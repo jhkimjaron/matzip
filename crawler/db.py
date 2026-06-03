@@ -7,6 +7,7 @@ db.py — SQLite 기반 맛집 데이터 저장소
 """
 
 import json
+import re
 import sqlite3
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -65,6 +66,10 @@ def init_db():
             closed_days     TEXT DEFAULT '',
             business_status TEXT DEFAULT '',
 
+            -- 리뷰 원문 (키워드 분석용)
+            visitor_reviews_json TEXT DEFAULT '[]',
+            blog_reviews_json    TEXT DEFAULT '[]',
+
             -- 관리 메타
             area             TEXT DEFAULT '',
             scan_only        INT  DEFAULT 1,
@@ -80,6 +85,16 @@ def init_db():
         conn.execute("""
         CREATE INDEX IF NOT EXISTS idx_crawled   ON places(last_crawled)
         """)
+        # 기존 DB에 컬럼 없을 경우 마이그레이션
+        for col, definition in [
+            ("visitor_reviews_json", "TEXT DEFAULT '[]'"),
+            ("blog_reviews_json",    "TEXT DEFAULT '[]'"),
+        ]:
+            try:
+                conn.execute(f"ALTER TABLE places ADD COLUMN {col} {definition}")
+                conn.commit()
+            except Exception:
+                pass  # 이미 존재하면 무시
         conn.commit()
 
 
@@ -139,6 +154,7 @@ def upsert_crawl(result: dict):
             positive_rate, sentiment_positive, sentiment_negative,
             sentiment_neutral, sentiment_total, mindless_excluded,
             review_analysis,
+            visitor_reviews_json, blog_reviews_json,
             business_hours, break_time, closed_days, business_status,
             area, scan_only, last_crawled, first_seen, verdict
         ) VALUES (
@@ -152,6 +168,7 @@ def upsert_crawl(result: dict):
             :positive_rate, :sentiment_positive, :sentiment_negative,
             :sentiment_neutral, :sentiment_total, :mindless_excluded,
             :review_analysis,
+            :visitor_reviews_json, :blog_reviews_json,
             :business_hours, :break_time, :closed_days, :business_status,
             :area, 0, :last_crawled,
             COALESCE((SELECT first_seen FROM places WHERE id=:id), :last_crawled),
@@ -162,6 +179,8 @@ def upsert_crawl(result: dict):
             "lat": result.get("lat", 0),
             "lng": result.get("lng", 0),
             "review_analysis": json.dumps(ra, ensure_ascii=False),
+            "visitor_reviews_json": json.dumps(result.get("visitor_reviews", []), ensure_ascii=False),
+            "blog_reviews_json":    json.dumps(result.get("blog_reviews", []), ensure_ascii=False),
             "last_crawled": datetime.now().isoformat(),
             "area": result.get("area", ""),
         })
@@ -183,6 +202,20 @@ def get_pending_crawl(older_than_days: int = 30) -> list[dict]:
     return [dict(r) for r in rows]
 
 
+def _fix_hours(s: str) -> str | None:
+    """영업시간 필드에 리뷰 텍스트가 섞인 경우 시간 패턴만 추출."""
+    if not s:
+        return None
+    if len(s) <= 60 and re.search(r"\d{1,2}:\d{2}", s):
+        return s
+    src = s[s.rfind("영업시간"):] if "영업시간" in s else s
+    m = re.search(
+        r"(?:[월화수목금토일]{1,3}[~\-]?[월화수목금토일]{0,3}\s+)?\d{1,2}:\d{2}\s*[~\-]\s*\d{1,2}:\d{2}",
+        src,
+    )
+    return m.group(0).strip() if m else None
+
+
 def export_places(min_valid: int = 50) -> list[dict]:
     """웹용 export — 크롤링 완료 + 유효리뷰 기준 통과한 것만."""
     with get_conn() as conn:
@@ -197,6 +230,14 @@ def export_places(min_valid: int = 50) -> list[dict]:
     for r in rows:
         p = dict(r)
         p["review_analysis"] = json.loads(p.get("review_analysis") or "{}")
+        p["business_hours"]  = _fix_hours(p.get("business_hours") or "")
+        # 리뷰 원문: visitor + blog 를 {text, type} 형태로 병합
+        v_reviews = json.loads(p.pop("visitor_reviews_json", None) or "[]")
+        b_reviews = json.loads(p.pop("blog_reviews_json",    None) or "[]")
+        p["reviews"] = (
+            [{"text": t, "type": "visitor"} for t in v_reviews if isinstance(t, str)] +
+            [{"text": t, "type": "blog"}    for t in b_reviews if isinstance(t, str)]
+        )
         places.append(p)
     return places
 

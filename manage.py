@@ -37,7 +37,7 @@ OUTPUT_JS   = ROOT / "data" / "places.js"
 # ── 설정 로드 ──────────────────────────────────────────────────────────
 def load_config() -> dict:
     if CONFIG_PATH.exists():
-        return json.loads(CONFIG_PATH.read_text(encoding="utf-8"))
+        return json.loads(CONFIG_PATH.read_text(encoding="utf-8-sig"))
     return {
         "limit_per_area": 100,
         "min_reviews": 100,

@@ -950,6 +950,9 @@ async def search_places(query: str, limit: int = 500,
     print(f"[naver] '{query}' 검색 중 (목표 {limit}개, 최소리뷰 {min_reviews}건)...")
     places: list[dict] = []
     seen_ids: set[str] = set()
+    total_seen = 0
+    skip_chain = 0
+    skip_reviews = 0
 
     async with _stealth.use_async(async_playwright()) as p:
         browser = await p.chromium.launch(headless=True)
@@ -983,12 +986,14 @@ async def search_places(query: str, limit: int = 500,
                     if not pid or pid in seen_ids:
                         continue
                     seen_ids.add(pid)
+                    total_seen += 1
 
                     name = item.get("name", "")
 
                     # ── 스캔 단계 필터 ──
                     # 프랜차이즈 제외
                     if _is_chain(name):
+                        skip_chain += 1
                         continue
 
                     cats = item.get("category", [])
@@ -1001,6 +1006,7 @@ async def search_places(query: str, limit: int = 500,
 
                     # 최소 리뷰 수 미달 제외
                     if total_count < min_reviews:
+                        skip_reviews += 1
                         continue
 
                     _GENERIC = {"음식점", "식당", "레스토랑", "먹거리", "푸드코트"}
@@ -1082,7 +1088,11 @@ async def search_places(query: str, limit: int = 500,
         await ctx.close()
 
     result = places[:limit]
-    print(f"[naver] 최종 {len(result)}개 발견 (필터 적용 후)")
+    print(f"[naver] 스캔 완료:")
+    print(f"  전체 검색결과:   {total_seen}개")
+    print(f"  프랜차이즈 제외: -{skip_chain}개")
+    print(f"  리뷰부족 제외:   -{skip_reviews}개  (기준: {min_reviews}건 미만)")
+    print(f"  최종 통과:       {len(result)}개")
     return result
 
 
