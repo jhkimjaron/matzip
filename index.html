@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light dark">
 <title>맛집지도 — 네이버 리뷰 기반</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -305,6 +306,35 @@
   .badge-visitor { background:rgba(3,199,90,.15);  color:var(--accent); }
   .badge-blog    { background:rgba(96,160,240,.15); color:#60a0f0; }
 
+  /* 키워드 리뷰 인용 */
+  .kw-category { margin-bottom:14px; }
+  .kw-category:last-child { margin-bottom:0; }
+  .kw-label {
+    font-size:11px; font-family:var(--mono); color:var(--dim);
+    letter-spacing:.06em; text-transform:uppercase;
+    margin-bottom:6px; display:flex; align-items:center; gap:6px;
+  }
+  .kw-label-count {
+    font-size:10px; background:var(--surface2);
+    border:1px solid var(--border); border-radius:8px;
+    padding:1px 7px; color:var(--muted); font-family:var(--mono);
+    text-transform:none; letter-spacing:0;
+  }
+  .kw-quote {
+    font-size:12px; color:var(--text); line-height:1.65;
+    padding:8px 10px 8px 12px;
+    border-left:2px solid var(--border);
+    margin-bottom:5px;
+    background:var(--surface2);
+    border-radius:0 6px 6px 0;
+    position:relative;
+  }
+  .kw-quote:last-child { margin-bottom:0; }
+  .kw-no-match {
+    font-size:11px; color:var(--dim); padding:4px 0 4px 4px;
+    font-style:italic;
+  }
+
   /* 네이버 지도 다크모드 */
   @media (prefers-color-scheme: dark) {
     #map { filter: brightness(0.78) saturate(0.6); }
@@ -334,28 +364,39 @@
   ::-webkit-scrollbar-track { background:transparent; }
   ::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
 
+  /* ── 목록 토글 버튼 (모바일 전용) ── */
+  .list-toggle-btn { display:none; }
+
   /* ── 모바일 ── */
   @media (max-width:768px) {
-    /* 헤더: 검색창만 표시, 필터칩 숨김 */
+    /* 헤더 */
     header { gap:10px; padding:0 12px; }
     .filter-chips { display:none; }
     .search-wrap { max-width:100%; }
 
-    /* 레이아웃: 지도 위 / 사이드바 아래 */
+    /* 레이아웃: 지도가 전체 채움 */
     .main { flex-direction:column; position:relative; }
-    #map, #map-fallback { height:52vh; width:100%; flex:none; }
-
-    /* 사이드바: 하단 패널로 */
-    .sidebar {
+    #map, #map-fallback {
+      height: calc(100vh - 52px);
       width:100%; flex:none;
-      height:48vh;
+    }
+
+    /* 사이드바: 하단에서 슬라이드업 */
+    .sidebar {
+      position:fixed;
+      bottom:0; left:0; right:0;
+      width:100%; height:72vh;
+      flex:none;
       border-right:none;
       border-top:2px solid var(--border);
       border-radius:16px 16px 0 0;
-      overflow:hidden;
+      transform:translateY(100%);
+      transition:transform .3s cubic-bezier(.4,0,.2,1);
+      z-index:300;
     }
+    .sidebar.open { transform:translateY(0); }
 
-    /* 사이드바 상단에 드래그 핸들 */
+    /* 드래그 핸들 */
     .sidebar::before {
       content:'';
       display:block;
@@ -367,6 +408,43 @@
 
     .place-list { -webkit-overflow-scrolling:touch; }
 
+    /* 목록 토글 버튼 */
+    .list-toggle-btn {
+      display:flex;
+      position:fixed;
+      bottom:28px; left:50%;
+      transform:translateX(-50%);
+      background:var(--surface);
+      border:1px solid var(--border);
+      color:var(--text);
+      font-family:var(--font);
+      font-size:14px; font-weight:500;
+      padding:11px 28px;
+      border-radius:24px;
+      cursor:pointer;
+      z-index:200;
+      box-shadow:0 4px 20px var(--shadow);
+      gap:8px; align-items:center;
+      white-space:nowrap;
+      transition:background .15s, transform .15s;
+    }
+    .list-toggle-btn:active { transform:translateX(-50%) scale(0.96); }
+    .list-toggle-btn.open {
+      background:var(--accent);
+      border-color:var(--accent);
+      color:#fff;
+      bottom: calc(72vh + 12px);
+    }
+
+    /* 사이드바 열릴 때 버튼 숨김 처리 */
+    .sidebar-backdrop {
+      display:none;
+      position:fixed; inset:0;
+      z-index:299;
+      background:transparent;
+    }
+    .sidebar-backdrop.active { display:block; }
+
     /* 상세 패널: 하단 풀스크린 */
     .detail-panel {
       width:100%; height:88vh;
@@ -375,22 +453,22 @@
       border-left:none;
       border-top:2px solid var(--border);
       border-radius:16px 16px 0 0;
+      z-index:400;
     }
     .detail-panel.open { transform:translateY(0); }
 
     /* 카드 글씨 조정 */
     .card-name { font-size:13px; }
     .card-meta { font-size:11px; }
-
-    /* 상세 패널 너비 */
     .detail-body { padding:16px; }
     .detail-name { font-size:20px; }
   }
 
   /* 매우 작은 화면 (iPhone SE 등) */
   @media (max-width:375px) {
-    #map, #map-fallback { height:45vh; }
-    .sidebar { height:55vh; }
+    #map, #map-fallback { height: calc(100vh - 52px); }
+    .sidebar { height:75vh; }
+    .list-toggle-btn.open { bottom: calc(75vh + 12px); }
   }
 </style>
 </head>
@@ -422,6 +500,9 @@
 
   <div id="map" style="flex:1"></div>
 </div>
+
+<div class="sidebar-backdrop" id="sidebarBackdrop" onclick="closeSidebar()"></div>
+<button class="list-toggle-btn" id="listToggleBtn" onclick="toggleSidebar()">☰ 목록 보기</button>
 
 <div class="detail-panel" id="detailPanel">
   <div class="detail-header">
@@ -590,71 +671,156 @@ function renderFilterChips() {
   });
 }
 
+// ── 대표 메뉴 추출 ──
+const GENERIC_FOOD = new Set([
+  '한식','일식','중식','양식','음식','요리','식사','메뉴','코스','세트','런치','디너','점심','저녁','브런치',
+  '밥','면','국','찌개','탕','볶음','구이','튀김','전','죽','국밥','덮밥','비빔밥',
+  '파스타','피자','햄버거','버거','라면','우동','소바','초밥','스시','롤','사시미',
+  '치킨','떡볶이','김밥','삼겹살','갈비','냉면','돈까스','까스','스테이크','샐러드',
+  '빵','케이크','커피','음료','주스','술','맥주','소주','막걸리',
+]);
+
+const NON_MENU = new Set([
+  '여기','이곳','가게','식당','음식점','매장','본점','지점','곳','집',
+  '가격','분위기','서비스','위생','인테리어','화장실','주차','비품',
+  '직원','사장','알바','사람','손님','아이','아기','가족',
+  '재료','맛','향','식감','냄새','양','크기','사이즈',
+  '자리','좌석','테이블','공간','줄','웨이팅','대기','예약','시간',
+  '주말','평일','점심','저녁','오늘','내일','다음','처음','마지막',
+]);
+
+function extractMenusFromReviews(reviews) {
+  if (!reviews?.length) return [];
+  const menuCount = new Map();
+  const positiveRe = /맛있|추천|강추|최고|맛나|존맛|별미|일품|맛 좋|맛이 좋/;
+  // 명사(2~8자) + (이/가)? + 긍정어 패턴
+  const menuRe = /([가-힣]{2,8})(?:[이가]?\s*)(?:맛있|추천|강추|최고|맛나|존맛|별미|일품)/g;
+
+  for (const review of reviews) {
+    if (!positiveRe.test(review)) continue;
+    let m;
+    while ((m = menuRe.exec(review)) !== null) {
+      const cand = m[1].trim();
+      if (!GENERIC_FOOD.has(cand) && !NON_MENU.has(cand)) {
+        menuCount.set(cand, (menuCount.get(cand) || 0) + 1);
+      }
+    }
+  }
+
+  // 2회 이상 언급된 것 우선, 없으면 1회짜리 포함
+  const sorted = [...menuCount.entries()].sort((a, b) => b[1] - a[1]);
+  const frequent = sorted.filter(([, c]) => c >= 2).slice(0, 5).map(([n]) => n);
+  if (frequent.length) return frequent;
+  return sorted.slice(0, 5).map(([n]) => n);
+}
+
+// ── 키워드 카테고리 정의 ──
+const REVIEW_KEYWORDS = [
+  {
+    label: '음식의 양',
+    icon: '🍚',
+    keywords: ['양이 많', '양이 적', '양 많', '양 적', '푸짐', '가성비', '적은 양', '많은 양', '양은', '넉넉'],
+  },
+  {
+    label: '서비스',
+    icon: '🤝',
+    keywords: ['친절', '불친절', '서비스', '직원', '사장님', '알바', '응대', '무뚝뚝', '상냥'],
+  },
+  {
+    label: '위생',
+    icon: '🧹',
+    keywords: ['청결', '깨끗', '더럽', '불결', '위생', '끈적', '냄새', '청소'],
+  },
+  {
+    label: '편의',
+    icon: '🚻',
+    keywords: ['화장실', '주차', '물티슈', '좌석', '테이블', '자리', '간격', '넓', '좁', '남녀분리', '비품'],
+  },
+  {
+    label: '웨이팅',
+    icon: '⏱',
+    keywords: ['웨이팅', '대기', '줄', '캐치테이블', '테이블링', '원격등록', '현장등록', '예약', '기다'],
+  },
+  {
+    label: '분위기',
+    icon: '✨',
+    keywords: ['분위기', '데이트', '가족', '조용', '시끄럽', '어둡', '밝', '인테리어', '테마', '아늑', '감성'],
+  },
+];
+
 // ── 리뷰 분석 블록 빌더 ──
 function buildAnalysisBlock(p) {
-  const ra = p.review_analysis;
-  if (!ra || (!ra.top_menus?.length && !ra.neg_topics?.length && ra.service_score == null)) {
+  const reviews = p.reviews;
+
+  if (!reviews || !reviews.length) {
     return `<div class="section">
       <div class="section-title">리뷰 분석</div>
       <div class="stat-block" style="color:var(--dim);font-size:12px;text-align:center;padding:16px">
-        재크롤링 후 분석 결과가 표시됩니다
+        리뷰 데이터가 없습니다
       </div>
     </div>`;
   }
 
-  function scoreColor(s) {
-    return s >= 70 ? 'var(--accent)' : s >= 40 ? '#f0c860' : '#f06060';
-  }
-  function scoreBar(score, label, count) {
-    if (score == null) return '';
-    const c = scoreColor(score);
-    return `
-      <div class="analysis-label">${label} <span style="color:var(--dim);font-weight:400">(언급 ${count}건)</span></div>
-      <div class="score-inline">
-        <div class="bar"><div class="bar-fill" style="width:${score}%;background:${c}"></div></div>
-        <span class="score-val" style="color:${c}">${score}%</span>
-      </div>`;
+  function highlight(text, keywords) {
+    let result = text;
+    keywords.forEach(kw => {
+      const re = new RegExp(`(${kw})`, 'gi');
+      result = result.replace(re, '<mark style="background:rgba(3,199,90,.25);color:inherit;border-radius:2px;padding:0 1px">$1</mark>');
+    });
+    return result;
   }
 
-  const menus = (ra.top_menus || []).map(m =>
-    `<span class="tag tag-menu">🍽 ${m}</span>`).join('');
-
-  function kwItems(list, cls) {
-    return (list || []).map(k => {
-      const word  = typeof k === 'string' ? k : k.word;
-      const count = typeof k === 'object' ? k.count : null;
-      const ex    = typeof k === 'object' ? k.example : '';
-      return `
-        <div style="margin-bottom:8px">
-          <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
-            <span class="tag ${cls}">${word}</span>
-            ${count ? `<span style="font-size:11px;color:var(--dim)">${count}회 언급</span>` : ''}
-          </div>
-          ${ex ? `<div style="font-size:11px;color:var(--muted);padding-left:2px;line-height:1.5;font-style:italic">"${ex}"</div>` : ''}
-        </div>`;
-    }).join('');
+  function findQuotes(keywords, maxQuotes = 2) {
+    const matched = [];
+    for (const review of reviews) {
+      if (matched.length >= maxQuotes) break;
+      const lower = review.toLowerCase();
+      if (keywords.some(kw => lower.includes(kw.toLowerCase()))) {
+        matched.push(review);
+      }
+    }
+    return matched;
   }
 
-  return `
+  // 대표 메뉴 추출 (리뷰 기반 우선, 없으면 top_menus 필터링 폴백)
+  let topMenus = extractMenusFromReviews(reviews);
+  if (!topMenus.length && p.review_analysis?.top_menus?.length) {
+    topMenus = p.review_analysis.top_menus
+      .filter(m => !GENERIC_FOOD.has(m) && !NON_MENU.has(m))
+      .slice(0, 5);
+  }
+
+  const menuSection = topMenus.length ? `
     <div class="section">
-      <div class="section-title">리뷰 분석 <span style="color:var(--dim);font-size:10px;font-family:var(--font);text-transform:none;letter-spacing:0">kiwipiepy · ${ra.analyzed_count || 0}건</span></div>
-      <div class="stat-block">
-        ${menus ? `
-        <div class="analysis-label">대표 메뉴</div>
-        <div class="tag-group" style="margin-bottom:4px">${menus}</div>` : ''}
-
-        ${(ra.top_keywords||[]).length ? `
-        <div class="analysis-label" style="margin-top:10px">주요 특징</div>
-        ${kwItems(ra.top_keywords, 'tag-kw')}` : ''}
-
-        ${(ra.neg_topics||[]).length ? `
-        <div class="analysis-label" style="margin-top:6px">주요 불만</div>
-        ${kwItems(ra.neg_topics, 'tag-neg')}` : ''}
-
-        ${scoreBar(ra.service_score, '서비스 평가', ra.service_count)}
-        ${scoreBar(ra.hygiene_score, '위생·청결 평가', ra.hygiene_count)}
+      <div class="section-title">대표 메뉴</div>
+      <div class="tag-group">
+        ${topMenus.map(m => `<span class="tag tag-menu">🍽 ${m}</span>`).join('')}
       </div>
-    </div>`;
+    </div>` : '';
+
+  const categories = REVIEW_KEYWORDS.map(cat => {
+    const quotes = findQuotes(cat.keywords);
+    return { ...cat, quotes };
+  }).filter(cat => cat.quotes.length > 0);
+
+  const analysisSection = categories.length ? `
+    <div class="section">
+      <div class="section-title">리뷰 분석 <span style="color:var(--dim);font-size:10px;font-family:var(--font);text-transform:none;letter-spacing:0">키워드 기반 · ${reviews.length}건</span></div>
+      <div class="stat-block">
+        ${categories.map(cat => `
+          <div class="kw-category">
+            <div class="kw-label">
+              ${cat.icon} ${cat.label}
+              <span class="kw-label-count">${cat.quotes.length}건</span>
+            </div>
+            ${cat.quotes.map(q =>
+              `<div class="kw-quote">${highlight(q, cat.keywords)}</div>`
+            ).join('')}
+          </div>`).join('')}
+      </div>
+    </div>` : '';
+
+  return menuSection + analysisSection;
 }
 
 // ── 상세 패널 ──
@@ -794,6 +960,7 @@ function openDetail(id) {
     ${buildAnalysisBlock(p)}
   `;
 
+  if (window.innerWidth <= 768) closeSidebar();
   document.getElementById('detailPanel').classList.add('open');
 }
 
@@ -801,6 +968,26 @@ function closeDetail() {
   activeId = null;
   document.getElementById('detailPanel').classList.remove('open');
   document.querySelectorAll('.place-card').forEach(c => c.classList.remove('active'));
+}
+
+function toggleSidebar() {
+  const sidebar = document.querySelector('.sidebar');
+  const btn = document.getElementById('listToggleBtn');
+  const backdrop = document.getElementById('sidebarBackdrop');
+  const isOpen = sidebar.classList.toggle('open');
+  btn.classList.toggle('open', isOpen);
+  btn.innerHTML = isOpen ? '✕ 닫기' : '☰ 목록 보기';
+  backdrop.classList.toggle('active', isOpen);
+}
+
+function closeSidebar() {
+  const sidebar = document.querySelector('.sidebar');
+  const btn = document.getElementById('listToggleBtn');
+  const backdrop = document.getElementById('sidebarBackdrop');
+  sidebar.classList.remove('open');
+  btn.classList.remove('open');
+  btn.innerHTML = '☰ 목록 보기';
+  backdrop.classList.remove('active');
 }
 
 // ── 필터 & 정렬 ──
