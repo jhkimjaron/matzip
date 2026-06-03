@@ -7,12 +7,12 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpClientId=zvmm7wkis7"></script>
 
 <script src="./data/places.js" onerror="console.warn('places.js 없음')"></script>
 
 <style>
+  /* ── 다크 모드 (기본) ── */
   :root {
     --bg:       #0f0f0f;
     --surface:  #1a1a1a;
@@ -21,11 +21,32 @@
     --text:     #e8e6e0;
     --muted:    #888;
     --dim:      #555;
-    --accent:   #03c75a;   /* 네이버 그린 */
+    --accent:   #03c75a;
     --accent-d: #029a44;
     --sidebar-w: 360px;
     --font:     'Noto Sans KR', sans-serif;
     --mono:     'DM Mono', monospace;
+    --tile-filter: brightness(0.7) saturate(0.6);
+    --shadow:   rgba(0,0,0,.5);
+    --pin-shadow: rgba(0,0,0,.6);
+  }
+
+  /* ── 라이트 모드 (시스템 설정 따름) ── */
+  @media (prefers-color-scheme: light) {
+    :root {
+      --bg:       #f4f4f4;
+      --surface:  #ffffff;
+      --surface2: #f0f0f0;
+      --border:   #e0e0e0;
+      --text:     #1a1a1a;
+      --muted:    #666;
+      --dim:      #999;
+      --accent:   #03c75a;
+      --accent-d: #029a44;
+      --tile-filter: brightness(1) saturate(0.9);
+      --shadow:   rgba(0,0,0,.12);
+      --pin-shadow: rgba(0,0,0,.3);
+    }
   }
 
   * { margin:0; padding:0; box-sizing:border-box; }
@@ -246,6 +267,12 @@
   }
   .stat-row span:last-child { color:var(--text); font-family:var(--mono); font-size:11px; }
 
+  /* 라이트 모드 보정 */
+  @media (prefers-color-scheme: light) {
+    .stat-block { background:var(--surface2); border-color:var(--border); }
+    .leaflet-popup-content-wrapper { background:var(--surface); color:var(--text); }
+  }
+
   .stat-bar { height:4px; background:var(--border); border-radius:2px; margin-top:10px; overflow:hidden; }
   .stat-bar-fill { height:100%; background:var(--accent); border-radius:2px; }
 
@@ -279,9 +306,11 @@
   .badge-visitor { background:rgba(3,199,90,.15);  color:var(--accent); }
   .badge-blog    { background:rgba(96,160,240,.15); color:#60a0f0; }
 
-  /* 지도 타일 어둡게 */
-  .leaflet-tile { filter: brightness(0.7) saturate(0.6) !important; }
-  .leaflet-container { background: #1a1a1a; }
+  /* 네이버 지도 다크모드 */
+  @media (prefers-color-scheme: dark) {
+    #map { filter: brightness(0.78) saturate(0.6); }
+    .map-pin-wrap { filter: brightness(1.28) saturate(1.8) !important; }
+  }
 
   /* 커스텀 마커 */
   .map-pin-wrap {
@@ -289,12 +318,12 @@
     cursor:pointer;
   }
   .map-pin {
-    filter:drop-shadow(0 3px 6px rgba(0,0,0,.5));
+    filter:drop-shadow(0 3px 6px var(--pin-shadow));
     transition:transform .15s, filter .15s;
   }
-  .map-pin-wrap:hover .map-pin { transform:scale(1.15) translateY(-2px); filter:drop-shadow(0 5px 10px rgba(0,0,0,.6)); }
+  .map-pin-wrap:hover .map-pin { transform:scale(1.15) translateY(-2px); }
   .map-pin-label {
-    background:rgba(15,15,15,.82); color:#fff;
+    background:rgba(0,0,0,.72); color:#fff;
     font-size:10px; font-family:var(--font);
     padding:2px 6px; border-radius:4px;
     white-space:nowrap; margin-top:2px;
@@ -306,13 +335,63 @@
   ::-webkit-scrollbar-track { background:transparent; }
   ::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
 
+  /* ── 모바일 ── */
   @media (max-width:768px) {
-    .sidebar { width:100%; position:absolute; bottom:0; left:0; height:42vh; z-index:400; border-right:none; border-top:1px solid var(--border); }
-    #map, #map-fallback { height:58vh; width:100%; }
-    .main { flex-direction:column; }
-    .detail-panel { width:100%; top:auto; bottom:0; height:78vh; transform:translateY(100%); border-left:none; border-top:1px solid var(--border); }
-    .detail-panel.open { transform:translateY(0); }
+    /* 헤더: 검색창만 표시, 필터칩 숨김 */
+    header { gap:10px; padding:0 12px; }
     .filter-chips { display:none; }
+    .search-wrap { max-width:100%; }
+
+    /* 레이아웃: 지도 위 / 사이드바 아래 */
+    .main { flex-direction:column; position:relative; }
+    #map, #map-fallback { height:52vh; width:100%; flex:none; }
+
+    /* 사이드바: 하단 패널로 */
+    .sidebar {
+      width:100%; flex:none;
+      height:48vh;
+      border-right:none;
+      border-top:2px solid var(--border);
+      border-radius:16px 16px 0 0;
+      overflow:hidden;
+    }
+
+    /* 사이드바 상단에 드래그 핸들 */
+    .sidebar::before {
+      content:'';
+      display:block;
+      width:40px; height:4px;
+      background:var(--border);
+      border-radius:2px;
+      margin:10px auto 6px;
+    }
+
+    .place-list { -webkit-overflow-scrolling:touch; }
+
+    /* 상세 패널: 하단 풀스크린 */
+    .detail-panel {
+      width:100%; height:88vh;
+      top:auto; bottom:0;
+      transform:translateY(100%);
+      border-left:none;
+      border-top:2px solid var(--border);
+      border-radius:16px 16px 0 0;
+    }
+    .detail-panel.open { transform:translateY(0); }
+
+    /* 카드 글씨 조정 */
+    .card-name { font-size:13px; }
+    .card-meta { font-size:11px; }
+
+    /* 상세 패널 너비 */
+    .detail-body { padding:16px; }
+    .detail-name { font-size:20px; }
+  }
+
+  /* 매우 작은 화면 (iPhone SE 등) */
+  @media (max-width:375px) {
+    #map, #map-fallback { height:45vh; }
+    .sidebar { height:55vh; }
   }
 </style>
 </head>
@@ -386,54 +465,49 @@ async function loadData() {
 
 // ── 네이버 지도 초기화 ──
 function initMap() {
-  // 첫 번째 업소 위치를 기본 중심으로
   const first = allPlaces[0];
   const defaultLat = (first && first.lat) ? first.lat : 37.5665;
   const defaultLng = (first && first.lng) ? first.lng : 126.9780;
 
-  map = L.map('map', {
-    center: [defaultLat, defaultLng],
+  map = new naver.maps.Map('map', {
+    center: new naver.maps.LatLng(defaultLat, defaultLng),
     zoom: 13,
-    zoomControl: false
+    zoomControl: true,
+    zoomControlOptions: { position: naver.maps.Position.RIGHT_BOTTOM },
+    mapTypeControl: false,
+    scaleControl: false,
   });
-
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; OpenStreetMap &copy; CARTO',
-    maxZoom: 19
-  }).addTo(map);
-
-  L.control.zoom({ position: 'bottomright' }).addTo(map);
 }
 
 // ── 마커 렌더 ──
 function renderMarkers() {
   if (!map) return;
 
-  Object.values(markers).forEach(m => map.removeLayer(m));
+  Object.values(markers).forEach(m => m.setMap(null));
   markers = {};
 
   filteredPlaces.forEach(p => {
     if (!p.lat || !p.lng) return;
 
     const shortName = p.name.length > 8 ? p.name.slice(0, 8) + '…' : p.name;
-    const icon = L.divIcon({
-      className: '',
-      html: `<div class="map-pin-wrap">
-        <div class="map-pin">
-          <svg width="22" height="30" viewBox="0 0 22 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M11 0C4.925 0 0 4.925 0 11c0 8.8 11 19 11 19S22 19.8 22 11C22 4.925 17.075 0 11 0z" fill="#03c75a"/>
-            <circle cx="11" cy="11" r="4.5" fill="white" opacity="0.92"/>
-          </svg>
-        </div>
-        <div class="map-pin-label">${shortName}</div>
-      </div>`,
-      iconSize: [96, 52],
-      iconAnchor: [48, 30]
+    const m = new naver.maps.Marker({
+      position: new naver.maps.LatLng(p.lat, p.lng),
+      map: map,
+      icon: {
+        content: `<div class="map-pin-wrap">
+          <div class="map-pin">
+            <svg width="22" height="30" viewBox="0 0 22 30" fill="none">
+              <path d="M11 0C4.925 0 0 4.925 0 11c0 8.8 11 19 11 19S22 19.8 22 11C22 4.925 17.075 0 11 0z" fill="#03c75a"/>
+              <circle cx="11" cy="11" r="4.5" fill="white" opacity="0.92"/>
+            </svg>
+          </div>
+          <div class="map-pin-label">${shortName}</div>
+        </div>`,
+        anchor: new naver.maps.Point(11, 30)
+      }
     });
 
-    const m = L.marker([p.lat, p.lng], { icon })
-      .addTo(map)
-      .on('click', () => openDetail(p.id));
+    naver.maps.Event.addListener(m, 'click', () => openDetail(p.id));
     markers[p.id] = m;
   });
 }
@@ -594,7 +668,8 @@ function openDetail(id) {
     c.classList.toggle('active', c.dataset.id === id));
 
   if (map && p.lat && p.lng) {
-    map.flyTo([p.lat, p.lng], 16, { duration: 0.7 });
+    map.setCenter(new naver.maps.LatLng(p.lat, p.lng));
+    map.setZoom(16);
   }
 
   document.getElementById('detailTitle').textContent = '상세 정보';
