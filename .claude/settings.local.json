@@ -15,7 +15,23 @@
       "Bash(python -c \"import ast; ast.parse\\(open\\('crawler/naver_crawler.py',encoding='utf-8'\\).read\\(\\)\\); print\\('OK'\\)\")",
       "Bash(python -c \"import ast; ast.parse\\(open\\('crawler/naver_crawler.py',encoding='utf-8'\\).read\\(\\)\\); print\\('crawler OK'\\)\")",
       "Bash(python -c \"import ast; ast.parse\\(open\\('crawler/naver_crawler.py',encoding='utf-8'\\).read\\(\\)\\); ast.parse\\(open\\('crawler/run_all.py',encoding='utf-8'\\).read\\(\\)\\); print\\('OK'\\)\")",
-      "Bash(python -u -X utf8 manage.py status)"
+      "Bash(python -u -X utf8 manage.py status)",
+      "WebFetch(domain:navermaps.github.io)",
+      "WebFetch(domain:guide.ncloud-docs.com)",
+      "WebFetch(domain:api.ncloud-docs.com)",
+      "mcp__firecrawl__firecrawl_search",
+      "WebFetch(domain:www.ncloud-forums.com)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)",
+      "Bash(node -e ' *)",
+      "Bash(python -c \"import json; d=json.load\\(open\\('_debug_pcmap_gql.json',encoding='utf-8'\\)\\); s=d[0]; print\\('len',len\\(s\\)\\); print\\(s[:1500]\\)\")",
+      "Bash(cd /c/Users/jh960/Desktop/matzip *)",
+      "Bash(python manage.py status)",
+      "Bash(git rm *)",
+      "Bash(grep -c '\\\\b__TRACKED_VAR__\\\\b' crawler/naver_crawler.py)",
+      "Bash(python -c \"import ast; ast.parse\\(open\\('crawler/naver_crawler.py',encoding='utf-8'\\).read\\(\\)\\); ast.parse\\(open\\('crawler/db.py',encoding='utf-8'\\).read\\(\\)\\); ast.parse\\(open\\('manage.py',encoding='utf-8'\\).read\\(\\)\\); print\\('syntax OK'\\)\")",
+      "Bash(python -c \"import sys; sys.path.insert\\(0,'crawler'\\); from naver_crawler import search_places, crawl_place, check_recent_activity, _stealth, MIN_REVIEWS; print\\('imports OK'\\)\")"
     ]
   }
 }

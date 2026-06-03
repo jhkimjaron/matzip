@@ -330,8 +330,8 @@
   }
   .kw-quote:last-child { margin-bottom:0; }
   .kw-quote-source {
-    display:block; font-size:10px; color:var(--dim);
-    margin-top:3px; font-family:var(--mono);
+    display:inline; font-size:10px; color:var(--dim);
+    margin-left:6px; font-family:var(--mono);
   }
   .kw-no-match {
     font-size:11px; color:var(--dim); padding:4px 0 4px 4px;
@@ -698,6 +698,13 @@ const NON_MENU = new Set([
   '처음','다음','이번','저번','오늘','내일','주말','평일','점심','저녁','마지막',
   // 음식 형용사 (메뉴명 아님)
   '고소','달콤','매콤','짭짤','시원','따뜻','느끼','담백','쫄깃',
+  // 체험·전시·동물 (음식 아님)
+  '체험','전시','관람','입장','티켓','관광','놀이','게임',
+  '물고기','도마뱀','파충류','동물','새','곤충','강아지','고양이',
+  '수족관','아쿠아리움','동물원','테마파크','체험관','전시관',
+  // 기타 비식품
+  '사진','포토','인스타','굿즈','기념품','쇼핑','공연','축제',
+  '주변','근처','위치','접근','교통','버스','지하철','주차장',
 ]);
 
 function extractMenusFromReviews(reviews) {
@@ -725,9 +732,14 @@ function extractMenusFromReviews(reviews) {
 }
 
 // ── 키워드 카테고리 정의 ──
-const RESERVATION_APPS = ['캐치테이블', '테이블링'];
+const RESERVATION_APPS = ['캐치테이블', '테이블링', '네이버예약'];
 
 const REVIEW_KEYWORDS = [
+  {
+    label: '음식의 맛',
+    icon: '😋',
+    keywords: ['맛있', '맛없', '맛나', '존맛', '꿀맛', '별로', '실망', '맛이 좋', '맛이 없', '맛 좋', '맛 없', '기대이하', '최고의 맛', '진짜 맛'],
+  },
   {
     label: '음식의 양',
     icon: '🍚',
@@ -752,9 +764,7 @@ const REVIEW_KEYWORDS = [
   {
     label: '웨이팅',
     icon: '⏱',
-    // 예약앱은 별도 감지 — 여기선 대기 시간 맥락 리뷰만
     keywords: ['웨이팅', '대기', '줄 서', '기다', '원격등록', '현장등록', '예약'],
-    reservationApps: true,
   },
   {
     label: '분위기',
@@ -796,16 +806,19 @@ function buildAnalysisBlock(p) {
   }
 
   function findQuotes(keywords, maxQuotes = 2) {
-    const matched = [];
+    const quotes = [];
+    let total = 0;
     for (const r of reviews) {
-      if (matched.length >= maxQuotes) break;
       const text = getText(r);
       const lower = text.toLowerCase();
       if (keywords.some(kw => lower.includes(kw.toLowerCase()))) {
-        matched.push({ context: extractContext(text, keywords), type: getType(r) });
+        total++;
+        if (quotes.length < maxQuotes) {
+          quotes.push({ context: extractContext(text, keywords), type: getType(r) });
+        }
       }
     }
-    return matched;
+    return { quotes, total };
   }
 
   // 대표 메뉴: top_menus 필터링 우선, 부족하면 리뷰 추출로 보충
@@ -839,45 +852,50 @@ function buildAnalysisBlock(p) {
 
   const sourceLabel = { visitor: '방문자', blog: '블로그' };
 
-  // 예약앱 언급 감지
+  // 예약앱 감지
   const allTexts = reviews.map(r => getText(r)).join(' ');
   const detectedApps = RESERVATION_APPS.filter(app => allTexts.includes(app));
 
+  const reservationSection = `
+    <div class="section">
+      <div class="section-title">온라인 예약</div>
+      <div style="display:flex;gap:5px;flex-wrap:wrap;">
+        ${detectedApps.length
+          ? detectedApps.map(app => `
+              <span style="font-size:11px;padding:3px 10px;border-radius:10px;
+                background:rgba(3,199,90,.12);border:1px solid rgba(3,199,90,.3);
+                color:var(--accent);font-weight:500">${app} 가능</span>`).join('')
+          : `<span style="font-size:11px;padding:3px 10px;border-radius:10px;
+              background:var(--surface2);border:1px solid var(--border);
+              color:var(--dim)">리뷰에서 확인 불가</span>`
+        }
+      </div>
+    </div>`;
+
   const categories = REVIEW_KEYWORDS.map(cat => {
-    const quotes = findQuotes(cat.keywords);
-    return { ...cat, quotes };
-  }).filter(cat => cat.quotes.length > 0 || (cat.reservationApps && detectedApps.length));
+    const { quotes, total } = findQuotes(cat.keywords);
+    return { ...cat, quotes, total };
+  }).filter(cat => cat.total > 0);
 
   const analysisSection = categories.length ? `
     <div class="section">
       <div class="section-title">리뷰 분석 <span style="color:var(--dim);font-size:10px;font-family:var(--font);text-transform:none;letter-spacing:0">키워드 기반 · ${reviews.length}건</span></div>
       <div class="stat-block">
-        ${categories.map(cat => {
-          const appBadges = cat.reservationApps && detectedApps.length ? `
-            <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:6px">
-              ${detectedApps.map(app => `
-                <span style="font-size:11px;padding:2px 8px;border-radius:10px;
-                  background:rgba(3,199,90,.12);border:1px solid rgba(3,199,90,.3);
-                  color:var(--accent);font-weight:500">${app} 예약 가능</span>`).join('')}
-            </div>` : '';
-          return `
+        ${categories.map(cat => `
           <div class="kw-category">
             <div class="kw-label">
               ${cat.icon} ${cat.label}
-              ${cat.quotes.length ? `<span class="kw-label-count">${cat.quotes.length}건</span>` : ''}
+              <span class="kw-label-count">${cat.total}건</span>
             </div>
-            ${appBadges}
             ${cat.quotes.map(q => `
               <div class="kw-quote">
-                ${highlight(q.context, cat.keywords)}
-                <span class="kw-quote-source">${sourceLabel[q.type] || '방문자'} 리뷰</span>
+                ${highlight(q.context, cat.keywords)}<span class="kw-quote-source">· ${sourceLabel[q.type] || '방문자'} 리뷰</span>
               </div>`).join('')}
-          </div>`;
-        }).join('')}
+          </div>`).join('')}
       </div>
     </div>` : '';
 
-  return menuSection + analysisSection;
+  return menuSection + reservationSection + analysisSection;
 }
 
 // ── 상세 패널 ──

@@ -11,6 +11,7 @@ __pycache__/
 .venv/
 venv/
 
-# 디버그 파일
+# 디버그 / 도구 산출물
 test_stealth*.py
-data/polle_debug.png
+.playwright-mcp/
+crawler/_debug_*
