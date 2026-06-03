@@ -1,0 +1,11 @@
+{
+  "limit_per_area": 100,
+  "min_reviews": 100,
+  "active_days": 90,
+  "update_interval_days": 30,
+  "min_valid_reviews": 50,
+  "areas": [
+    "천안 서북구 음식점",
+    "천안 동남구 음식점"
+  ]
+}

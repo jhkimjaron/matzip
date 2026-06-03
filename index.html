@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>맛집지도 — 네이버 리뷰 기반</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script src="./data/places.js" onerror="console.warn('places.js 없음')"></script>
+
+<style>
+  :root {
+    --bg:       #0f0f0f;
+    --surface:  #1a1a1a;
+    --surface2: #242424;
+    --border:   #2e2e2e;
+    --text:     #e8e6e0;
+    --muted:    #888;
+    --dim:      #555;
+    --accent:   #03c75a;   /* 네이버 그린 */
+    --accent-d: #029a44;
+    --sidebar-w: 360px;
+    --font:     'Noto Sans KR', sans-serif;
+    --mono:     'DM Mono', monospace;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text);
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── 헤더 ── */
+  header {
+    height: 52px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 0 16px;
+    z-index: 1000;
+    flex-shrink: 0;
+  }
+
+  .logo {
+    font-family: var(--mono);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--accent);
+    white-space: nowrap;
+  }
+
+  .search-wrap { flex:1; max-width:380px; position:relative; }
+  .search-wrap input {
+    width:100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 7px 12px 7px 32px;
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 13px;
+    outline: none;
+    transition: border-color .15s;
+  }
+  .search-wrap input:focus { border-color: var(--accent-d); }
+  .search-wrap input::placeholder { color: var(--dim); }
+  .search-icon {
+    position:absolute; left:10px; top:50%;
+    transform:translateY(-50%);
+    color:var(--dim); font-size:14px; pointer-events:none;
+  }
+
+  .filter-chips { display:flex; gap:6px; overflow-x:auto; scrollbar-width:none; }
+  .filter-chips::-webkit-scrollbar { display:none; }
+
+  .chip {
+    padding:4px 10px; border-radius:20px;
+    border:1px solid var(--border); background:transparent;
+    color:var(--muted); font-family:var(--font); font-size:12px;
+    cursor:pointer; white-space:nowrap; transition:all .15s;
+  }
+  .chip:hover { border-color:var(--accent-d); color:var(--text); }
+  .chip.active { background:var(--accent); border-color:var(--accent); color:#fff; font-weight:500; }
+
+  /* ── 레이아웃 ── */
+  .main { display:flex; flex:1; overflow:hidden; }
+
+  /* ── 사이드바 ── */
+  .sidebar {
+    width: var(--sidebar-w); flex-shrink:0;
+    background: var(--surface); border-right:1px solid var(--border);
+    display:flex; flex-direction:column; overflow:hidden;
+  }
+
+  .sidebar-header {
+    padding:10px 16px; border-bottom:1px solid var(--border);
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .count-label { font-size:12px; color:var(--muted); }
+  .count-label span { color:var(--accent); font-family:var(--mono); font-weight:500; }
+
+  .sort-select {
+    background:var(--surface2); border:1px solid var(--border);
+    border-radius:6px; color:var(--muted); font-family:var(--font);
+    font-size:12px; padding:4px 8px; outline:none; cursor:pointer;
+  }
+
+  .place-list {
+    overflow-y:auto; flex:1;
+    scrollbar-width:thin; scrollbar-color:var(--border) transparent;
+  }
+
+  /* ── 카드 ── */
+  .place-card {
+    padding:13px 16px; border-bottom:1px solid var(--border);
+    cursor:pointer; transition:background .12s;
+  }
+  .place-card:hover { background:var(--surface2); }
+  .place-card.active { background:var(--surface2); border-left:3px solid var(--accent); padding-left:13px; }
+
+  .card-top {
+    display:flex; align-items:flex-start;
+    justify-content:space-between; gap:8px; margin-bottom:5px;
+  }
+  .card-name { font-size:14px; font-weight:500; color:var(--text); line-height:1.3; }
+
+  .matzip-badge {
+    font-size:11px; font-weight:600; padding:2px 8px;
+    border-radius:10px; white-space:nowrap; flex-shrink:0;
+    background:rgba(3,199,90,.15); color:var(--accent);
+    border:1px solid rgba(3,199,90,.3);
+  }
+
+  .card-meta { font-size:12px; color:var(--muted); margin-bottom:8px; }
+
+  /* 리뷰 분석 태그 */
+  .tag-group { display:flex; flex-wrap:wrap; gap:5px; margin-top:5px; }
+  .tag {
+    font-size:11px; padding:3px 9px; border-radius:12px;
+    background:var(--surface2); border:1px solid var(--border);
+    color:var(--muted); white-space:nowrap;
+  }
+  .tag-menu  { border-color:rgba(3,199,90,.35); color:var(--accent); background:rgba(3,199,90,.08); }
+  .tag-neg   { border-color:rgba(240,96,96,.35); color:#f06060; background:rgba(240,96,96,.08); }
+  .tag-kw    { border-color:rgba(96,160,240,.35); color:#60a0f0; background:rgba(96,160,240,.08); }
+
+  .analysis-label {
+    font-size:11px; color:var(--dim); margin-bottom:3px; margin-top:10px;
+    font-family:var(--mono); letter-spacing:.05em; text-transform:uppercase;
+  }
+  .analysis-label:first-child { margin-top:0; }
+
+  .score-inline {
+    display:flex; align-items:center; gap:8px; margin-top:5px;
+  }
+  .score-inline .bar {
+    flex:1; height:5px; background:var(--border); border-radius:3px; overflow:hidden;
+  }
+  .score-inline .bar-fill { height:100%; border-radius:3px; }
+  .score-val { font-size:12px; font-family:var(--mono); font-weight:600; min-width:32px; text-align:right; }
+
+  .review-row {
+    display:flex; align-items:center; gap:8px; flex-wrap:wrap;
+  }
+  .review-num {
+    font-family:var(--mono); font-size:13px;
+    color:var(--accent); font-weight:600;
+  }
+  .review-label { font-size:11px; color:var(--dim); }
+
+  .review-bar-wrap {
+    flex:1; min-width:60px; max-width:100px;
+    height:3px; background:var(--border);
+    border-radius:2px; overflow:hidden;
+  }
+  .review-bar-fill {
+    height:100%; background:var(--accent); border-radius:2px;
+    transition:width .4s ease;
+  }
+
+  /* ── 지도 ── */
+  #map { flex:1; }
+  #map-fallback {
+    flex:1; display:flex; align-items:center; justify-content:center;
+    flex-direction:column; gap:12px; color:var(--muted); font-size:13px;
+    text-align:center; line-height:1.8;
+  }
+  #map-fallback code { font-size:12px; color:var(--text); background:var(--surface2); padding:4px 8px; border-radius:4px; }
+
+  /* ── 상세 패널 ── */
+  .detail-panel {
+    position:absolute; right:0; top:52px;
+    width:480px; height:calc(100vh - 52px);
+    background:var(--surface); border-left:1px solid var(--border);
+    z-index:500; display:flex; flex-direction:column;
+    transform:translateX(100%); transition:transform .25s cubic-bezier(.4,0,.2,1);
+    overflow-y:auto; scrollbar-width:thin; scrollbar-color:var(--border) transparent;
+  }
+  .detail-panel.open { transform:translateX(0); }
+
+  .detail-header {
+    position:sticky; top:0; background:var(--surface);
+    border-bottom:1px solid var(--border);
+    padding:10px 16px; display:flex;
+    align-items:center; justify-content:space-between; z-index:10;
+  }
+  .detail-header-title { font-size:12px; color:var(--dim); }
+  .close-btn {
+    background:none; border:none; color:var(--muted);
+    cursor:pointer; font-size:18px; line-height:1; padding:2px;
+  }
+  .close-btn:hover { color:var(--text); }
+
+  .detail-body { padding:20px; }
+  .detail-name {
+    font-size:24px; font-weight:700; color:var(--text);
+    line-height:1.25; margin-bottom:6px; letter-spacing:-0.3px;
+  }
+  .detail-meta { font-size:13px; color:var(--muted); margin-bottom:18px; }
+
+  .section { margin-bottom:20px; }
+  .section-title {
+    font-size:11px; font-family:var(--mono); color:var(--dim);
+    letter-spacing:.08em; text-transform:uppercase; margin-bottom:10px;
+  }
+
+  .stat-block {
+    background:var(--surface2); border:1px solid var(--border);
+    border-radius:10px; padding:12px 14px;
+  }
+  .stat-row {
+    display:flex; justify-content:space-between;
+    font-size:12px; color:var(--muted); padding:3px 0;
+  }
+  .stat-row span:last-child { color:var(--text); font-family:var(--mono); font-size:11px; }
+
+  .stat-bar { height:4px; background:var(--border); border-radius:2px; margin-top:10px; overflow:hidden; }
+  .stat-bar-fill { height:100%; background:var(--accent); border-radius:2px; }
+
+  .notice-box {
+    background:rgba(3,199,90,.06); border:1px solid rgba(3,199,90,.15);
+    border-radius:8px; padding:10px 12px;
+    font-size:11px; color:var(--muted); line-height:1.7;
+  }
+  .notice-box strong { color:var(--accent); }
+
+  /* 시간 뱃지 */
+  .hours-row {
+    display:flex; align-items:center; gap:8px;
+    font-size:12px; color:var(--muted); padding:3px 0;
+  }
+  .hours-label { color:var(--dim); min-width:72px; }
+  .hours-val { color:var(--text); }
+  .status-badge {
+    font-size:10px; padding:1px 7px; border-radius:8px;
+    font-weight:500;
+  }
+  .status-open  { background:rgba(3,199,90,.15);  color:var(--accent); }
+  .status-close { background:rgba(240,96,96,.12);  color:#f06060; }
+  .status-break { background:rgba(240,200,96,.12); color:#f0c860; }
+
+  /* 리뷰 블록 구분 */
+  .review-type-badge {
+    display:inline-block; font-size:10px; font-weight:600;
+    padding:2px 7px; border-radius:6px; margin-bottom:8px;
+  }
+  .badge-visitor { background:rgba(3,199,90,.15);  color:var(--accent); }
+  .badge-blog    { background:rgba(96,160,240,.15); color:#60a0f0; }
+
+  /* 지도 타일 어둡게 */
+  .leaflet-tile { filter: brightness(0.7) saturate(0.6) !important; }
+  .leaflet-container { background: #1a1a1a; }
+
+  /* 커스텀 마커 */
+  .map-pin-wrap {
+    display:flex; flex-direction:column; align-items:center;
+    cursor:pointer;
+  }
+  .map-pin {
+    filter:drop-shadow(0 3px 6px rgba(0,0,0,.5));
+    transition:transform .15s, filter .15s;
+  }
+  .map-pin-wrap:hover .map-pin { transform:scale(1.15) translateY(-2px); filter:drop-shadow(0 5px 10px rgba(0,0,0,.6)); }
+  .map-pin-label {
+    background:rgba(15,15,15,.82); color:#fff;
+    font-size:10px; font-family:var(--font);
+    padding:2px 6px; border-radius:4px;
+    white-space:nowrap; margin-top:2px;
+    max-width:90px; overflow:hidden; text-overflow:ellipsis;
+    pointer-events:none;
+  }
+
+  ::-webkit-scrollbar { width:4px; }
+  ::-webkit-scrollbar-track { background:transparent; }
+  ::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+
+  @media (max-width:768px) {
+    .sidebar { width:100%; position:absolute; bottom:0; left:0; height:42vh; z-index:400; border-right:none; border-top:1px solid var(--border); }
+    #map, #map-fallback { height:58vh; width:100%; }
+    .main { flex-direction:column; }
+    .detail-panel { width:100%; top:auto; bottom:0; height:78vh; transform:translateY(100%); border-left:none; border-top:1px solid var(--border); }
+    .detail-panel.open { transform:translateY(0); }
+    .filter-chips { display:none; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">맛집지도</div>
+  <div class="search-wrap">
+    <span class="search-icon">⌕</span>
+    <input type="text" id="searchInput" placeholder="식당명, 카테고리, 주소 검색...">
+  </div>
+  <div class="filter-chips" id="filterChips">
+    <button class="chip active" data-filter="all">전체</button>
+  </div>
+</header>
+
+<div class="main">
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <div class="count-label"><span id="placeCount">0</span>곳</div>
+      <select class="sort-select" id="sortSelect">
+        <option value="reviews">리뷰 많은순</option>
+        <option value="positive">긍정률 높은순</option>
+        <option value="name">이름순</option>
+      </select>
+    </div>
+    <div class="place-list" id="placeList"></div>
+  </div>
+
+  <div id="map" style="flex:1"></div>
+</div>
+
+<div class="detail-panel" id="detailPanel">
+  <div class="detail-header">
+    <span class="detail-header-title" id="detailTitle">상세 정보</span>
+    <button class="close-btn" onclick="closeDetail()">&#x2715;</button>
+  </div>
+  <div class="detail-body" id="detailBody"></div>
+</div>
+
+<script>
+let allPlaces = [], filteredPlaces = [];
+let map, markers = {};
+let activeFilter = 'all', activeId = null;
+
+// ── 데이터 로드 ──
+async function loadData() {
+  try {
+    if (window.PLACES_DATA && Array.isArray(window.PLACES_DATA)) {
+      allPlaces = window.PLACES_DATA;
+    } else {
+      const res = await fetch('./data/places.json');
+      if (!res.ok) throw new Error();
+      allPlaces = await res.json();
+    }
+  } catch {
+    document.getElementById('placeList').innerHTML =
+      `<div style="padding:24px;text-align:center;color:var(--dim);font-size:13px;line-height:2">
+        데이터가 없습니다.<br>
+        <code style="font-size:11px;color:var(--muted)">python crawler/run_all.py --query "지역명"</code><br>
+        을 먼저 실행해주세요.
+       </div>`;
+    return;
+  }
+  filteredPlaces = [...allPlaces];
+  initMap();
+  renderFilterChips();
+  renderList();
+  renderMarkers();
+}
+
+// ── 네이버 지도 초기화 ──
+function initMap() {
+  // 첫 번째 업소 위치를 기본 중심으로
+  const first = allPlaces[0];
+  const defaultLat = (first && first.lat) ? first.lat : 37.5665;
+  const defaultLng = (first && first.lng) ? first.lng : 126.9780;
+
+  map = L.map('map', {
+    center: [defaultLat, defaultLng],
+    zoom: 13,
+    zoomControl: false
+  });
+
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; OpenStreetMap &copy; CARTO',
+    maxZoom: 19
+  }).addTo(map);
+
+  L.control.zoom({ position: 'bottomright' }).addTo(map);
+}
+
+// ── 마커 렌더 ──
+function renderMarkers() {
+  if (!map) return;
+
+  Object.values(markers).forEach(m => map.removeLayer(m));
+  markers = {};
+
+  filteredPlaces.forEach(p => {
+    if (!p.lat || !p.lng) return;
+
+    const shortName = p.name.length > 8 ? p.name.slice(0, 8) + '…' : p.name;
+    const icon = L.divIcon({
+      className: '',
+      html: `<div class="map-pin-wrap">
+        <div class="map-pin">
+          <svg width="22" height="30" viewBox="0 0 22 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M11 0C4.925 0 0 4.925 0 11c0 8.8 11 19 11 19S22 19.8 22 11C22 4.925 17.075 0 11 0z" fill="#03c75a"/>
+            <circle cx="11" cy="11" r="4.5" fill="white" opacity="0.92"/>
+          </svg>
+        </div>
+        <div class="map-pin-label">${shortName}</div>
+      </div>`,
+      iconSize: [96, 52],
+      iconAnchor: [48, 30]
+    });
+
+    const m = L.marker([p.lat, p.lng], { icon })
+      .addTo(map)
+      .on('click', () => openDetail(p.id));
+    markers[p.id] = m;
+  });
+}
+
+// ── 리스트 렌더 ──
+function renderList() {
+  const list = document.getElementById('placeList');
+  document.getElementById('placeCount').textContent = filteredPlaces.length;
+
+  if (!filteredPlaces.length) {
+    list.innerHTML = `<div style="padding:32px;text-align:center;color:var(--dim);font-size:13px">검색 결과가 없습니다</div>`;
+    return;
+  }
+
+  list.innerHTML = filteredPlaces.map(p => {
+    // 실제 리뷰 수 (네이버 API 집계)
+    const vTotal = p.visitor_total || 0;
+    const bTotal = p.blog_total || 0;
+    // 광고 제거 수 (샘플에서)
+    const va = p.visitor_ad_count || 0;
+    const ba = p.blog_ad_count || 0;
+    const adTotal = va + ba;
+    // 긍정률 bar
+    const posRate = (p.positive_rate != null && p.positive_rate > 0) ? p.positive_rate : null;
+    const barPct = posRate ?? 0;
+    const barColor = posRate != null
+      ? (posRate >= 70 ? 'var(--accent)' : posRate >= 40 ? '#f0c860' : '#f06060')
+      : 'var(--border)';
+    const barLabel = posRate != null ? `긍정 ${posRate}%` : (adTotal > 0 ? `광고 ${adTotal}건 제외` : '');
+    const _GENERIC = new Set(['음식점','식당','레스토랑','먹거리','푸드코트']);
+    const cat = (p.category || '').split(',').map(c=>c.trim()).find(c=>c&&!_GENERIC.has(c))
+                || (p.category||'').split(',')[0] || '';
+    const addr = (p.address || '').replace(/^충청남도|^충청북도|^경기도|^서울특별시|^서울 /, '').split(' ').slice(0, 3).join(' ');
+
+    return `
+      <div class="place-card${activeId === p.id ? ' active' : ''}" onclick="openDetail('${p.id}')" data-id="${p.id}">
+        <div class="card-top">
+          <div class="card-name">${p.name}</div>
+        </div>
+        <div class="card-meta">${cat}${addr ? ' &middot; ' + addr : ''}</div>
+        <div class="review-row">
+          <span class="review-num" title="방문자 전체 리뷰">${vTotal.toLocaleString()}</span>
+          <span class="review-label" style="color:var(--accent)">방문자</span>
+          <span class="review-num" style="color:#60a0f0" title="블로그 전체 리뷰">${bTotal.toLocaleString()}</span>
+          <span class="review-label" style="color:#60a0f0">블로그</span>
+          <div class="review-bar-wrap"><div class="review-bar-fill" style="width:${barPct}%;background:${barColor}"></div></div>
+          <span class="review-label">${barLabel}</span>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+// ── 동적 필터 칩 생성 ──
+function renderFilterChips() {
+  const cats = new Map(); // category → count
+  allPlaces.forEach(p => {
+    const c = (p.category || '').trim();
+    if (c && c !== '기타') cats.set(c, (cats.get(c) || 0) + 1);
+  });
+
+  const container = document.getElementById('filterChips');
+  // 전체 버튼 유지, 나머지 동적 생성
+  container.innerHTML = `<button class="chip active" data-filter="all">전체</button>`;
+  [...cats.entries()]
+    .sort((a, b) => b[1] - a[1])  // 많은 순
+    .forEach(([cat]) => {
+      const btn = document.createElement('button');
+      btn.className = 'chip';
+      btn.dataset.filter = cat;
+      btn.textContent = cat;
+      container.appendChild(btn);
+    });
+
+  container.querySelectorAll('.chip').forEach(btn => {
+    btn.addEventListener('click', () => {
+      container.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+      btn.classList.add('active');
+      activeFilter = btn.dataset.filter;
+      applyFilters();
+    });
+  });
+}
+
+// ── 리뷰 분석 블록 빌더 ──
+function buildAnalysisBlock(p) {
+  const ra = p.review_analysis;
+  if (!ra || (!ra.top_menus?.length && !ra.neg_topics?.length && ra.service_score == null)) {
+    return `<div class="section">
+      <div class="section-title">리뷰 분석</div>
+      <div class="stat-block" style="color:var(--dim);font-size:12px;text-align:center;padding:16px">
+        재크롤링 후 분석 결과가 표시됩니다
+      </div>
+    </div>`;
+  }
+
+  function scoreColor(s) {
+    return s >= 70 ? 'var(--accent)' : s >= 40 ? '#f0c860' : '#f06060';
+  }
+  function scoreBar(score, label, count) {
+    if (score == null) return '';
+    const c = scoreColor(score);
+    return `
+      <div class="analysis-label">${label} <span style="color:var(--dim);font-weight:400">(언급 ${count}건)</span></div>
+      <div class="score-inline">
+        <div class="bar"><div class="bar-fill" style="width:${score}%;background:${c}"></div></div>
+        <span class="score-val" style="color:${c}">${score}%</span>
+      </div>`;
+  }
+
+  const menus = (ra.top_menus || []).map(m =>
+    `<span class="tag tag-menu">🍽 ${m}</span>`).join('');
+
+  function kwItems(list, cls) {
+    return (list || []).map(k => {
+      const word  = typeof k === 'string' ? k : k.word;
+      const count = typeof k === 'object' ? k.count : null;
+      const ex    = typeof k === 'object' ? k.example : '';
+      return `
+        <div style="margin-bottom:8px">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
+            <span class="tag ${cls}">${word}</span>
+            ${count ? `<span style="font-size:11px;color:var(--dim)">${count}회 언급</span>` : ''}
+          </div>
+          ${ex ? `<div style="font-size:11px;color:var(--muted);padding-left:2px;line-height:1.5;font-style:italic">"${ex}"</div>` : ''}
+        </div>`;
+    }).join('');
+  }
+
+  return `
+    <div class="section">
+      <div class="section-title">리뷰 분석 <span style="color:var(--dim);font-size:10px;font-family:var(--font);text-transform:none;letter-spacing:0">kiwipiepy · ${ra.analyzed_count || 0}건</span></div>
+      <div class="stat-block">
+        ${menus ? `
+        <div class="analysis-label">대표 메뉴</div>
+        <div class="tag-group" style="margin-bottom:4px">${menus}</div>` : ''}
+
+        ${(ra.top_keywords||[]).length ? `
+        <div class="analysis-label" style="margin-top:10px">주요 특징</div>
+        ${kwItems(ra.top_keywords, 'tag-kw')}` : ''}
+
+        ${(ra.neg_topics||[]).length ? `
+        <div class="analysis-label" style="margin-top:6px">주요 불만</div>
+        ${kwItems(ra.neg_topics, 'tag-neg')}` : ''}
+
+        ${scoreBar(ra.service_score, '서비스 평가', ra.service_count)}
+        ${scoreBar(ra.hygiene_score, '위생·청결 평가', ra.hygiene_count)}
+      </div>
+    </div>`;
+}
+
+// ── 상세 패널 ──
+function openDetail(id) {
+  const p = allPlaces.find(x => x.id === id);
+  if (!p) return;
+
+  activeId = id;
+  document.querySelectorAll('.place-card').forEach(c =>
+    c.classList.toggle('active', c.dataset.id === id));
+
+  if (map && p.lat && p.lng) {
+    map.flyTo([p.lat, p.lng], 16, { duration: 0.7 });
+  }
+
+  document.getElementById('detailTitle').textContent = '상세 정보';
+
+  // ── 영업정보 ──
+  const statusCls = (() => {
+    const s = (p.business_status || '').toLowerCase();
+    if (s.includes('영업중') || s.includes('영업 중')) return 'status-open';
+    if (s.includes('브레이크') || s.includes('break')) return 'status-break';
+    return 'status-close';
+  })();
+  const hoursBlock = (p.business_hours || p.break_time || p.closed_days || p.business_status) ? `
+    <div class="section">
+      <div class="section-title">영업 정보</div>
+      <div class="stat-block">
+        ${p.business_status ? `<div class="hours-row"><span class="status-badge ${statusCls}">${p.business_status}</span></div>` : ''}
+        ${p.business_hours  ? `<div class="hours-row"><span class="hours-label">영업시간</span><span class="hours-val">${p.business_hours}</span></div>` : ''}
+        ${p.break_time      ? `<div class="hours-row"><span class="hours-label">브레이크</span><span class="hours-val">${p.break_time}</span></div>` : ''}
+        ${p.closed_days     ? `<div class="hours-row"><span class="hours-label">휴무일</span><span class="hours-val">${p.closed_days}</span></div>` : ''}
+      </div>
+    </div>` : '';
+
+  // ── 방문자 리뷰 블록 ──
+  const vt = p.visitor_total || 0;   // 네이버 집계 전체
+  const vs = p.visitor_sampled || 0; // 실제 크롤링해서 분석한 수 (최신순 최대 100건)
+  const vv = p.visitor_valid || p.filtered_reviews || 0;
+  const va = p.visitor_ad_count || 0;
+  const vd = p.visitor_dup_count || 0;
+
+  // 긍정률 색상 헬퍼
+  function rateColor(r) {
+    return r >= 70 ? 'var(--accent)' : r >= 40 ? '#f0c860' : '#f06060';
+  }
+
+  const visitorBlock = `
+    <div class="stat-block" style="margin-bottom:8px">
+      <div class="review-type-badge badge-visitor">방문자 리뷰</div>
+      <div class="stat-row">
+        <span>전체 리뷰 수 (네이버 집계)</span>
+        <span style="color:var(--text);font-weight:500">${vt.toLocaleString()}건</span>
+      </div>
+      <div class="stat-row" style="border-top:1px solid var(--border);margin-top:6px;padding-top:6px">
+        <span style="color:var(--muted)">최신순 ${vs.toLocaleString()}건 분석</span>
+      </div>
+      ${va ? `<div class="stat-row"><span style="padding-left:8px">광고&#183;협찬 제거</span><span style="color:#f06060">−${va}건</span></div>` : ''}
+      ${vd ? `<div class="stat-row"><span style="padding-left:8px">중복 복붙 제거</span><span style="color:#f0c860">−${vd}건</span></div>` : ''}
+      <div class="stat-row" style="margin-top:4px">
+        <span style="padding-left:8px;color:var(--text);font-weight:500">유효 리뷰</span>
+        <span style="color:var(--accent);font-weight:600">${vv.toLocaleString()}건</span>
+      </div>
+    </div>`;
+
+  // ── 블로그 리뷰 블록 ──
+  const bt = p.blog_total || 0;
+  const bs = p.blog_sampled || 0;
+  const bv = p.blog_valid || 0;
+  const ba = p.blog_ad_count || 0;
+  const bd = p.blog_dup_count || 0;
+
+  const blogBlock = `
+    <div class="stat-block" style="margin-bottom:8px">
+      <div class="review-type-badge badge-blog">블로그 리뷰</div>
+      <div class="stat-row">
+        <span>전체 리뷰 수 (네이버 집계)</span>
+        <span style="color:var(--text);font-weight:500">${bt.toLocaleString()}건</span>
+      </div>
+      ${bs > 0 ? `
+      <div class="stat-row" style="border-top:1px solid var(--border);margin-top:6px;padding-top:6px">
+        <span style="color:var(--muted)">최신순 ${bs.toLocaleString()}건 분석</span>
+      </div>
+      ${ba ? `<div class="stat-row"><span style="padding-left:8px">광고&#183;협찬 제거</span><span style="color:#f06060">−${ba}건</span></div>` : ''}
+      ${bd ? `<div class="stat-row"><span style="padding-left:8px">중복 복붙 제거</span><span style="color:#f0c860">−${bd}건</span></div>` : ''}
+      <div class="stat-row" style="margin-top:4px">
+        <span style="padding-left:8px;color:var(--text);font-weight:500">유효 리뷰</span>
+        <span style="color:#60a0f0;font-weight:600">${bv.toLocaleString()}건</span>
+      </div>` : `
+      <div class="stat-row" style="margin-top:6px">
+        <span style="color:var(--dim);font-size:11px">블로그 리뷰 분석 미수행 (재크롤링 필요)</span>
+      </div>`}
+    </div>`;
+
+  // ── 긍정률 블록 ──
+  const pr = p.positive_rate ?? null;
+  const sentimentBlock = pr != null ? `
+    <div class="stat-block">
+      <div class="stat-row">
+        <span style="color:var(--text);font-weight:500">긍정률</span>
+        <span style="color:${rateColor(pr)};font-weight:700;font-size:15px">${pr}%</span>
+      </div>
+      <div class="stat-bar" style="margin-top:8px;height:6px">
+        <div class="stat-bar-fill" style="width:${pr}%;background:${rateColor(pr)}"></div>
+      </div>
+      ${p.sentiment_total > 0 ? `
+      <div class="stat-row" style="margin-top:8px;font-size:11px">
+        <span style="color:var(--accent)">긍정 ${p.sentiment_positive}건</span>
+        <span style="color:var(--muted)">중립 ${p.sentiment_neutral}건</span>
+        <span style="color:#f06060">부정 ${p.sentiment_negative}건</span>
+      </div>` : ''}
+    </div>` : '';
+
+  const naverUrl = `https://map.naver.com/p/entry/place/${p.id}`;
+  const _GEN = new Set(['음식점','식당','레스토랑','먹거리','푸드코트']);
+  const cat = (p.category||'').split(',').map(c=>c.trim()).find(c=>c&&!_GEN.has(c))
+              || (p.category||'').split(',')[0] || '';
+
+  document.getElementById('detailBody').innerHTML = `
+    <div class="detail-name">${p.name}</div>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:4px">${cat}</div>
+    <div style="font-size:12px;color:var(--dim);margin-bottom:10px;line-height:1.5">${p.address || ''}</div>
+    <a href="${naverUrl}" target="_blank" rel="noopener"
+       style="display:inline-flex;align-items:center;gap:5px;font-size:12px;
+              color:var(--accent);text-decoration:none;margin-bottom:18px;
+              border:1px solid rgba(3,199,90,.3);padding:4px 10px;border-radius:6px">
+      네이버지도 바로가기 ↗
+    </a>
+    ${hoursBlock}
+    <div class="section">
+      <div class="section-title">리뷰 통계</div>
+      ${visitorBlock}
+      ${blogBlock}
+      ${sentimentBlock}
+    </div>
+    ${buildAnalysisBlock(p)}
+  `;
+
+  document.getElementById('detailPanel').classList.add('open');
+}
+
+function closeDetail() {
+  activeId = null;
+  document.getElementById('detailPanel').classList.remove('open');
+  document.querySelectorAll('.place-card').forEach(c => c.classList.remove('active'));
+}
+
+// ── 필터 & 정렬 ──
+function applyFilters() {
+  const q    = document.getElementById('searchInput').value.trim().toLowerCase();
+  const sort = document.getElementById('sortSelect').value;
+
+  filteredPlaces = allPlaces.filter(p => {
+    const mf = activeFilter === 'all' || (p.category || '').includes(activeFilter);
+    const ms = !q
+      || p.name.toLowerCase().includes(q)
+      || (p.category || '').toLowerCase().includes(q)
+      || (p.address || '').toLowerCase().includes(q);
+    return mf && ms;
+  });
+
+  filteredPlaces.sort((a, b) => {
+    if (sort === 'reviews')  return b.filtered_reviews - a.filtered_reviews;
+    if (sort === 'positive') return (b.positive_rate ?? -1) - (a.positive_rate ?? -1);
+    if (sort === 'name')     return a.name.localeCompare(b.name, 'ko');
+    return 0;
+  });
+
+  renderList();
+  renderMarkers();
+}
+
+document.querySelectorAll('.chip').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    activeFilter = btn.dataset.filter;
+    applyFilters();
+  });
+});
+document.getElementById('searchInput').addEventListener('input', applyFilters);
+document.getElementById('sortSelect').addEventListener('change', applyFilters);
+
+loadData();
+</script>
+</body>
+</html>

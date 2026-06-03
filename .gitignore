@@ -1,0 +1,16 @@
+# DB는 로컬에만 (용량 크고 민감)
+data/places.db
+
+# 크롤링 원본 (용량 큼)
+data/raw/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# 디버그 파일
+test_stealth*.py
+data/polle_debug.png
