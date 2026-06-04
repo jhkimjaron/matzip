@@ -6,6 +6,7 @@ manage.py — 맛집지도 통합 관리 CLI
   python manage.py scan --area "강남구 음식점"  단일 지역 스캔
   python manage.py crawl                  DB의 미크롤링/오래된 장소 크롤링
   python manage.py reanalyze              저장된 원문 리뷰로 분석만 재생성 (재크롤링 X)
+  python manage.py awards                  홈 페이지 재방문으로 공식 수상 배지 백필
   python manage.py export                 DB → places.json / places.js
   python manage.py push                   GitHub 자동 push
   python manage.py update                 scan + crawl + export + push 한 번에
@@ -27,7 +28,7 @@ import db as _db
 from naver_crawler import (
     search_places, crawl_place, check_recent_activity,
     build_review_analysis, _dedup_blog_against_visitor, analyze_sentiment,
-    _stealth, MIN_REVIEWS,
+    _crawl_hours, _stealth, MIN_REVIEWS,
 )
 from playwright.async_api import async_playwright
 
@@ -197,6 +198,44 @@ def cmd_reanalyze(args):
     print(f"[reanalyze] {done}곳 재분석 완료 (블로그 중복 제거 {deduped}곳)")
 
 
+# ── AWARDS (기존 크롤링 장소에 수상 배지 백필) ────────────────────────
+async def cmd_awards(args):
+    """크롤링 완료된 장소들의 홈 페이지만 가볍게 재방문해 공식 수상 배지
+    (미쉐린/빕구르망/블루리본)를 갱신. 리뷰는 건드리지 않는다."""
+    _db.init_db()
+    rows = _db.get_crawled_ids()
+    if not rows:
+        print("백필할 장소가 없습니다.")
+        return
+
+    print(f"[awards] 대상 {len(rows)}곳 — 홈 페이지에서 수상 배지 확인")
+    found = changed = 0
+    async with _stealth.use_async(async_playwright()) as p:
+        browser = await p.chromium.launch(headless=True)
+        ctx = await browser.new_context(
+            locale="ko-KR",
+            extra_http_headers={"Accept-Language": "ko-KR,ko;q=0.9"},
+        )
+        for i, r in enumerate(rows, 1):
+            pid = r["id"]
+            try:
+                info = await _crawl_hours(pid, ctx)
+            except Exception as e:
+                print(f"  [{i}/{len(rows)}] {r['name']} — 실패 ({e})")
+                continue
+            awards = info.get("awards", [])
+            prev = json.loads(r.get("awards") or "[]")
+            if awards:
+                found += 1
+                print(f"  [{i}/{len(rows)}] {r['name']} → {', '.join(awards)}")
+            if awards != prev:
+                _db.update_awards(pid, awards)
+                changed += 1
+            await asyncio.sleep(0.5)
+        await ctx.close()
+    print(f"\n[awards 완료] 수상 {found}곳 / 갱신 {changed}곳")
+
+
 # ── EXPORT ────────────────────────────────────────────────────────────
 def cmd_export(args):
     cfg = load_config()
@@ -280,6 +319,9 @@ def main():
     # reanalyze
     sub.add_parser("reanalyze", help="저장된 원문 리뷰로 분석만 재생성")
 
+    # awards
+    sub.add_parser("awards", help="홈 페이지 재방문으로 공식 수상 배지 백필")
+
     # export
     sub.add_parser("export", help="DB → places.json/js 생성")
 
@@ -304,6 +346,8 @@ def main():
         asyncio.run(cmd_crawl(args))
     elif args.cmd == "reanalyze":
         cmd_reanalyze(args)
+    elif args.cmd == "awards":
+        asyncio.run(cmd_awards(args))
     elif args.cmd == "export":
         cmd_export(args)
     elif args.cmd == "push":

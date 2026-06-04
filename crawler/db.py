@@ -66,6 +66,9 @@ def init_db():
             closed_days     TEXT DEFAULT '',
             business_status TEXT DEFAULT '',
 
+            -- 공식 수상 (네이버 표시 배지: 미쉐린/빕구르망/블루리본) JSON 배열
+            awards          TEXT DEFAULT '[]',
+
             -- 리뷰 원문 (키워드 분석용)
             visitor_reviews_json TEXT DEFAULT '[]',
             blog_reviews_json    TEXT DEFAULT '[]',
@@ -95,6 +98,7 @@ def init_db():
             ("blog_reviews_json",    "TEXT DEFAULT '[]'"),
             ("visitor_dates_json",   "TEXT DEFAULT '[]'"),
             ("blog_dates_json",      "TEXT DEFAULT '[]'"),
+            ("awards",               "TEXT DEFAULT '[]'"),
         ]:
             try:
                 conn.execute(f"ALTER TABLE places ADD COLUMN {col} {definition}")
@@ -163,6 +167,7 @@ def upsert_crawl(result: dict):
             visitor_reviews_json, blog_reviews_json,
             visitor_dates_json, blog_dates_json,
             business_hours, break_time, closed_days, business_status,
+            awards,
             area, scan_only, last_crawled, first_seen, verdict
         ) VALUES (
             :id, :name, :category, :address, :lat, :lng,
@@ -178,6 +183,7 @@ def upsert_crawl(result: dict):
             :visitor_reviews_json, :blog_reviews_json,
             :visitor_dates_json, :blog_dates_json,
             :business_hours, :break_time, :closed_days, :business_status,
+            :awards,
             :area, 0, :last_crawled,
             COALESCE((SELECT first_seen FROM places WHERE id=:id), :last_crawled),
             '맛집'
@@ -191,6 +197,7 @@ def upsert_crawl(result: dict):
             "blog_reviews_json":    json.dumps(result.get("blog_reviews", []), ensure_ascii=False),
             "visitor_dates_json":   json.dumps(result.get("visitor_reviews_dates", []), ensure_ascii=False),
             "blog_dates_json":      json.dumps(result.get("blog_reviews_dates", []), ensure_ascii=False),
+            "awards":               json.dumps(result.get("awards", []), ensure_ascii=False),
             "last_crawled": datetime.now().isoformat(),
             "area": result.get("area", ""),
         })
@@ -240,6 +247,7 @@ def export_places(min_valid: int = 50) -> list[dict]:
     for r in rows:
         p = dict(r)
         p["review_analysis"] = json.loads(p.get("review_analysis") or "{}")
+        p["awards"]          = json.loads(p.get("awards") or "[]")
         p["business_hours"]  = _fix_hours(p.get("business_hours") or "")
         # 원문 리뷰·작성일은 브라우저로 보내지 않는다 (분석에 인용문이 이미 포함됨).
         # DB에는 그대로 보관 → reanalyze로 재분석 가능.
@@ -249,6 +257,15 @@ def export_places(min_valid: int = 50) -> list[dict]:
         p.pop("blog_dates_json", None)
         places.append(p)
     return places
+
+
+def get_crawled_ids() -> list[dict]:
+    """크롤링 완료 장소의 id·name·awards (수상 배지 백필용)."""
+    with get_conn() as conn:
+        rows = conn.execute(
+            "SELECT id, name, awards FROM places WHERE scan_only = 0"
+        ).fetchall()
+    return [dict(r) for r in rows]
 
 
 def get_crawled_with_reviews() -> list[dict]:
@@ -267,6 +284,16 @@ def update_analysis(pid: str, analysis: dict):
         conn.execute(
             "UPDATE places SET review_analysis=? WHERE id=?",
             (json.dumps(analysis, ensure_ascii=False), pid),
+        )
+        conn.commit()
+
+
+def update_awards(pid: str, awards: list[str]):
+    """awards 컬럼만 갱신 (수상 배지 백필)."""
+    with get_conn() as conn:
+        conn.execute(
+            "UPDATE places SET awards=? WHERE id=?",
+            (json.dumps(awards, ensure_ascii=False), pid),
         )
         conn.commit()
 

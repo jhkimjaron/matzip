@@ -165,6 +165,17 @@
     border:1px solid rgba(3,199,90,.3);
   }
 
+  /* 공식 수상 배지 (미쉐린·빕구르망·블루리본) */
+  .award-badge {
+    display:inline-flex; align-items:center; gap:3px;
+    font-size:10px; font-weight:600; padding:2px 7px;
+    border-radius:10px; white-space:nowrap; flex-shrink:0;
+    background:rgba(214,158,46,.14); color:#e0b341;
+    border:1px solid rgba(214,158,46,.4);
+  }
+  .award-badge + .award-badge { margin-left:4px; }
+  .award-badge.aw-blue { background:rgba(80,140,255,.14); color:#7aa6ff; border-color:rgba(80,140,255,.4); }
+
   .card-meta { font-size:12px; color:var(--muted); margin-bottom:8px; }
 
   /* 리뷰 분석 태그 */
@@ -492,11 +503,19 @@
   <div class="sidebar">
     <div class="sidebar-header">
       <div class="count-label"><span id="placeCount">0</span>곳</div>
-      <select class="sort-select" id="sortSelect">
-        <option value="reviews">리뷰 많은순</option>
-        <option value="positive">긍정률 높은순</option>
-        <option value="name">이름순</option>
-      </select>
+      <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end">
+        <select class="sort-select" id="regionSelect" title="지역(구) 필터">
+          <option value="all">전체 지역</option>
+        </select>
+        <select class="sort-select" id="awardSelect" title="수상 필터" style="display:none">
+          <option value="all">수상 무관</option>
+        </select>
+        <select class="sort-select" id="sortSelect">
+          <option value="reviews">리뷰 많은순</option>
+          <option value="positive">긍정률 높은순</option>
+          <option value="name">이름순</option>
+        </select>
+      </div>
     </div>
     <div class="place-list" id="placeList"></div>
   </div>
@@ -519,6 +538,22 @@
 let allPlaces = [], filteredPlaces = [];
 let map, markers = {};
 let activeFilter = 'all', activeId = null;
+let activeRegion = 'all', activeAward = 'all';
+
+// area("서울 강남구 음식점") → 지역 라벨("서울 강남구")
+function regionLabel(p) {
+  return (p.area || '').replace(/\s*음식점\s*$/, '').trim();
+}
+
+// 수상 배지 HTML (네이버가 표시한 공식 수상만 데이터에 들어옴)
+function awardBadge(awards) {
+  if (!Array.isArray(awards) || !awards.length) return '';
+  return awards.map(a => {
+    const blue = a.startsWith('블루리본');
+    const icon = a.startsWith('미쉐린') ? '⭐' : a.startsWith('빕') ? '🍜' : '🎀';
+    return `<span class="award-badge${blue ? ' aw-blue' : ''}">${icon} ${a}</span>`;
+  }).join('');
+}
 
 // ── 데이터 로드 ──
 async function loadData() {
@@ -542,8 +577,35 @@ async function loadData() {
   filteredPlaces = [...allPlaces];
   initMap();
   renderFilterChips();
+  renderRegionOptions();
+  renderAwardOptions();
   renderList();
   renderMarkers();
+}
+
+// ── 지역(구) 셀렉트 옵션 ──
+function renderRegionOptions() {
+  const sel = document.getElementById('regionSelect');
+  const regions = [...new Set(allPlaces.map(regionLabel).filter(Boolean))]
+    .sort((a, b) => a.localeCompare(b, 'ko'));
+  sel.innerHTML = '<option value="all">전체 지역</option>'
+    + regions.map(r => `<option value="${r}">${r}</option>`).join('');
+}
+
+// ── 수상 셀렉트 옵션 (실제 존재하는 수상만 노출) ──
+function renderAwardOptions() {
+  const sel = document.getElementById('awardSelect');
+  const present = new Set();
+  allPlaces.forEach(p => (p.awards || []).forEach(a => {
+    present.add(a.startsWith('미쉐린') ? '미쉐린' : a);  // 빕구르망·블루리본은 그대로
+  }));
+  if (!present.size) { sel.style.display = 'none'; return; }
+  sel.style.display = '';
+  const labels = [['미쉐린', '⭐ 미쉐린'], ['빕구르망', '🍜 빕구르망'], ['블루리본', '🎀 블루리본']];
+  sel.innerHTML = '<option value="all">수상 무관</option>'
+    + '<option value="any">⭐ 수상 업체만</option>'
+    + labels.filter(([k]) => present.has(k))
+            .map(([k, l]) => `<option value="${k}">${l}</option>`).join('');
 }
 
 // ── 네이버 지도 초기화 ──
@@ -629,6 +691,7 @@ function renderList() {
       <div class="place-card${activeId === p.id ? ' active' : ''}" onclick="openDetail('${p.id}')" data-id="${p.id}">
         <div class="card-top">
           <div class="card-name">${p.name}</div>
+          ${awardBadge(p.awards)}
         </div>
         <div class="card-meta">${cat}${addr ? ' &middot; ' + addr : ''}</div>
         <div class="review-row">
@@ -872,8 +935,12 @@ function openDetail(id) {
   const cat = (p.category||'').split(',').map(c=>c.trim()).find(c=>c&&!_GEN.has(c))
               || (p.category||'').split(',')[0] || '';
 
+  const awardsLine = (p.awards && p.awards.length)
+    ? `<div style="margin-bottom:8px;display:flex;gap:4px;flex-wrap:wrap">${awardBadge(p.awards)}</div>` : '';
+
   document.getElementById('detailBody').innerHTML = `
     <div class="detail-name">${p.name}</div>
+    ${awardsLine}
     <div style="font-size:13px;color:var(--muted);margin-bottom:4px">${cat}</div>
     <div style="font-size:12px;color:var(--dim);margin-bottom:10px;line-height:1.5">${p.address || ''}</div>
     <a href="${naverMapLink}" target="_blank" rel="noopener"
@@ -929,11 +996,18 @@ function applyFilters() {
 
   filteredPlaces = allPlaces.filter(p => {
     const mf = activeFilter === 'all' || (p.category || '').includes(activeFilter);
+    const mr = activeRegion === 'all' || regionLabel(p) === activeRegion;
+    const aw = p.awards || [];
+    const ma = activeAward === 'all'
+      || (activeAward === 'any'    ? aw.length > 0
+        : activeAward === '미쉐린' ? aw.some(a => a.startsWith('미쉐린'))
+        : aw.includes(activeAward));
     const ms = !q
       || p.name.toLowerCase().includes(q)
       || (p.category || '').toLowerCase().includes(q)
-      || (p.address || '').toLowerCase().includes(q);
-    return mf && ms;
+      || (p.address || '').toLowerCase().includes(q)
+      || regionLabel(p).toLowerCase().includes(q);
+    return mf && mr && ma && ms;
   });
 
   filteredPlaces.sort((a, b) => {
@@ -957,6 +1031,12 @@ document.querySelectorAll('.chip').forEach(btn => {
 });
 document.getElementById('searchInput').addEventListener('input', applyFilters);
 document.getElementById('sortSelect').addEventListener('change', applyFilters);
+document.getElementById('regionSelect').addEventListener('change', e => {
+  activeRegion = e.target.value; applyFilters();
+});
+document.getElementById('awardSelect').addEventListener('change', e => {
+  activeAward = e.target.value; applyFilters();
+});
 
 loadData();
 </script>
