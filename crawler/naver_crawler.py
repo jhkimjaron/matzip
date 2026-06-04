@@ -1166,7 +1166,8 @@ async def _crawl_blog_fulltext(pid: str, ctx, target: int = 25) -> list[tuple[st
             if href and href not in collected:
                 dm = _BLOG_DATE_RE.search(it.get("card", ""))
                 collected[href] = _normalize_date(dm.group(0)) if dm else ""
-        if len(collected) >= target:
+        # 본문 추출 실패·방문자 중복 제거로 줄어들 것을 대비해 여유분(+12) 확보
+        if len(collected) >= target + 12:
             break
         if len(collected) == prev:
             stall += 1
@@ -1189,16 +1190,20 @@ async def _crawl_blog_fulltext(pid: str, ctx, target: int = 25) -> list[tuple[st
         await asyncio.sleep(0.7)
 
     await page.close()
-    url_dates: list[tuple[str, str]] = list(collected.items())[:target]
+    url_dates: list[tuple[str, str]] = list(collected.items())[:target + 12]
 
-    print(f"      [blog-전문] 글 링크 {len(url_dates)}건 → 본문 수집 시작")
+    # 방문자 중복 제거(crawl_place 단계)로 더 줄어드므로 target보다 약간 더 확보한다.
+    fetch_goal = target + 4
+    print(f"      [blog-전문] 글 링크 {len(url_dates)}건 → 본문 수집 시작 (목표 {fetch_goal}건)")
     out: list[tuple[str, str]] = []
     for href, date in url_dates:
+        if len(out) >= fetch_goal:
+            break
         body = await _fetch_blog_fulltext(href, ctx)
         if len(body) >= BLOG_MIN_LEN:
             out.append((body, date))
         await asyncio.sleep(0.4)
-    print(f"      [blog-전문] 본문 확보 {len(out)}/{len(url_dates)}건")
+    print(f"      [blog-전문] 본문 확보 {len(out)}건")
     return out
 
 
