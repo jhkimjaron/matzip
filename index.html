@@ -24,7 +24,7 @@
     --dim:      #555;
     --accent:   #03c75a;
     --accent-d: #029a44;
-    --sidebar-w: 540px;
+    --sidebar-w: 360px;
     --font:     'Noto Sans KR', sans-serif;
     --mono:     'DM Mono', monospace;
     --tile-filter: brightness(0.7) saturate(0.6);
@@ -69,7 +69,7 @@
     border-bottom: 1px solid var(--border);
     display: flex;
     align-items: center;
-    gap: 14px;
+    gap: 12px;
     padding: 0 16px;
     z-index: 1000;
     flex-shrink: 0;
@@ -83,7 +83,20 @@
     white-space: nowrap;
   }
 
-  .search-wrap { flex:1; max-width:380px; position:relative; }
+  .search-wrap { flex:1; min-width:160px; max-width:340px; position:relative; }
+
+  /* 헤더 필터 그룹 (지역·수상·음식분류) */
+  .header-filters {
+    display:flex; align-items:center; gap:6px; flex-shrink:0;
+  }
+  .hdr-select {
+    background:var(--surface2); border:1px solid var(--border);
+    border-radius:7px; color:var(--muted); font-family:var(--font);
+    font-size:12px; padding:5px 8px; outline:none; cursor:pointer;
+    max-width:120px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+    transition:border-color .15s;
+  }
+  .hdr-select:focus, .hdr-select:hover { border-color:var(--accent-d); color:var(--text); }
   .search-wrap input {
     width:100%;
     background: var(--surface2);
@@ -165,10 +178,6 @@
   }
   .count-label { font-size:12px; color:var(--muted); white-space:nowrap; flex-shrink:0; }
   .count-label span { color:var(--accent); font-family:var(--mono); font-weight:500; }
-  .sidebar-controls {
-    display:flex; gap:6px; align-items:center;
-    flex-wrap:nowrap; justify-content:flex-end; min-width:0;
-  }
 
   .sort-select {
     background:var(--surface2); border:1px solid var(--border);
@@ -452,11 +461,13 @@
   /* ── 모바일 ── */
   @media (max-width:768px) {
     /* 헤더 */
-    header { gap:10px; padding:0 12px; }
-    .search-wrap { flex:1; min-width:0; }
-    .cat-filter-btn { padding:7px 9px; }
+    header { gap:8px; padding:0 10px; flex-wrap:wrap; height:auto; min-height:52px; padding-top:6px; padding-bottom:6px; }
+    .search-wrap { flex:1; min-width:120px; max-width:100%; }
+    .header-filters { gap:4px; }
+    .hdr-select { max-width:90px; font-size:11px; padding:4px 6px; }
+    .cat-filter-btn { padding:5px 8px; font-size:12px; }
     .cat-filter-btn .cat-filter-caret { display:none; }
-    .cat-filter-panel { width:min(72vw, 260px); }
+    .cat-filter-panel { width:min(72vw, 260px); right:-10px; }
 
     /* 레이아웃: 지도가 전체 채움 */
     .main { flex-direction:column; position:relative; }
@@ -564,12 +575,20 @@
     <span class="search-icon">⌕</span>
     <input type="text" id="searchInput" placeholder="식당명, 카테고리, 주소 검색...">
   </div>
-  <div class="cat-filter">
-    <button class="cat-filter-btn" id="catFilterBtn" aria-haspopup="true" aria-expanded="false">
-      🍽 음식 분류<span class="cat-filter-count" id="catFilterCount"></span>
-      <span class="cat-filter-caret">▾</span>
-    </button>
-    <div class="cat-filter-panel" id="catFilterPanel" hidden></div>
+  <div class="header-filters">
+    <select class="hdr-select" id="regionSelect" title="지역(구) 필터">
+      <option value="all">전체 지역</option>
+    </select>
+    <select class="hdr-select" id="awardSelect" title="수상 필터" style="display:none">
+      <option value="all">수상 무관</option>
+    </select>
+    <div class="cat-filter">
+      <button class="cat-filter-btn" id="catFilterBtn" aria-haspopup="true" aria-expanded="false">
+        🍽 분류<span class="cat-filter-count" id="catFilterCount"></span>
+        <span class="cat-filter-caret">▾</span>
+      </button>
+      <div class="cat-filter-panel" id="catFilterPanel" hidden></div>
+    </div>
   </div>
 </header>
 
@@ -577,19 +596,11 @@
   <div class="sidebar">
     <div class="sidebar-header">
       <div class="count-label"><span id="placeCount">0</span>곳</div>
-      <div class="sidebar-controls">
-        <select class="sort-select" id="regionSelect" title="지역(구) 필터">
-          <option value="all">전체 지역</option>
-        </select>
-        <select class="sort-select" id="awardSelect" title="수상 필터" style="display:none">
-          <option value="all">수상 무관</option>
-        </select>
-        <select class="sort-select" id="sortSelect">
-          <option value="reviews">리뷰 많은순</option>
-          <option value="positive">긍정률 높은순</option>
-          <option value="name">이름순</option>
-        </select>
-      </div>
+      <select class="sort-select" id="sortSelect">
+        <option value="reviews">리뷰 많은순</option>
+        <option value="positive">긍정률 높은순</option>
+        <option value="name">이름순</option>
+      </select>
     </div>
     <div class="place-list" id="placeList"></div>
   </div>
