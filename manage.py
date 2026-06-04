@@ -94,7 +94,8 @@ async def cmd_crawl(args):
     cfg = load_config()
     _db.init_db()
 
-    older_than  = args.older_than or cfg["update_interval_days"]
+    # 0일(전체 재크롤)도 유효하도록 falsy(or) 대신 None 판정
+    older_than  = args.older_than if args.older_than is not None else cfg["update_interval_days"]
     active_days = cfg["active_days"]
     min_valid   = cfg["min_valid_reviews"]
     cutoff_date = (datetime.now() - timedelta(days=active_days)).strftime("%Y%m%d")
@@ -105,73 +106,84 @@ async def cmd_crawl(args):
         return
 
     print(f"[crawl] 대상 {len(pending)}곳 (스캔대기 + {older_than}일 이상 된 곳)")
+    stats = {"done": 0, "skip_active": 0, "skip_valid": 0, "error": 0}
+    BATCH = 25  # 이 수마다 브라우저를 새로 띄워 메모리·드라이버 안정성 확보
 
-    done = skip_active = skip_valid = 0
+    async def process_one(place, ctx):
+        pid  = place["id"]
+        name = place["name"] or pid
+        # ── 활성도 체크 (API 날짜 없으면 경량 방문) ──
+        lrd = place.get("last_review_date", "")
+        if lrd:
+            if lrd < cutoff_date:
+                print(f"  [skip] 마지막 리뷰 {lrd} — {active_days}일 초과")
+                stats["skip_active"] += 1
+                return
+        else:
+            if not await check_recent_activity(pid, ctx, active_days):
+                print(f"  [skip] 최근 {active_days}일 내 리뷰 없음")
+                stats["skip_active"] += 1
+                return
 
-    async with _stealth.use_async(async_playwright()) as p:
-        browser = await p.chromium.launch(headless=True)
-        ctx = await browser.new_context(
-            locale="ko-KR",
-            extra_http_headers={"Accept-Language": "ko-KR,ko;q=0.9"},
-        )
+        place_for_crawl = {
+            "id":                   pid,
+            "name":                 name,
+            "category":             place.get("category", ""),
+            "address":              place.get("address", ""),
+            "x":                    str(place.get("lng", 0)),
+            "y":                    str(place.get("lat", 0)),
+            "review_count":         place.get("visitor_total", 0) + place.get("blog_total", 0),
+            "visitor_review_count": place.get("visitor_total", 0),
+            "blog_review_count":    place.get("blog_total", 0),
+            "business_status":      place.get("business_status", ""),
+            "business_hours_today": "",
+            "break_time_today":     "",
+            "last_order":           "",
+        }
+        result = await crawl_place(place_for_crawl, ctx)
+        if not result:
+            return
+        if result["filtered_reviews"] < min_valid:
+            print(f"  [skip] 유효리뷰 {result['filtered_reviews']}건 < {min_valid}건")
+            stats["skip_valid"] += 1
+            return
+        result["area"] = place.get("area", "")
+        _db.upsert_crawl(result)
+        stats["done"] += 1
+        print(f"  [저장] {name} — 유효리뷰 {result['filtered_reviews']}건, 긍정률 {result.get('positive_rate',0)}%")
 
-        for i, place in enumerate(pending, 1):
-            pid  = place["id"]
-            name = place["name"] or pid
-            print(f"\n[{i}/{len(pending)}] {name}")
+    # 배치 단위로 브라우저를 새로 띄운다. 한 곳에서 드라이버가 죽어도(connection closed)
+    # 그 곳만 건너뛰고 새 브라우저로 다음부터 이어간다 (장시간 작업 내성).
+    i = 0
+    while i < len(pending):
+        try:
+            async with _stealth.use_async(async_playwright()) as p:
+                browser = await p.chromium.launch(headless=True)
+                ctx = await browser.new_context(
+                    locale="ko-KR",
+                    extra_http_headers={"Accept-Language": "ko-KR,ko;q=0.9"},
+                )
+                batch_end = min(i + BATCH, len(pending))
+                while i < batch_end:
+                    place = pending[i]
+                    name = place["name"] or place["id"]
+                    print(f"\n[{i+1}/{len(pending)}] {name}")
+                    try:
+                        await process_one(place, ctx)
+                    except Exception as e:
+                        stats["error"] += 1
+                        print(f"  [error] {name} — {type(e).__name__}: {str(e)[:90]}")
+                        i += 1
+                        raise   # 배치 종료 → 새 브라우저로 재시작
+                    i += 1
+                    await asyncio.sleep(1)
+                await ctx.close()
+        except Exception:
+            print("  [batch-restart] 브라우저 재시작 후 계속")
+            continue
 
-            # ── 활성도 체크 (API 날짜 없으면 경량 방문) ──
-            lrd = place.get("last_review_date", "")
-            if lrd:
-                # DB에 저장된 API 날짜로 확인
-                if lrd < cutoff_date:
-                    print(f"  [skip] 마지막 리뷰 {lrd} — {active_days}일 초과")
-                    skip_active += 1
-                    continue
-            else:
-                # 경량 방문으로 확인 (~6초)
-                active = await check_recent_activity(pid, ctx, active_days)
-                if not active:
-                    print(f"  [skip] 최근 {active_days}일 내 리뷰 없음")
-                    skip_active += 1
-                    continue
-
-            # ── 전체 크롤링 ──
-            place_for_crawl = {
-                "id":                   pid,
-                "name":                 name,
-                "category":             place.get("category", ""),
-                "address":              place.get("address", ""),
-                "x":                    str(place.get("lng", 0)),
-                "y":                    str(place.get("lat", 0)),
-                "review_count":         place.get("visitor_total", 0) + place.get("blog_total", 0),
-                "visitor_review_count": place.get("visitor_total", 0),
-                "blog_review_count":    place.get("blog_total", 0),
-                "business_status":      place.get("business_status", ""),
-                "business_hours_today": "",
-                "break_time_today":     "",
-                "last_order":           "",
-            }
-            result = await crawl_place(place_for_crawl, ctx)
-            if not result:
-                continue
-
-            # 최종 유효리뷰 필터
-            if result["filtered_reviews"] < min_valid:
-                print(f"  [skip] 유효리뷰 {result['filtered_reviews']}건 < {min_valid}건")
-                skip_valid += 1
-                continue
-
-            result["area"] = place.get("area", "")
-            _db.upsert_crawl(result)
-            done += 1
-            print(f"  [저장] {name} — 유효리뷰 {result['filtered_reviews']}건, 긍정률 {result.get('positive_rate',0)}%")
-
-            await asyncio.sleep(1)
-
-        await ctx.close()
-
-    print(f"\n[crawl 완료] 저장 {done}곳 / 활성도제외 {skip_active}곳 / 리뷰부족 {skip_valid}곳")
+    print(f"\n[crawl 완료] 저장 {stats['done']}곳 / 활성도제외 {stats['skip_active']}곳 "
+          f"/ 리뷰부족 {stats['skip_valid']}곳 / 오류 {stats['error']}곳")
 
 
 # ── REANALYZE (저장된 원문으로 분석만 재생성) ──────────────────────────
