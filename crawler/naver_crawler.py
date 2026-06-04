@@ -1076,6 +1076,7 @@ async def _crawl_reviews(pid: str, review_type: str, ctx,
 # 플레이스 블로그 탭은 ~400자 미리보기 스니펫만 내려준다. 정확한 분석을 위해
 # 각 글의 실제 blog.naver.com 본문 전체를 가져와 분석한다.
 BLOG_BODY_CAP = 5000  # 글 1건 저장·분석 상한 (협찬 고지가 보통 하단이라 넉넉히)
+BLOG_CONCURRENCY = 5  # 블로그 본문 동시 수집 수 (순차는 곳당 수 분 → 병렬로 단축)
 
 # 글 본문 추출 셀렉터 (스마트에디터 ONE → 구버전 → 기타 순)
 _BLOG_BODY_JS = """() => {
@@ -1124,8 +1125,9 @@ async def _fetch_blog_fulltext(url: str, ctx) -> str:
     view = f"https://blog.naver.com/PostView.naver?blogId={m.group(1)}&logNo={m.group(2)}"
     page = await ctx.new_page()
     try:
-        await page.goto(view, wait_until="load", timeout=18000)
-        await asyncio.sleep(1.2)
+        # 본문(se-main-container)은 초기 HTML에 서버 렌더되므로 domcontentloaded면 충분
+        await page.goto(view, wait_until="domcontentloaded", timeout=15000)
+        await asyncio.sleep(0.5)
         body = await page.evaluate(_BLOG_BODY_JS)
     except Exception:
         body = ""
@@ -1194,17 +1196,22 @@ async def _crawl_blog_fulltext(pid: str, ctx, target: int = 25) -> list[tuple[st
 
     # 방문자 중복 제거(crawl_place 단계)로 더 줄어드므로 target보다 약간 더 확보한다.
     fetch_goal = target + 4
-    print(f"      [blog-전문] 글 링크 {len(url_dates)}건 → 본문 수집 시작 (목표 {fetch_goal}건)")
+    print(f"      [blog-전문] 글 링크 {len(url_dates)}건 → 본문 병렬 수집 (목표 {fetch_goal}건)")
+
+    # 블로그 글마다 페이지 1회라 순차는 느리다 → 동시 BLOG_CONCURRENCY개씩 병렬 수집.
     out: list[tuple[str, str]] = []
-    for href, date in url_dates:
-        if len(out) >= fetch_goal:
-            break
-        body = await _fetch_blog_fulltext(href, ctx)
-        if len(body) >= BLOG_MIN_LEN:
-            out.append((body, date))
-        await asyncio.sleep(0.4)
+    idx = 0
+    while idx < len(url_dates) and len(out) < fetch_goal:
+        chunk = url_dates[idx: idx + BLOG_CONCURRENCY]
+        idx += BLOG_CONCURRENCY
+        bodies = await asyncio.gather(
+            *(_fetch_blog_fulltext(href, ctx) for href, _ in chunk),
+            return_exceptions=True)
+        for (href, date), body in zip(chunk, bodies):   # 최신순 유지
+            if isinstance(body, str) and len(body) >= BLOG_MIN_LEN:
+                out.append((body, date))
     print(f"      [blog-전문] 본문 확보 {len(out)}건")
-    return out
+    return out[:fetch_goal]
 
 
 # ── 어뷰징 필터 ──────────────────────────────────────────────────────
