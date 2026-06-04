@@ -141,18 +141,54 @@ _STOP_NOUNS = {
 
 # 음식 관련 접미사 → 붙어있으면 메뉴로 분류
 _FOOD_SUFFIXES = (
-    '탕', '찌개', '구이', '볶음', '면', '밥', '죽', '전', '회', '롤',
-    '초밥', '카츠', '파스타', '피자', '버거', '스테이크', '샐러드',
-    '냉면', '국수', '우동', '소바', '덮밥', '갈비', '삼겹', '오겹',
-    '항정', '곱창', '막창', '순대', '족발', '보쌈', '육회', '만두',
-    '떡볶이', '순두부', '해물', '라면', '튀김', '돈까스',
+    # 한식·면·밥류
+    '탕', '찌개', '전골', '국밥', '곰탕', '설렁탕', '해장국', '칼국수', '수제비',
+    '구이', '볶음', '조림', '무침', '찜', '면', '밥', '죽', '전', '회', '정식', '백반',
+    '냉면', '국수', '쌀국수', '비빔밥', '덮밥', '갈비', '삼겹', '오겹', '수육',
+    '항정', '곱창', '막창', '순대', '족발', '보쌈', '육회', '만두', '꼬치',
+    '떡볶이', '순두부', '해물', '라면', '튀김', '돈까스', '카츠', '쌈밥',
+    # 일식·중식·양식
+    '초밥', '스시', '사시미', '우동', '소바', '텐동', '규동', '카레',
+    '짜장', '짬뽕', '탕수육', '마라탕', '마라샹궈', '딤섬',
+    '파스타', '피자', '버거', '스테이크', '샐러드', '리조또', '그라탕',
+    '타코', '부리또', '핫도그', '샌드위치',
+    # 빵·디저트·음료
+    '빵', '케이크', '도넛', '쿠키', '토스트', '베이글', '크로플', '와플',
+    '빙수', '젤라또', '아이스크림', '라떼', '에이드', '스무디', '커피',
 )
 
-# 서비스·위생 관련 키워드
-_SERVICE_CONTEXTS = ['직원', '사장', '사장님', '친절', '응대', '서비스', '주문', '안내']
-_HYGIENE_CONTEXTS = ['위생', '청결', '깔끔', '더럽', '불결', '냄새', '곰팡이']
-_HYGIENE_POS      = ['깔끔', '청결', '위생적', '깨끗', '청소', '깔끔하']
-_HYGIENE_NEG      = ['더럽', '불결', '냄새', '곰팡이', '위생이 별', '불결']
+# ── 리뷰 분석 항목 정의 (단일 출처) ──────────────────────────────────
+# 프론트엔드는 이 결과를 그대로 렌더링만 한다. 키워드/아이콘은 여기서만 관리.
+REVIEW_ASPECTS = [
+    {"key": "taste",       "label": "음식의 맛", "icon": "😋",
+     "keywords": ["맛있", "맛없", "맛나", "존맛", "꿀맛", "별로", "실망",
+                  "맛이 좋", "맛이 없", "맛 좋", "맛 없", "기대이하", "최고의 맛", "진짜 맛"]},
+    {"key": "amount",      "label": "음식의 양", "icon": "🍚",
+     "keywords": ["양이 많", "양이 적", "양 많", "양 적", "푸짐", "가성비",
+                  "적은 양", "많은 양", "양은", "넉넉"]},
+    {"key": "service",     "label": "서비스",   "icon": "🤝",
+     "keywords": ["친절", "불친절", "서비스", "직원", "사장님", "알바", "응대", "무뚝뚝", "상냥"]},
+    {"key": "hygiene",     "label": "위생",     "icon": "🧹",
+     "keywords": ["청결", "깨끗", "더럽", "불결", "위생", "끈적", "냄새", "청소"]},
+    {"key": "convenience", "label": "편의",     "icon": "🚻",
+     # '테이블' 제외 → 캐치테이블·테이블링 오매칭 방지
+     "keywords": ["화장실", "주차", "물티슈", "좌석", "자리 간격", "좌석 간격",
+                  "남녀분리", "1인석", "단체석", "비품"]},
+    {"key": "waiting",     "label": "웨이팅",   "icon": "⏱",
+     "keywords": ["웨이팅", "대기", "줄 서", "기다", "원격등록", "현장등록", "예약"]},
+    {"key": "mood",        "label": "분위기",   "icon": "✨",
+     "keywords": ["분위기", "데이트", "가족", "조용", "시끄럽", "어둡", "밝",
+                  "인테리어", "테마", "아늑", "감성"]},
+]
+
+# 리뷰에서 감지할 온라인 예약 앱
+RESERVATION_APPS = ["캐치테이블", "테이블링", "네이버예약"]
+
+# 메뉴로 분류하기엔 너무 일반적인 단어 (구체적 메뉴명만 남기기 위해 후순위 처리)
+_GENERIC_MENU = {
+    '한식', '일식', '중식', '양식', '분식', '음식', '요리', '식사', '메뉴',
+    '코스', '세트', '런치', '디너', '브런치',
+}
 
 
 def _extract_compound_nouns(text: str) -> list[str]:
@@ -188,121 +224,104 @@ def _extract_compound_nouns(text: str) -> list[str]:
         return []
 
 
-def _find_example(keyword: str, texts: list[str], max_len: int = 55) -> str:
-    """keyword가 포함된 리뷰에서 해당 문장을 추출"""
-    for text in texts:
-        if keyword not in text:
-            continue
-        # 마침표·느낌표·물음표 또는 줄바꿈으로 문장 분리
-        parts = re.split(r'(?<=[.!?요다네])\s+|[\n\r]+', text)
-        for part in parts:
-            if keyword in part and len(part.strip()) >= 10:
-                s = part.strip()
-                return (s[:max_len] + '…') if len(s) > max_len else s
-        # 분리 안 될 경우 키워드 앞뒤 문맥
-        idx = text.find(keyword)
-        start = max(0, idx - 12)
-        end   = min(len(text), idx + len(keyword) + 28)
-        snippet = text[start:end].strip()
-        return (snippet[:max_len] + '…') if len(snippet) > max_len else snippet
-    return ""
-
-
-def analyze_reviews_konlpy(visitor_valid: list[str], blog_valid: list[str]) -> dict:
-    """kiwipiepy로 유효 리뷰를 분석.
-    반환 형식:
-      top_menus     : list[str]           — 복합명사 기반 구체적 메뉴명
-      top_keywords  : list[{word, count, example}]
-      neg_topics    : list[{word, count, example}]
-      service_score / hygiene_score : int | None
+def _extract_menus(sample: list[str], place_name: str) -> list[str]:
+    """복합명사 + 음식 접미사 매칭으로 대표 메뉴 추출.
+    구체적 메뉴명(복합명사)을 우선하고, 일반 카테고리어(피자·파스타 등)는 후순위로 채운다.
     """
-    if not NLP_AVAILABLE:
-        return {}
-
-    all_reviews = (visitor_valid or []) + (blog_valid or [])
-    if len(all_reviews) < 3:
-        return {}
-
-    analyze_limit = min(len(all_reviews), 150)
-    sample = all_reviews[:analyze_limit]
-
-    # ── 복합명사 포함 전체 명사 추출 ──
     all_nouns: list[str] = []
     for text in sample:
         all_nouns.extend(_extract_compound_nouns(text))
-
     noun_freq = Counter(all_nouns)
-    top_nouns = noun_freq.most_common(50)
 
-    # ── 대표 메뉴 (음식 접미사 매칭, 복합명사 우선) ──
-    top_menus: list[str] = []
-    seen_menu: set[str] = set()
-    for noun, _cnt in top_nouns:
-        if any(noun.endswith(s) or noun == s for s in _FOOD_SUFFIXES):
-            # 이미 포함된 단어가 부분문자열이면 더 긴 것(복합명사)으로 교체
-            dominated = False
-            for existing in list(top_menus):
-                if existing in noun:          # 기존이 현재의 부분 → 교체
-                    top_menus.remove(existing)
-                    seen_menu.discard(existing)
-                elif noun in existing:        # 현재가 기존의 부분 → 건너뜀
-                    dominated = True
-                    break
-            if not dominated and noun not in seen_menu:
-                top_menus.append(noun)
-                seen_menu.add(noun)
-        if len(top_menus) >= 5:
-            break
+    specific: list[str] = []   # 복합명사 (예: 고르곤졸라피자)
+    generic:  list[str] = []   # 단일 카테고리어 (예: 피자)
+    seen: set[str] = set()
 
-    menu_set = set(top_menus)
-
-    # ── 대표 특징 키워드 (언급 횟수 + 예시문장) ──
-    # stop words·음식명 제외, 상위 5개
-    top_keywords = []
-    for noun, count in top_nouns:
-        if noun in _STOP_NOUNS or any(noun.endswith(s) for s in _FOOD_SUFFIXES) or noun in menu_set:
+    for noun, _cnt in noun_freq.most_common(80):
+        if not any(noun.endswith(s) or noun == s for s in _FOOD_SUFFIXES):
             continue
-        example = _find_example(noun, sample)
-        top_keywords.append({'word': noun, 'count': count, 'example': example})
-        if len(top_keywords) >= 5:
-            break
-
-    # ── 부정 리뷰 주요 불만 (언급 횟수 + 예시문장) ──
-    neg_reviews = [t for t in sample if any(kw in t for kw in NEGATIVE_KEYWORDS)]
-    neg_nouns: list[str] = []
-    for text in neg_reviews[:50]:
-        neg_nouns.extend(n for n in _extract_compound_nouns(text) if n not in menu_set)
-    neg_freq = Counter(neg_nouns)
-    neg_topics = []
-    for noun, count in neg_freq.most_common(8):
-        if noun in _STOP_NOUNS:
+        if noun in _STOP_NOUNS or noun in _GENERIC_MENU or noun == place_name or noun in seen:
             continue
-        example = _find_example(noun, neg_reviews[:30])
-        neg_topics.append({'word': noun, 'count': count, 'example': example})
-        if len(neg_topics) >= 4:
+        # 접미사 그 자체(피자·파스타 등 2~3자 단일어)인지 판별
+        is_specific = len(noun) >= 3 and noun not in _FOOD_SUFFIXES
+        bucket = specific if is_specific else generic
+        # 부분문자열 흡수: 더 긴 복합명사로 교체
+        dominated = False
+        for existing in list(bucket):
+            if existing in noun:
+                bucket.remove(existing)
+                seen.discard(existing)
+            elif noun in existing:
+                dominated = True
+                break
+        if not dominated:
+            bucket.append(noun)
+            seen.add(noun)
+
+    menus = specific[:5]
+    for g in generic:
+        if len(menus) >= 5:
             break
+        menus.append(g)
+    return menus
 
-    # ── 서비스 평가 ──
-    svc_reviews = [t for t in sample if any(k in t for k in _SERVICE_CONTEXTS)]
-    svc_pos   = sum(1 for t in svc_reviews if any(k in t for k in _POS_SERVICE))
-    svc_neg   = sum(1 for t in svc_reviews if any(k in t for k in _NEG_SERVICE))
-    svc_total = svc_pos + svc_neg
 
-    # ── 위생 평가 ──
-    hyg_reviews = [t for t in sample if any(k in t for k in _HYGIENE_CONTEXTS)]
-    hyg_pos   = sum(1 for t in hyg_reviews if any(k in t for k in _HYGIENE_POS))
-    hyg_neg   = sum(1 for t in hyg_reviews if any(k in t for k in _HYGIENE_NEG))
-    hyg_total = hyg_pos + hyg_neg
+def _aspect_quotes(reviews_typed: list[tuple[str, str]], keywords: list[str],
+                   max_quotes: int = 2) -> tuple[list[dict], int]:
+    """키워드가 언급된 리뷰 수(total)와 대표 인용문(앞뒤 30자 문맥)을 반환."""
+    quotes: list[dict] = []
+    total = 0
+    for text, rtype in reviews_typed:
+        low = text.lower()
+        hit = next((kw for kw in keywords if kw.lower() in low), None)
+        if not hit:
+            continue
+        total += 1
+        if len(quotes) < max_quotes:
+            idx = low.find(hit.lower())
+            start = max(0, idx - 30)
+            end   = min(len(text), idx + len(hit) + 30)
+            ctx = ('…' if start > 0 else '') + text[start:end].strip() + ('…' if end < len(text) else '')
+            quotes.append({"text": ctx, "type": rtype, "kw": hit})
+    return quotes, total
+
+
+def build_review_analysis(visitor_valid: list[str], blog_valid: list[str],
+                          place_name: str = "") -> dict:
+    """유효 리뷰 → 프론트가 그대로 렌더링하는 분석 구조 생성.
+    반환:
+      menus            : list[str]        대표 메뉴
+      reservation_apps : list[str]        리뷰에서 감지된 예약 앱
+      aspects          : list[{key,label,icon,count,quotes:[{text,type,kw}]}]
+      analyzed         : int              분석한 리뷰 수
+    """
+    reviews_typed = (
+        [(t, "visitor") for t in (visitor_valid or []) if isinstance(t, str)] +
+        [(t, "blog")    for t in (blog_valid or [])    if isinstance(t, str)]
+    )
+    if len(reviews_typed) < 3:
+        return {}
+
+    sample = [t for t, _ in reviews_typed][:150]
+    menus = _extract_menus(sample, place_name) if NLP_AVAILABLE else []
+
+    aspects = []
+    for asp in REVIEW_ASPECTS:
+        quotes, total = _aspect_quotes(reviews_typed, asp["keywords"])
+        if total > 0:
+            aspects.append({
+                "key": asp["key"], "label": asp["label"], "icon": asp["icon"],
+                "count": total, "quotes": quotes,
+            })
+
+    all_text = " ".join(t for t, _ in reviews_typed)
+    reservation_apps = [a for a in RESERVATION_APPS if a in all_text]
 
     return {
-        'top_menus':      top_menus,
-        'top_keywords':   top_keywords,
-        'neg_topics':     neg_topics,
-        'service_score':  round(svc_pos / svc_total * 100) if svc_total >= 3 else None,
-        'service_count':  svc_total,
-        'hygiene_score':  round(hyg_pos / hyg_total * 100) if hyg_total >= 3 else None,
-        'hygiene_count':  hyg_total,
-        'analyzed_count': analyze_limit,
+        "menus": menus,
+        "reservation_apps": reservation_apps,
+        "aspects": aspects,
+        "analyzed": len(reviews_typed),
     }
 
 
@@ -1298,14 +1317,15 @@ async def crawl_place(place: dict, ctx) -> dict | None:
         print(f"    블로그 리뷰 {len(blog_texts)}/{BLOG_TARGET}건 "
               f"(해당 업체 블로그 리뷰 부족)")
 
-    # ── KoNLPy 리뷰 분석 ──
-    review_analysis = analyze_reviews_konlpy(
+    # ── 리뷰 분석 (메뉴·항목별 인용·예약앱) ──
+    review_analysis = build_review_analysis(
         visitor_filtered["valid"],
         blog_filtered["valid"],
+        name,
     )
     if review_analysis:
-        print(f"    [분석] 메뉴:{review_analysis.get('top_menus')} "
-              f"불만:{review_analysis.get('neg_topics')}")
+        print(f"    [분석] 메뉴:{review_analysis.get('menus')} "
+              f"항목:{[a['key'] for a in review_analysis.get('aspects', [])]}")
 
     lat = _safe_float(place.get("y", 0))
     lng = _safe_float(place.get("x", 0))

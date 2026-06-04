@@ -231,15 +231,32 @@ def export_places(min_valid: int = 50) -> list[dict]:
         p = dict(r)
         p["review_analysis"] = json.loads(p.get("review_analysis") or "{}")
         p["business_hours"]  = _fix_hours(p.get("business_hours") or "")
-        # 리뷰 원문: visitor + blog 를 {text, type} 형태로 병합
-        v_reviews = json.loads(p.pop("visitor_reviews_json", None) or "[]")
-        b_reviews = json.loads(p.pop("blog_reviews_json",    None) or "[]")
-        p["reviews"] = (
-            [{"text": t, "type": "visitor"} for t in v_reviews if isinstance(t, str)] +
-            [{"text": t, "type": "blog"}    for t in b_reviews if isinstance(t, str)]
-        )
+        # 원문 리뷰는 브라우저로 보내지 않는다 (분석에 인용문이 이미 포함됨).
+        # DB에는 그대로 보관 → reanalyze로 재분석 가능.
+        p.pop("visitor_reviews_json", None)
+        p.pop("blog_reviews_json", None)
         places.append(p)
     return places
+
+
+def get_crawled_with_reviews() -> list[dict]:
+    """크롤링 완료 장소의 저장된 원문 리뷰 반환 (재분석용)."""
+    with get_conn() as conn:
+        rows = conn.execute(
+            "SELECT id, name, visitor_reviews_json, blog_reviews_json "
+            "FROM places WHERE scan_only = 0"
+        ).fetchall()
+    return [dict(r) for r in rows]
+
+
+def update_analysis(pid: str, analysis: dict):
+    """review_analysis 컬럼만 갱신 (재분석)."""
+    with get_conn() as conn:
+        conn.execute(
+            "UPDATE places SET review_analysis=? WHERE id=?",
+            (json.dumps(analysis, ensure_ascii=False), pid),
+        )
+        conn.commit()
 
 
 def status() -> dict:

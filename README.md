@@ -38,6 +38,9 @@ python manage.py scan --area "천안시 동남구 음식점" --limit 100
 # 2) 크롤링 — 스캔된 곳의 리뷰·영업정보 수집·분석 → DB 저장
 python manage.py crawl
 
+# 2-1) reanalyze — 저장된 원문 리뷰로 분석만 재생성 (분석 로직 변경 시, 재크롤링 불필요)
+python manage.py reanalyze
+
 # 3) export — DB → data/places.json / places.js 생성
 python manage.py export
 
@@ -69,7 +72,11 @@ python -m http.server 8000
    미만이면 제외.
 3. **크롤링** — 방문자 리뷰 최신순 100건 + 블로그 리뷰 25건 + 영업시간/휴무를 수집.
 4. **필터(리뷰 단계)** — 광고·협찬·체험단 키워드 리뷰, 복붙 중복, 무지성 리뷰 제거.
-5. **분석** — kiwipiepy 형태소 분석으로 대표 메뉴·키워드·불만 토픽 추출, 감성(긍정률) 계산.
+5. **분석(서버 단일 처리)** — kiwipiepy 형태소 분석으로 대표 메뉴를 추출하고,
+   항목별(맛·양·서비스·위생·편의·웨이팅·분위기) 인용문과 예약앱 감지, 감성(긍정률)을 계산해
+   `review_analysis` 한 구조로 저장한다. 프론트엔드는 이 결과를 **렌더링만** 한다
+   (원문 리뷰는 브라우저로 보내지 않아 `places.js`가 가볍다). 분석 키워드·아이콘은
+   `crawler/naver_crawler.py`의 `REVIEW_ASPECTS` 한 곳에서만 관리한다.
 
 ## 설정 (config.json)
 

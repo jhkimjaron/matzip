@@ -5,6 +5,7 @@ manage.py — 맛집지도 통합 관리 CLI
   python manage.py scan                   config.json의 areas 스캔
   python manage.py scan --area "강남구 음식점"  단일 지역 스캔
   python manage.py crawl                  DB의 미크롤링/오래된 장소 크롤링
+  python manage.py reanalyze              저장된 원문 리뷰로 분석만 재생성 (재크롤링 X)
   python manage.py export                 DB → places.json / places.js
   python manage.py push                   GitHub 자동 push
   python manage.py update                 scan + crawl + export + push 한 번에
@@ -25,7 +26,7 @@ sys.path.insert(0, str(ROOT / "crawler"))
 import db as _db
 from naver_crawler import (
     search_places, crawl_place, check_recent_activity,
-    _stealth, MIN_REVIEWS,
+    build_review_analysis, _stealth, MIN_REVIEWS,
 )
 from playwright.async_api import async_playwright
 
@@ -171,6 +172,25 @@ async def cmd_crawl(args):
     print(f"\n[crawl 완료] 저장 {done}곳 / 활성도제외 {skip_active}곳 / 리뷰부족 {skip_valid}곳")
 
 
+# ── REANALYZE (저장된 원문으로 분석만 재생성) ──────────────────────────
+def cmd_reanalyze(args):
+    _db.init_db()
+    rows = _db.get_crawled_with_reviews()
+    if not rows:
+        print("재분석할 장소가 없습니다.")
+        return
+
+    done = 0
+    for r in rows:
+        v = json.loads(r["visitor_reviews_json"] or "[]")
+        b = json.loads(r["blog_reviews_json"]    or "[]")
+        analysis = build_review_analysis(v, b, r["name"])
+        _db.update_analysis(r["id"], analysis)
+        done += 1
+
+    print(f"[reanalyze] {done}곳 재분석 완료")
+
+
 # ── EXPORT ────────────────────────────────────────────────────────────
 def cmd_export(args):
     cfg = load_config()
@@ -251,6 +271,9 @@ def main():
     p_crawl.add_argument("--older-than", type=int, dest="older_than",
                          help="N일 이상 된 장소 재크롤링 (기본: config 값)")
 
+    # reanalyze
+    sub.add_parser("reanalyze", help="저장된 원문 리뷰로 분석만 재생성")
+
     # export
     sub.add_parser("export", help="DB → places.json/js 생성")
 
@@ -273,6 +296,8 @@ def main():
         asyncio.run(cmd_scan(args))
     elif args.cmd == "crawl":
         asyncio.run(cmd_crawl(args))
+    elif args.cmd == "reanalyze":
+        cmd_reanalyze(args)
     elif args.cmd == "export":
         cmd_export(args)
     elif args.cmd == "push":
