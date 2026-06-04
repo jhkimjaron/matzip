@@ -781,6 +781,10 @@ function openDetail(id) {
   const va = p.visitor_ad_count || 0;
   const vd = p.visitor_dup_count || 0;
 
+  // 리뷰 부족 표시 (서버 분석이 신뢰 기준 미만으로 판정)
+  const _short = p.review_analysis?.shortage || {};
+  const lowNote = '<span style="font-size:10px;color:#f0c860;margin-left:6px;font-weight:500">⚠ 리뷰 부족</span>';
+
   // 긍정률 색상 헬퍼
   function rateColor(r) {
     return r >= 70 ? 'var(--accent)' : r >= 40 ? '#f0c860' : '#f06060';
@@ -794,7 +798,7 @@ function openDetail(id) {
         <span style="color:var(--text);font-weight:500">${vt.toLocaleString()}건</span>
       </div>
       <div class="stat-row" style="border-top:1px solid var(--border);margin-top:6px;padding-top:6px">
-        <span style="color:var(--muted)">최신순 ${vs.toLocaleString()}건 분석</span>
+        <span style="color:var(--muted)">최신순 ${vs.toLocaleString()}건 분석${_short.visitor ? lowNote : ''}</span>
       </div>
       ${va ? `<div class="stat-row"><span style="padding-left:8px">광고&#183;협찬 제거</span><span style="color:#f06060">−${va}건</span></div>` : ''}
       ${vd ? `<div class="stat-row"><span style="padding-left:8px">중복 복붙 제거</span><span style="color:#f0c860">−${vd}건</span></div>` : ''}
@@ -820,7 +824,7 @@ function openDetail(id) {
       </div>
       ${bs > 0 ? `
       <div class="stat-row" style="border-top:1px solid var(--border);margin-top:6px;padding-top:6px">
-        <span style="color:var(--muted)">최신순 ${bs.toLocaleString()}건 분석</span>
+        <span style="color:var(--muted)">최신순 ${bs.toLocaleString()}건 분석${_short.blog ? lowNote : ''}</span>
       </div>
       ${ba ? `<div class="stat-row"><span style="padding-left:8px">광고&#183;협찬 제거</span><span style="color:#f06060">−${ba}건</span></div>` : ''}
       ${bd ? `<div class="stat-row"><span style="padding-left:8px">중복 복붙 제거</span><span style="color:#f0c860">−${bd}건</span></div>` : ''}

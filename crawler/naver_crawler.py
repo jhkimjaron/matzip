@@ -2,8 +2,8 @@
 naver_crawler.py — 네이버 플레이스 크롤러 (stealth + GraphQL 인터셉트)
 
 수집 항목:
-  - 방문자 리뷰: 최신순 100건 이상 (실제 텍스트 분석)
-  - 블로그 리뷰: 최신순 50건 이상 (실제 텍스트 분석)
+  - 방문자 리뷰: 최신순 100건 (실제 텍스트 분석, 작성일 함께 저장)
+  - 블로그 리뷰: 최신순 기본 25건 (방문자 부족 시 최대 50건까지 보충, 작성일 함께 저장)
   - 영업시간·휴무일·브레이크타임 (홈 페이지 GraphQL)
   - 좌표·카테고리·주소 (allSearch API)
 
@@ -19,7 +19,6 @@ import asyncio
 import json
 import re
 import argparse
-from collections import Counter
 from pathlib import Path
 from datetime import datetime
 from playwright.async_api import async_playwright
@@ -39,8 +38,12 @@ OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 BASE_PCMAP      = "https://pcmap.place.naver.com"
 MIN_REVIEWS     = 50   # 등재 기준 (방문자 유효 리뷰 기준)
-VISITOR_TARGET  = 100  # 방문자 리뷰 기본 수집 목표
-BLOG_TARGET     = 25   # 블로그 리뷰 기본 수집 목표
+VISITOR_TARGET  = 100  # 방문자 리뷰 기본 수집·분석·저장 목표
+BLOG_TARGET     = 25   # 블로그 리뷰 기본 목표 (방문자가 100건 다 차면 이 값만 수집)
+BLOG_CAP        = 50   # 블로그 상한 — 방문자 부족분을 보충해도 분석·저장은 여기까지만
+VISITOR_LOW     = 30   # 이 미만이면 '리뷰 부족' 표시 (분석 신뢰 낮음)
+BLOG_LOW        = 10   # 이 미만이면 '리뷰 부족' 표시
+BLOG_MIN_LEN    = 100  # 블로그 유효 최소 길이 (클립·해시태그·단문 제거)
 
 _stealth = Stealth()
 
@@ -184,86 +187,143 @@ REVIEW_ASPECTS = [
 # 리뷰에서 감지할 온라인 예약 앱
 RESERVATION_APPS = ["캐치테이블", "테이블링", "네이버예약"]
 
-# 메뉴로 분류하기엔 너무 일반적인 단어 (구체적 메뉴명만 남기기 위해 후순위 처리)
+# 메뉴로 인정하되 너무 일반적이라 후순위로 미루는 단어 (구체적 메뉴명을 우선 노출)
 _GENERIC_MENU = {
-    '한식', '일식', '중식', '양식', '분식', '음식', '요리', '식사', '메뉴',
-    '코스', '세트', '런치', '디너', '브런치',
+    '한식', '일식', '중식', '양식', '분식', '음식', '요리', '식사', '코스', '세트',
+    '런치', '디너', '브런치', '고기', '피자', '파스타', '커피', '음료', '빙수',
+}
+
+# 메뉴가 아닌데 취식·긍정 문맥에 자주 끼는 단어 (하드 제외)
+_NON_MENU = {
+    '메뉴', '반찬', '안주', '사이드', '혼밥', '혼술', '점심', '저녁', '아침', '야식', '간식',
+    '재료', '육수', '국물', '양념', '잡내', '냄새', '정도', '종류', '메뉴판', '맛집',
+    '분위기', '친구', '가족', '연인', '데이트', '친절', '서비스', '가성비', '가격', '다양', '깔끔',
+    '식전', '식후', '오전', '오후', '여왕', '본점', '지점', '매장', '입구', '내부',
+    # '전'으로 끝나는 비(非)음식어 (파전·김치전 등 진짜 '전'류는 복합어라 영향 없음)
+    '예전', '이전', '사전', '회전', '여전', '발전', '기회', '처음', '다음',
 }
 
 
-def _extract_compound_nouns(text: str) -> list[str]:
-    """연속된 명사 토큰을 붙여 복합명사(메뉴명) 추출.
-    예: '불고기' + '버거' → '불고기버거'
+def _has_food_suffix(w: str) -> bool:
+    return any(w.endswith(s) or w == s for s in _FOOD_SUFFIXES)
+
+
+# ── 대표 메뉴 추출 (리뷰 문맥 기반 점수화) ────────────────────────────
+# 접미사 매칭이 아니라, "OO를 먹었다 / 대표메뉴인 OO"처럼 메뉴가 등장하는
+# 문법적 맥락을 보고 후보에 점수를 매긴다. 사전에 없는 메뉴명도 잡고,
+# 우연히 접미사만 맞는 비(非)메뉴는 거른다.
+_EAT_STEMS    = ('먹', '드시', '자시', '시키', '맛보', '즐기')  # 취식·주문 동사 어간(VV)
+_ORDER_NOUNS  = ('주문',)                                      # 'OO 주문했다' (NNG + 하다)
+_MENU_MARKERS = ('대표메뉴', '시그니처', '시그니쳐', '추천메뉴', '인기메뉴',
+                 '메인메뉴', '베스트메뉴', '간판메뉴')           # 'OO' 앞에 오는 지칭어
+_POS_NEAR     = ('맛있', '존맛', '최고', '추천', '강추', '유명', '일품', '꿀맛', '맛나')
+
+
+def _noun_runs(toks):
+    """연속된 명사(NNG/NNP) 토큰을 복합명사 구간 (텍스트, 시작idx, 끝idx)으로 묶는다."""
+    runs = []
+    i, n = 0, len(toks)
+    while i < n:
+        if toks[i].tag in ("NNG", "NNP"):
+            j = i
+            forms = []
+            while j < n and toks[j].tag in ("NNG", "NNP"):
+                forms.append(toks[j].form)
+                j += 1
+            runs.append((''.join(forms), i, j))
+            i = j
+        else:
+            i += 1
+    return runs
+
+
+def _score_menu_in_review(text: str) -> dict[str, tuple[int, int]]:
+    """리뷰 1건에서 메뉴 후보별로 (강한신호 횟수, 총점)을 매긴다.
+    강한 신호 = 목적격+취식동사 / 메뉴 지칭어. 약한 신호(긍정어·접미사)는 점수만.
     """
     try:
-        tokens = _kiwi.tokenize(text)
-        results: list[str] = []
-        buf: list[str] = []
-        for t in tokens:
-            if t.tag in ("NNG", "NNP") and len(t.form) >= 1:
-                buf.append(t.form)
-            else:
-                if len(buf) >= 2:
-                    compound = ''.join(buf)
-                    if len(compound) >= 3 and compound not in _STOP_NOUNS:
-                        results.append(compound)
-                for b in buf:
-                    if len(b) >= 2 and b not in _STOP_NOUNS:
-                        results.append(b)
-                buf = []
-        if buf:
-            if len(buf) >= 2:
-                compound = ''.join(buf)
-                if len(compound) >= 3 and compound not in _STOP_NOUNS:
-                    results.append(compound)
-            for b in buf:
-                if len(b) >= 2 and b not in _STOP_NOUNS:
-                    results.append(b)
-        return results
+        toks = _kiwi.tokenize(text)
     except Exception:
-        return []
+        return {}
+    runs = _noun_runs(toks)
+    out: dict[str, tuple[int, int]] = {}
+    for idx, (cand, s, e) in enumerate(runs):
+        if (len(cand) < 2 or cand in _STOP_NOUNS or cand in _NON_MENU
+                or '메뉴' in cand or '재료' in cand):
+            continue
+        strong = 0
+        score  = 0
+        # (1) 목적격 조사 + 취식/주문 동사 → 강한 신호
+        if e < len(toks) and toks[e].tag == "JKO":
+            for w in range(e + 1, min(e + 5, len(toks))):
+                f, tag = toks[w].form, toks[w].tag
+                if tag.startswith("VV") and any(f.startswith(st) for st in _EAT_STEMS):
+                    strong += 1
+                    score  += 3
+                    break
+                if tag == "NNG" and f in _ORDER_NOUNS:
+                    strong += 1
+                    score  += 3
+                    break
+        # (2) 바로 앞에 '대표메뉴/시그니처' 등 지칭어 → 강한 신호
+        if idx > 0 and any(mk in runs[idx - 1][0] for mk in _MENU_MARKERS):
+            strong += 1
+            score  += 3
+        # (3) 뒤쪽 근처에 맛있/추천 등 긍정 표현 → 약한 신호 (순위 보정용)
+        for w in range(e, min(e + 6, len(toks))):
+            if any(toks[w].form.startswith(p) for p in _POS_NEAR):
+                score += 1
+                break
+        # (4) 음식 접미사 → 약한 보조 신호
+        if any(cand.endswith(sfx) or cand == sfx for sfx in _FOOD_SUFFIXES):
+            score += 1
+        if strong or score:
+            ps, psc = out.get(cand, (0, 0))
+            out[cand] = (ps + strong, psc + score)
+    return out
 
 
 def _extract_menus(sample: list[str], place_name: str) -> list[str]:
-    """복합명사 + 음식 접미사 매칭으로 대표 메뉴 추출.
-    구체적 메뉴명(복합명사)을 우선하고, 일반 카테고리어(피자·파스타 등)는 후순위로 채운다.
+    """문맥 점수를 리뷰 전체에 누적해 대표 메뉴를 뽑는다.
+    강한 신호(취식·지칭)가 1회 이상인 후보만 인정 → 비메뉴 노이즈를 거른다.
+    일반 카테고리어(피자·커피 등)는 구체적 메뉴보다 뒤로 민다.
     """
-    all_nouns: list[str] = []
+    strong: dict[str, int] = {}
+    score:  dict[str, int] = {}
+    freq:   dict[str, int] = {}
     for text in sample:
-        all_nouns.extend(_extract_compound_nouns(text))
-    noun_freq = Counter(all_nouns)
+        for cand, (st, sc) in _score_menu_in_review(text).items():
+            if cand == place_name:
+                continue
+            strong[cand] = strong.get(cand, 0) + st
+            score[cand]  = score.get(cand, 0) + sc
+            freq[cand]   = freq.get(cand, 0) + 1
 
-    specific: list[str] = []   # 복합명사 (예: 고르곤졸라피자)
-    generic:  list[str] = []   # 단일 카테고리어 (예: 피자)
-    seen: set[str] = set()
+    # 후보 인정: 강한 문맥 신호가 있거나, 음식 접미사어가 2회 이상 언급된 경우
+    #  → 문맥의 정밀도 + 접미사의 재현율을 결합 (한쪽만 쓰면 놓치거나 노이즈가 많음)
+    cands = [c for c in strong
+             if strong[c] >= 1 or (_has_food_suffix(c) and freq[c] >= 2)]
+    if not cands:
+        return []
 
-    for noun, _cnt in noun_freq.most_common(80):
-        if not any(noun.endswith(s) or noun == s for s in _FOOD_SUFFIXES):
-            continue
-        if noun in _STOP_NOUNS or noun in _GENERIC_MENU or noun == place_name or noun in seen:
-            continue
-        # 접미사 그 자체(피자·파스타 등 2~3자 단일어)인지 판별
-        is_specific = len(noun) >= 3 and noun not in _FOOD_SUFFIXES
-        bucket = specific if is_specific else generic
-        # 부분문자열 흡수: 더 긴 복합명사로 교체
+    # 구체적 메뉴 > 일반 카테고리어, 그다음 강한신호·총점·빈도 순
+    cands.sort(key=lambda c: (c not in _GENERIC_MENU, strong[c], score[c], freq[c]),
+               reverse=True)
+
+    menus: list[str] = []
+    for cand in cands:
         dominated = False
-        for existing in list(bucket):
-            if existing in noun:
-                bucket.remove(existing)
-                seen.discard(existing)
-            elif noun in existing:
+        for existing in list(menus):
+            if existing in cand:        # 기존이 현재의 부분 → 더 긴 것으로 교체
+                menus.remove(existing)
+            elif cand in existing:      # 현재가 기존의 부분 → 스킵
                 dominated = True
                 break
         if not dominated:
-            bucket.append(noun)
-            seen.add(noun)
-
-    menus = specific[:5]
-    for g in generic:
+            menus.append(cand)
         if len(menus) >= 5:
             break
-        menus.append(g)
-    return menus
+    return menus[:5]
 
 
 def _aspect_quotes(reviews_typed: list[tuple[str, str]], keywords: list[str],
@@ -286,19 +346,50 @@ def _aspect_quotes(reviews_typed: list[tuple[str, str]], keywords: list[str],
     return quotes, total
 
 
+def _norm_text(t: str) -> str:
+    """공백 제거 정규화 (동일 리뷰 비교용)."""
+    return ''.join(t.split())
+
+
+def _dedup_blog_against_visitor(visitor: list[str], blog: list[str]) -> tuple[list[str], int]:
+    """블로그 리뷰 중 방문자 리뷰와 사실상 동일한 것을 제거한다 (이중 집계 방지).
+    블로그 수집기가 방문자 리뷰를 섞어오는 경우를 거르고, (정제된 블로그, 제거된 수)를 반환.
+    """
+    vnorm = {_norm_text(t) for t in visitor if isinstance(t, str)}
+    out: list[str] = []
+    seen: set[str] = set()
+    removed = 0
+    for t in blog:
+        if not isinstance(t, str):
+            continue
+        n = _norm_text(t)
+        if n in vnorm or n in seen:   # 방문자와 중복 or 블로그 내부 중복
+            removed += 1
+            continue
+        seen.add(n)
+        out.append(t)
+    return out, removed
+
+
 def build_review_analysis(visitor_valid: list[str], blog_valid: list[str],
                           place_name: str = "") -> dict:
     """유효 리뷰 → 프론트가 그대로 렌더링하는 분석 구조 생성.
+    방문자와 중복되는 블로그 리뷰는 제거하고(이중 집계 방지), 실제 분석된 수만 보고한다.
     반환:
       menus            : list[str]        대표 메뉴
       reservation_apps : list[str]        리뷰에서 감지된 예약 앱
       aspects          : list[{key,label,icon,count,quotes:[{text,type,kw}]}]
-      analyzed         : int              분석한 리뷰 수
+      analyzed         : int              분석한 총 리뷰 수 (중복 제거 후)
+      counts           : {visitor, blog}  타입별 분석 수
+      shortage         : {visitor, blog}  리뷰가 신뢰 기준 미만이면 True
     """
-    reviews_typed = (
-        [(t, "visitor") for t in (visitor_valid or []) if isinstance(t, str)] +
-        [(t, "blog")    for t in (blog_valid or [])    if isinstance(t, str)]
-    )
+    visitor = [t for t in (visitor_valid or []) if isinstance(t, str)]
+    blog_raw, _removed = _dedup_blog_against_visitor(visitor, blog_valid or [])
+    # 200자 미만 클립·해시태그·단문은 블로그 리뷰로 인정하지 않음
+    blog = [t for t in blog_raw if len(t) >= BLOG_MIN_LEN]
+
+    reviews_typed = ([(t, "visitor") for t in visitor] +
+                     [(t, "blog")    for t in blog])
     if len(reviews_typed) < 3:
         return {}
 
@@ -317,11 +408,14 @@ def build_review_analysis(visitor_valid: list[str], blog_valid: list[str],
     all_text = " ".join(t for t, _ in reviews_typed)
     reservation_apps = [a for a in RESERVATION_APPS if a in all_text]
 
+    n_v, n_b = len(visitor), len(blog)
     return {
         "menus": menus,
         "reservation_apps": reservation_apps,
         "aspects": aspects,
-        "analyzed": len(reviews_typed),
+        "analyzed": n_v + n_b,
+        "counts": {"visitor": n_v, "blog": n_b},
+        "shortage": {"visitor": n_v < VISITOR_LOW, "blog": n_b < BLOG_LOW},
     }
 
 
@@ -444,6 +538,41 @@ def _parse_business_list_from_gql(gql_bodies: list[str]) -> list[dict]:
         walk(obj)
 
     return results
+
+
+def _parse_ad_ids_from_gql(gql_bodies: list[str]) -> set[str]:
+    """네이버가 '광고'로 노출하는 업체의 place id를 수집한다.
+
+    광고는 organic 목록(PlaceListBusinessesItem)과 분리된
+    'RestaurantAdSummary' 타입(또는 adId 필드를 가진 항목)으로 내려온다.
+    동일 업체가 organic 목록에도 함께 뜰 수 있으므로, 이 id 집합으로
+    스캔 단계에서 광고 업체를 제외한다.
+    """
+    ad_ids: set[str] = set()
+
+    def walk(node):
+        if isinstance(node, dict):
+            is_ad = (node.get("__typename") == "RestaurantAdSummary"
+                     or bool(node.get("adId")))
+            if is_ad:
+                pid = str(node.get("id", "")
+                          or node.get("apolloCacheId", ""))
+                if pid:
+                    ad_ids.add(pid)
+            for v in node.values():
+                walk(v)
+        elif isinstance(node, list):
+            for x in node:
+                walk(x)
+
+    for body in gql_bodies:
+        try:
+            obj = json.loads(body)
+        except Exception:
+            continue
+        walk(obj)
+
+    return ad_ids
 
 
 def _to_int(v) -> int:
@@ -874,20 +1003,19 @@ async def _crawl_reviews(pid: str, review_type: str, ctx,
     if pairs:
         pairs = _sort_pairs_by_date(pairs, review_type)
 
-    texts = [t for t, _ in pairs]
-
     # ── 2차: GraphQL 파싱 수집 부족 시 DOM fallback ──
-    if len(texts) < 5:
+    # DOM 경로는 날짜를 얻지 못하므로 date="" 로 채운다 (정렬·검증 불가).
+    if len(pairs) < 5:
         dom_texts = await _extract_texts_from_dom(page, target)
         for t in dom_texts:
-            if t not in seen and len(texts) < target:
+            if t not in seen and len(pairs) < target:
                 seen.add(t)
-                texts.append(t)
+                pairs.append((t, ""))
         if dom_texts:
             print(f"      [sort-check:{review_type}] DOM fallback 사용 — 날짜 검증 불가")
 
     await page.close()
-    return texts[:target]  # 반드시 target 이하
+    return pairs[:target]  # (text, date) 쌍, 반드시 target 이하
 
 
 # ── 어뷰징 필터 ──────────────────────────────────────────────────────
@@ -1007,9 +1135,11 @@ async def search_places(query: str, limit: int = 500,
     print(f"[naver] '{query}' 검색 중 (목표 {limit}개, 최소리뷰 {min_reviews}건)...")
     places: list[dict] = []
     seen_ids: set[str] = set()
+    ad_ids: set[str] = set()   # 네이버가 '광고'로 노출하는 업체 id
     total_seen = 0
     skip_chain = 0
     skip_reviews = 0
+    skip_ad = 0
 
     async with _stealth.use_async(async_playwright()) as p:
         browser = await p.chromium.launch(headless=True)
@@ -1021,13 +1151,15 @@ async def search_places(query: str, limit: int = 500,
         page = await ctx.new_page()
 
         async def on_response(resp):
-            nonlocal total_seen, skip_chain, skip_reviews
+            nonlocal total_seen, skip_chain, skip_reviews, skip_ad
             if "allSearch" not in resp.url:
                 return
             try:
                 body = await resp.json()
                 place_obj = body.get("result", {}).get("place", {})
                 items = place_obj.get("list", [])
+                # 광고 업체 id 수집 (organic 항목에도 같이 떠도 제외하기 위함)
+                ad_ids.update(_parse_ad_ids_from_gql([json.dumps(body, ensure_ascii=False)]))
                 for item in items:
                     pid = str(item.get("id", ""))
                     if not pid or pid in seen_ids:
@@ -1038,6 +1170,12 @@ async def search_places(query: str, limit: int = 500,
                     name = item.get("name", "")
 
                     # ── 스캔 단계 필터 ──
+                    # 네이버 '광고' 노출 업체 제외
+                    if pid in ad_ids or item.get("adId"):
+                        ad_ids.add(pid)
+                        skip_ad += 1
+                        continue
+
                     # 프랜차이즈 제외
                     if _is_chain(name):
                         skip_chain += 1
@@ -1168,6 +1306,11 @@ async def search_places(query: str, limit: int = 500,
                     seen_ids.add(pid)
                     total_seen_ref[0] += 1
 
+                    # 네이버 '광고' 노출 업체 제외
+                    if pid in ad_ids:
+                        skip_ad_ref[0] += 1
+                        continue
+
                     name = item.get("name", "")
                     if not name:
                         continue
@@ -1210,6 +1353,7 @@ async def search_places(query: str, limit: int = 500,
             total_seen_ref   = [total_seen]
             skip_chain_ref   = [skip_chain]
             skip_reviews_ref = [skip_reviews]
+            skip_ad_ref      = [skip_ad]
 
             prev_parsed = -1
             stall = 0
@@ -1224,12 +1368,15 @@ async def search_places(query: str, limit: int = 500,
                 except Exception:
                     pass
                 sources = ([apollo_state] if apollo_state else []) + gql_extra
+                # 광고 업체 id 먼저 수집 → organic 항목에서도 제외
+                ad_ids.update(_parse_ad_ids_from_gql(sources))
                 biz_items = _parse_business_list_from_gql(sources)
 
                 _ingest(biz_items)
                 total_seen   = total_seen_ref[0]
                 skip_chain   = skip_chain_ref[0]
                 skip_reviews = skip_reviews_ref[0]
+                skip_ad      = skip_ad_ref[0]
 
                 if len(places) >= limit:
                     break
@@ -1258,6 +1405,7 @@ async def search_places(query: str, limit: int = 500,
     result = places[:limit]
     print(f"[naver] 스캔 완료:")
     print(f"  전체 검색결과:   {total_seen}개")
+    print(f"  광고업체 제외:   -{skip_ad}개  (네이버 '광고' 노출)")
     print(f"  프랜차이즈 제외: -{skip_chain}개")
     print(f"  리뷰부족 제외:   -{skip_reviews}개  (기준: {min_reviews}건 미만)")
     print(f"  최종 통과:       {len(result)}개")
@@ -1297,10 +1445,13 @@ async def crawl_place(place: dict, ctx) -> dict | None:
             hours_info["break_time"] = f"{m.group(1)}:{m.group(2)}~{m.group(3)}:{m.group(4)}"
 
     # ── 방문자 리뷰 (기본 목표 VISITOR_TARGET) ──
-    visitor_texts = await _crawl_reviews(pid, "visitor", ctx, target=VISITOR_TARGET)
+    # _crawl_reviews 는 (텍스트, 작성일) 쌍을 최신순으로 반환한다.
+    visitor_pairs = await _crawl_reviews(pid, "visitor", ctx, target=VISITOR_TARGET)
+    visitor_texts = [t for t, _ in visitor_pairs]
+    visitor_date_of = {t: d for t, d in visitor_pairs}   # 텍스트→작성일 (저장용)
     visitor_filtered = filter_reviews(visitor_texts)
 
-    # 방문자 부족분 계산 → 블로그 목표에 추가
+    # 방문자 부족분 계산 → 블로그 목표에 추가 (동적 보충)
     visitor_shortage = max(0, VISITOR_TARGET - len(visitor_texts))
     blog_target_adj  = BLOG_TARGET + visitor_shortage
     if visitor_shortage:
@@ -1308,19 +1459,34 @@ async def crawl_place(place: dict, ctx) -> dict | None:
               f"→ 블로그 목표 {blog_target_adj}건으로 증가")
 
     # ── 블로그 리뷰 (부족분 보완된 목표) ──
-    blog_texts = await _crawl_reviews(pid, "blog", ctx, target=blog_target_adj)
+    blog_pairs = await _crawl_reviews(pid, "blog", ctx, target=blog_target_adj)
+    blog_texts = [t for t, _ in blog_pairs]
+    blog_date_of = {t: d for t, d in blog_pairs}
     blog_filtered = filter_reviews(blog_texts)
 
+    # 방문자와 중복 제거 + BLOG_MIN_LEN(100자) 미만 클립·단문 제거
+    blog_valid_dedup, blog_cross_dup = _dedup_blog_against_visitor(
+        visitor_filtered["valid"], blog_filtered["valid"])
+    blog_valid_dedup = [t for t in blog_valid_dedup if len(t) >= BLOG_MIN_LEN]
+    if blog_cross_dup:
+        print(f"    블로그-방문자 중복 {blog_cross_dup}건 제거")
+    print(f"    블로그 유효({BLOG_MIN_LEN}자+): {len(blog_valid_dedup)}건")
+
+    # ── 분석·저장에 쓸 최종 유효 리뷰 (상한 적용을 한 곳에서) ──
+    #   방문자: 최대 VISITOR_TARGET(100), 블로그: 최대 BLOG_CAP(50).
+    #   분석 입력과 저장본을 동일한 리스트로 통일한다 (crawl ↔ reanalyze 일치).
+    visitor_valid = visitor_filtered["valid"][:VISITOR_TARGET]
+    blog_valid    = blog_valid_dedup[:BLOG_CAP]
+
     # 블로그 부족분 로깅
-    blog_shortage = max(0, BLOG_TARGET - len(blog_texts))
-    if blog_shortage:
-        print(f"    블로그 리뷰 {len(blog_texts)}/{BLOG_TARGET}건 "
+    if len(blog_valid) < BLOG_TARGET:
+        print(f"    블로그 유효 리뷰 {len(blog_valid)}/{BLOG_TARGET}건 "
               f"(해당 업체 블로그 리뷰 부족)")
 
     # ── 리뷰 분석 (메뉴·항목별 인용·예약앱) ──
     review_analysis = build_review_analysis(
-        visitor_filtered["valid"],
-        blog_filtered["valid"],
+        visitor_valid,
+        blog_valid,
         name,
     )
     if review_analysis:
@@ -1347,40 +1513,40 @@ async def crawl_place(place: dict, ctx) -> dict | None:
         # 방문자 리뷰
         "visitor_total":      visitor_api_cnt,
         "visitor_sampled":    len(visitor_texts),
-        "visitor_valid":      len(visitor_filtered["valid"]),
+        "visitor_valid":      len(visitor_valid),
         "visitor_ad_count":   visitor_filtered["ad_count"],
         "visitor_dup_count":  visitor_filtered["duplicate_count"],
 
-        # 블로그 리뷰
+        # 블로그 리뷰 (방문자 중복 제거 + 상한 적용 후 기준)
         "blog_total":         blog_api_cnt,
-        "blog_sampled":       len(blog_texts),
-        "blog_valid":         len(blog_filtered["valid"]),
+        "blog_sampled":       len(blog_valid),
+        "blog_valid":         len(blog_valid),
         "blog_ad_count":      blog_filtered["ad_count"],
-        "blog_dup_count":     blog_filtered["duplicate_count"],
+        "blog_dup_count":     blog_filtered["duplicate_count"] + blog_cross_dup,
 
         # 합산 (등재 기준은 방문자 유효 리뷰)
         "total_reviews":    total_reviews,
-        "filtered_reviews": len(visitor_filtered["valid"]),
+        "filtered_reviews": len(visitor_valid),
     }
 
-    # 감성 분석 — 방문자 + 블로그 합산 (dict 밖에서 계산)
-    _sp = visitor_filtered.get("positive", 0) + blog_filtered.get("positive", 0)
-    _sn = visitor_filtered.get("negative", 0) + blog_filtered.get("negative", 0)
-    _su = visitor_filtered.get("neutral",  0) + blog_filtered.get("neutral",  0)
-    _st = _sp + _sn + _su
+    # 감성 분석 — 방문자 + (중복 제거·상한 적용된) 블로그 합산으로 재계산
+    sent = analyze_sentiment(visitor_valid + blog_valid)
     result.update({
-        "positive_rate":      round(_sp / _st * 100) if _st > 0 else 0,
-        "sentiment_positive": _sp,
-        "sentiment_negative": _sn,
-        "sentiment_neutral":  _su,
-        "sentiment_total":    _st,
-        "mindless_excluded":  (visitor_filtered.get("mindless_excluded", 0)
-                               + blog_filtered.get("mindless_excluded", 0)),
-        # KoNLPy 리뷰 분석 결과
+        "positive_rate":      sent["positive_rate"],
+        "sentiment_positive": sent["positive"],
+        "sentiment_negative": sent["negative"],
+        "sentiment_neutral":  sent["neutral"],
+        "sentiment_total":    sent["sentiment_total"],
+        "mindless_excluded":  sent["mindless_excluded"],
+        # 리뷰 분석 결과
         "review_analysis":   review_analysis,
-        # 유효 리뷰 텍스트 저장 (분석한 수와 일치하도록 방문자 100 + 블로그 50)
-        "visitor_reviews":   visitor_filtered["valid"][:100],
-        "blog_reviews":      blog_filtered["valid"][:50],
+        # 유효 리뷰 텍스트 + 작성일 저장 (방문자 ≤100, 블로그 ≤50)
+        # 작성일은 텍스트와 같은 순서(최신순)의 병렬 배열, YYYY-MM-DD 정규화.
+        # 날짜를 못 얻은 경우(DOM fallback 등)는 "".
+        "visitor_reviews":       visitor_valid,
+        "visitor_reviews_dates": [_normalize_date(visitor_date_of.get(t, "")) for t in visitor_valid],
+        "blog_reviews":          blog_valid,
+        "blog_reviews_dates":    [_normalize_date(blog_date_of.get(t, "")) for t in blog_valid],
         "crawled_at": datetime.now().isoformat(),
     })
 

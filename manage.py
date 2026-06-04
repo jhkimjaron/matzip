@@ -26,7 +26,8 @@ sys.path.insert(0, str(ROOT / "crawler"))
 import db as _db
 from naver_crawler import (
     search_places, crawl_place, check_recent_activity,
-    build_review_analysis, _stealth, MIN_REVIEWS,
+    build_review_analysis, _dedup_blog_against_visitor, analyze_sentiment,
+    _stealth, MIN_REVIEWS,
 )
 from playwright.async_api import async_playwright
 
@@ -180,15 +181,20 @@ def cmd_reanalyze(args):
         print("재분석할 장소가 없습니다.")
         return
 
-    done = 0
+    done = deduped = 0
     for r in rows:
         v = json.loads(r["visitor_reviews_json"] or "[]")
         b = json.loads(r["blog_reviews_json"]    or "[]")
-        analysis = build_review_analysis(v, b, r["name"])
-        _db.update_analysis(r["id"], analysis)
+        # 방문자와 중복되는 블로그 제거 → 이중 집계 없이 재분석·감성 재계산
+        b_dedup, removed = _dedup_blog_against_visitor(v, b)
+        if removed:
+            deduped += 1
+        analysis  = build_review_analysis(v, b, r["name"])
+        sentiment = analyze_sentiment(v + b_dedup)
+        _db.update_reanalysis(r["id"], analysis, len(b_dedup), sentiment)
         done += 1
 
-    print(f"[reanalyze] {done}곳 재분석 완료")
+    print(f"[reanalyze] {done}곳 재분석 완료 (블로그 중복 제거 {deduped}곳)")
 
 
 # ── EXPORT ────────────────────────────────────────────────────────────

@@ -70,6 +70,10 @@ def init_db():
             visitor_reviews_json TEXT DEFAULT '[]',
             blog_reviews_json    TEXT DEFAULT '[]',
 
+            -- 리뷰 작성일 (원문과 같은 순서·길이의 병렬 배열, 최신순)
+            visitor_dates_json   TEXT DEFAULT '[]',
+            blog_dates_json      TEXT DEFAULT '[]',
+
             -- 관리 메타
             area             TEXT DEFAULT '',
             scan_only        INT  DEFAULT 1,
@@ -89,6 +93,8 @@ def init_db():
         for col, definition in [
             ("visitor_reviews_json", "TEXT DEFAULT '[]'"),
             ("blog_reviews_json",    "TEXT DEFAULT '[]'"),
+            ("visitor_dates_json",   "TEXT DEFAULT '[]'"),
+            ("blog_dates_json",      "TEXT DEFAULT '[]'"),
         ]:
             try:
                 conn.execute(f"ALTER TABLE places ADD COLUMN {col} {definition}")
@@ -155,6 +161,7 @@ def upsert_crawl(result: dict):
             sentiment_neutral, sentiment_total, mindless_excluded,
             review_analysis,
             visitor_reviews_json, blog_reviews_json,
+            visitor_dates_json, blog_dates_json,
             business_hours, break_time, closed_days, business_status,
             area, scan_only, last_crawled, first_seen, verdict
         ) VALUES (
@@ -169,6 +176,7 @@ def upsert_crawl(result: dict):
             :sentiment_neutral, :sentiment_total, :mindless_excluded,
             :review_analysis,
             :visitor_reviews_json, :blog_reviews_json,
+            :visitor_dates_json, :blog_dates_json,
             :business_hours, :break_time, :closed_days, :business_status,
             :area, 0, :last_crawled,
             COALESCE((SELECT first_seen FROM places WHERE id=:id), :last_crawled),
@@ -181,6 +189,8 @@ def upsert_crawl(result: dict):
             "review_analysis": json.dumps(ra, ensure_ascii=False),
             "visitor_reviews_json": json.dumps(result.get("visitor_reviews", []), ensure_ascii=False),
             "blog_reviews_json":    json.dumps(result.get("blog_reviews", []), ensure_ascii=False),
+            "visitor_dates_json":   json.dumps(result.get("visitor_reviews_dates", []), ensure_ascii=False),
+            "blog_dates_json":      json.dumps(result.get("blog_reviews_dates", []), ensure_ascii=False),
             "last_crawled": datetime.now().isoformat(),
             "area": result.get("area", ""),
         })
@@ -231,10 +241,12 @@ def export_places(min_valid: int = 50) -> list[dict]:
         p = dict(r)
         p["review_analysis"] = json.loads(p.get("review_analysis") or "{}")
         p["business_hours"]  = _fix_hours(p.get("business_hours") or "")
-        # 원문 리뷰는 브라우저로 보내지 않는다 (분석에 인용문이 이미 포함됨).
+        # 원문 리뷰·작성일은 브라우저로 보내지 않는다 (분석에 인용문이 이미 포함됨).
         # DB에는 그대로 보관 → reanalyze로 재분석 가능.
         p.pop("visitor_reviews_json", None)
         p.pop("blog_reviews_json", None)
+        p.pop("visitor_dates_json", None)
+        p.pop("blog_dates_json", None)
         places.append(p)
     return places
 
@@ -256,6 +268,28 @@ def update_analysis(pid: str, analysis: dict):
             "UPDATE places SET review_analysis=? WHERE id=?",
             (json.dumps(analysis, ensure_ascii=False), pid),
         )
+        conn.commit()
+
+
+def update_reanalysis(pid: str, analysis: dict, blog_count: int, sentiment: dict):
+    """재분석 결과 일괄 갱신: 분석 구조 + (중복 제거된) 블로그 수 + 감성.
+    방문자 컬럼은 손대지 않는다 (오염원은 블로그 수집뿐).
+    """
+    with get_conn() as conn:
+        conn.execute("""
+            UPDATE places SET
+                review_analysis=?,
+                blog_sampled=?, blog_valid=?,
+                positive_rate=?, sentiment_positive=?, sentiment_negative=?,
+                sentiment_neutral=?, sentiment_total=?, mindless_excluded=?
+            WHERE id=?
+        """, (
+            json.dumps(analysis, ensure_ascii=False),
+            blog_count, blog_count,
+            sentiment["positive_rate"], sentiment["positive"], sentiment["negative"],
+            sentiment["neutral"], sentiment["sentiment_total"], sentiment["mindless_excluded"],
+            pid,
+        ))
         conn.commit()
 
 
