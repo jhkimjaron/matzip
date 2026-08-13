@@ -4,8 +4,9 @@ manage.py — 맛집지도 통합 관리 CLI
 명령어:
   python manage.py scan                   config.json의 areas 스캔
   python manage.py scan --area "강남구 음식점"  단일 지역 스캔
-  python manage.py list --names "몽탄 청담점" "산낙지마을 강남점"   지정한 음식점만 검색·크롤링
-  python manage.py list --file places.txt  파일에 적힌 음식점 이름 목록 크롤링 (한 줄에 하나)
+  python manage.py list --ids 1529048751 1856358676   place 고유번호로 정확히 지정 (권장)
+  python manage.py list --names "몽탄 청담점"            상호명 검색으로 지정
+  python manage.py list --file places.txt              목록 파일 (ID·이름 혼용, 한 줄에 하나)
   python manage.py crawl                  DB의 미크롤링/오래된 장소 크롤링
   python manage.py reanalyze              저장된 원문 리뷰로 분석만 재생성 (재크롤링 X)
   python manage.py awards                  홈 페이지 재방문으로 공식 수상 배지 백필
@@ -28,7 +29,8 @@ sys.path.insert(0, str(ROOT / "crawler"))
 
 import db as _db
 from naver_crawler import (
-    search_places, search_place_by_name, crawl_place, check_recent_activity,
+    search_places, search_place_by_name, fetch_place_by_id, parse_place_id,
+    crawl_place, check_recent_activity,
     build_review_analysis, _dedup_blog_against_visitor, analyze_sentiment,
     _crawl_hours, _stealth, MIN_REVIEWS,
 )
@@ -91,32 +93,45 @@ async def cmd_scan(args):
     print(f"\n[scan 완료] 누적 {st['total']}곳 (스캔대기 {st['scan_only']}곳, 크롤링완료 {st['crawled']}곳)")
 
 
-# ── LIST (지역 검색 없이 지정한 음식점 이름 목록만 크롤링) ─────────────
-async def cmd_list(args):
-    """config.json의 areas나 지역 검색을 거치지 않고, --names/--file 로
-    직접 지정한 상호명 목록만 검색해 바로 크롤링·DB 저장한다.
-    프랜차이즈 필터·리뷰수 스캔 필터는 적용하지 않는다(사용자가 콕 집어 지정했으므로).
+# ── LIST (지역 검색 없이 지정한 음식점만 크롤링) ───────────────────────
+def _collect_targets(args) -> list[str]:
+    """--ids / --names / --file 을 하나의 토큰 목록으로 합친다.
+    토큰이 place id(숫자·네이버 지도 URL)인지 상호명인지는 crawl 단계에서 판별한다.
     """
-    names: list[str] = list(args.names or [])
+    tokens: list[str] = list(args.ids or []) + list(args.names or [])
     if args.file:
         path = Path(args.file)
         if not path.exists():
             print(f"파일을 찾을 수 없습니다: {path}")
-            return
+            return []
         for line in path.read_text(encoding="utf-8-sig").splitlines():
             line = line.strip()
             if line and not line.startswith("#"):
-                names.append(line)
+                tokens.append(line)
+    return tokens
 
-    if not names:
-        print("--names 또는 --file 로 음식점 이름을 하나 이상 지정하세요.")
+
+async def cmd_list(args):
+    """config.json의 areas나 지역 검색을 거치지 않고, 직접 지정한 음식점만
+    크롤링·DB 저장한다. 지정 방법은 두 가지:
+
+      · place id (권장) — 네이버 플레이스 고유번호나 지도 URL.
+        검색 단계가 없어 동명이업체 오매칭이 원천적으로 발생하지 않는다.
+      · 상호명 — 검색 후 관련도 1위를 사용. 편하지만 오매칭 가능성이 있다.
+
+    프랜차이즈 필터·리뷰수 스캔 필터는 적용하지 않는다(사용자가 콕 집어 지정했으므로).
+    """
+    tokens = _collect_targets(args)
+    if not tokens:
+        print("--ids / --names / --file 로 음식점을 하나 이상 지정하세요.")
         return
 
     cfg = load_config()
     min_valid = cfg["min_valid_reviews"]
     _db.init_db()
 
-    print(f"[list] {len(names)}곳 검색·크롤링 시작")
+    n_id = sum(1 for t in tokens if parse_place_id(t))
+    print(f"[list] {len(tokens)}곳 크롤링 시작 (ID 지정 {n_id}곳, 이름 검색 {len(tokens) - n_id}곳)")
     stats = {"done": 0, "not_found": 0, "skip_valid": 0, "error": 0}
 
     async with _stealth.use_async(async_playwright()) as p:
@@ -125,10 +140,17 @@ async def cmd_list(args):
             locale="ko-KR",
             extra_http_headers={"Accept-Language": "ko-KR,ko;q=0.9"},
         )
-        for i, name in enumerate(names, 1):
-            print(f"\n[{i}/{len(names)}] {name}")
+        for i, token in enumerate(tokens, 1):
+            print(f"\n[{i}/{len(tokens)}] {token}")
             try:
-                place = await search_place_by_name(name, ctx)
+                # place id면 검색을 건너뛰고 상세 페이지에서 바로 메타를 읽는다.
+                pid = parse_place_id(token)
+                if pid:
+                    place = await fetch_place_by_id(pid, ctx)
+                    if place:
+                        print(f"  [ID조회] {place['name']} ({pid}) {place['address']}")
+                else:
+                    place = await search_place_by_name(token, ctx)
                 if not place:
                     stats["not_found"] += 1
                     continue
@@ -148,7 +170,7 @@ async def cmd_list(args):
                       f"긍정률 {result.get('positive_rate', 0)}%")
             except Exception as e:
                 stats["error"] += 1
-                print(f"  [error] {name} — {type(e).__name__}: {str(e)[:90]}")
+                print(f"  [error] {token} — {type(e).__name__}: {str(e)[:90]}")
             await asyncio.sleep(1)
         await ctx.close()
 
@@ -391,9 +413,12 @@ def main():
     p_scan.add_argument("--limit", type=int, help="지역당 최대 수집 수")
 
     # list
-    p_list = sub.add_parser("list", help="지역 검색 없이 지정한 음식점 이름 목록만 크롤링")
+    p_list = sub.add_parser("list", help="지역 검색 없이 지정한 음식점만 크롤링 (ID 또는 이름)")
+    p_list.add_argument("--ids",   nargs="+",
+                        help="네이버 place 고유번호 또는 지도 URL (정확 — 오매칭 없음)")
     p_list.add_argument("--names", nargs="+", help="음식점 이름들 (공백 구분, 여러 개 가능)")
-    p_list.add_argument("--file",  type=str, help="이름 목록 파일 경로 (한 줄에 하나, #으로 주석)")
+    p_list.add_argument("--file",  type=str,
+                        help="목록 파일 경로 (한 줄에 ID 또는 이름 하나, #으로 주석)")
     p_list.add_argument("--area",  type=str, help="DB에 저장할 area 라벨 (기본: '직접등록')")
     p_list.add_argument("--force", action="store_true",
                         help="유효리뷰 수가 min_valid_reviews 미만이어도 저장")

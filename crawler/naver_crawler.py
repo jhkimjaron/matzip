@@ -1688,6 +1688,95 @@ async def search_place_by_name(name: str, ctx) -> dict | None:
     return best
 
 
+# ── place ID 직접 조회 (검색 없이 고유번호로 지정) ────────────────────
+# 네이버 지도 URL에서 place id만 뽑아내는 패턴들.
+#   https://map.naver.com/p/entry/place/1529048751
+#   https://pcmap.place.naver.com/restaurant/1529048751/home
+#   https://naver.me/xxxxx 같은 단축 URL은 지원하지 않음(리다이렉트 필요).
+_PID_URL_RE = re.compile(r'(?:place|restaurant|entry/place)/(\d{6,})')
+
+
+def parse_place_id(token: str) -> str | None:
+    """입력 토큰에서 네이버 place id를 추출. id가 아니면 None.
+
+    숫자만 있는 문자열이거나 네이버 지도 URL이면 id로 인정한다.
+    (상호명은 None이 되어 호출부에서 이름 검색으로 넘어간다.)
+    """
+    token = (token or "").strip()
+    if token.isdigit() and len(token) >= 6:
+        return token
+    m = _PID_URL_RE.search(token)
+    return m.group(1) if m else None
+
+
+def _find_place_detail_base(apollo_obj: dict) -> dict | None:
+    """Apollo 캐시에서 PlaceDetailBase 노드를 찾는다.
+    키가 'PlaceDetailBase:{id}' 형태지만 업종에 따라 다를 수 있어 __typename으로 찾는다.
+    """
+    for v in apollo_obj.values():
+        if isinstance(v, dict) and v.get("__typename") == "PlaceDetailBase":
+            return v
+    return None
+
+
+async def fetch_place_by_id(pid: str, ctx) -> dict | None:
+    """place id로 업체 메타데이터를 직접 조회한다 (이름 검색·매칭 없음).
+
+    플레이스 상세 페이지의 Apollo 캐시(PlaceDetailBase)에서 상호명·카테고리·
+    주소·좌표·리뷰수를 그대로 읽는다. 검색 단계가 없으므로 동명이업체 오매칭이
+    원천적으로 발생하지 않는다 — 지정한 id의 업체가 정확히 그 업체다.
+
+    반환 형식은 search_places()의 항목과 동일해 crawl_place()에 바로 넘길 수 있다.
+    """
+    page = await ctx.new_page()
+    apollo = None
+    try:
+        await page.goto(f"{BASE_PCMAP}/restaurant/{pid}/home",
+                        wait_until="load", timeout=25000)
+        await asyncio.sleep(2.5)
+        apollo = await page.evaluate(
+            "() => window.__APOLLO_STATE__ ? JSON.stringify(window.__APOLLO_STATE__) : null"
+        )
+    except Exception as e:
+        print(f"  [조회실패] id={pid} — {type(e).__name__}: {str(e)[:60]}")
+    finally:
+        await page.close()
+
+    if not apollo:
+        print(f"  [조회실패] id={pid} — 플레이스 데이터 없음 (잘못된 id이거나 음식점이 아님)")
+        return None
+
+    try:
+        base = _find_place_detail_base(json.loads(apollo))
+    except Exception:
+        base = None
+
+    if not base or not base.get("name"):
+        print(f"  [조회실패] id={pid} — 업체 정보를 찾을 수 없음")
+        return None
+
+    coord = base.get("coordinate") or {}
+    visitor_count = _to_int(base.get("visitorReviewsTotal"))
+    blog_count    = _to_int(base.get("cafeBlogReviewsTotal"))
+
+    return {
+        "id":                   str(base.get("id") or pid),
+        "name":                 base.get("name", ""),
+        "category":             base.get("category") or "기타",
+        "address":              base.get("roadAddress") or base.get("address", ""),
+        "x":                    str(coord.get("x", "0")),
+        "y":                    str(coord.get("y", "0")),
+        "review_count":         visitor_count + blog_count,
+        "visitor_review_count": visitor_count,
+        "blog_review_count":    blog_count,
+        "business_status":      "",
+        "business_hours_today": "",
+        "break_time_today":     "",
+        "last_order":           "",
+        "last_review_date":     "",
+    }
+
+
 # ── 개별 장소 크롤링 ──────────────────────────────────────────────────
 async def crawl_place(place: dict, ctx) -> dict | None:
     """

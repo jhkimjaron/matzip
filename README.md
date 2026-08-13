@@ -35,9 +35,11 @@ playwright install chromium
 # 1) 스캔 — 검색어로 음식점 목록 수집 (프랜차이즈·리뷰부족 제외) → DB 저장
 python manage.py scan --area "천안시 동남구 음식점" --limit 100
 
-# 1-1) list — 지역 검색 없이 직접 지정한 음식점 이름만 검색·크롤링 → DB 저장
-python manage.py list --names "몽탄 청담점" "산낙지마을 강남점"
-python manage.py list --file places.txt   # 한 줄에 하나씩 적은 이름 목록 파일
+# 1-1) list — 지역 검색 없이 직접 지정한 음식점만 크롤링 → DB 저장
+python manage.py list --ids 1529048751 1856358676          # place 고유번호 (정확)
+python manage.py list --ids "https://map.naver.com/p/entry/place/1529048751"
+python manage.py list --names "몽탄 청담점" "산낙지마을 강남점"   # 상호명 검색
+python manage.py list --file places.txt                    # 목록 파일 (ID·이름 혼용 가능)
 
 # 2) 크롤링 — 스캔된 곳의 리뷰·영업정보 수집·분석 → DB 저장
 python manage.py crawl
@@ -60,10 +62,43 @@ python manage.py status
 
 `--area` 없이 `scan`을 실행하면 `config.json`의 `areas` 목록 전체를 스캔합니다.
 
-`list`는 프랜차이즈 제외·최소 리뷰수 같은 스캔 필터를 적용하지 않고 지정한 업체를
-그대로 찾아 크롤링합니다. 동명이업체 오매칭을 줄이려면 이름에 동네를 함께 적어주세요
-(예: `몽탄 청담점`). `--area 라벨`로 DB에 저장할 area 값을 지정할 수 있고(기본값
-`직접등록`), `--force`를 주면 유효 리뷰 수가 `min_valid_reviews` 미만이어도 저장합니다.
+#### list — 임의 지정 크롤링
+
+`list`는 프랜차이즈 제외·최소 리뷰수 같은 스캔 단계 필터를 적용하지 않고, 지정한
+업체를 그대로 크롤링합니다. 지정 방법은 두 가지입니다.
+
+| 방법 | 정확도 | 비고 |
+|---|---|---|
+| `--ids` (권장) | 정확 | 검색 단계가 없어 **동명이업체 오매칭이 원천적으로 불가능** |
+| `--names` | 보통 | 검색 후 관련도 1위를 사용 — 오매칭 가능성 있음 |
+
+**place 고유번호 찾는 법** — 네이버 지도에서 가게를 열면 주소창에 숫자가 보입니다.
+
+```
+https://map.naver.com/p/entry/place/1529048751
+                                    └─ 이 숫자가 place ID
+```
+
+URL을 통째로 붙여넣어도 ID만 자동으로 추출합니다. `pcmap.place.naver.com/restaurant/{id}/home`
+형태나 검색 결과 URL(`/p/search/천안맛집/place/1856358676`)도 인식합니다.
+단축 URL(`naver.me/...`)은 지원하지 않으니 펼쳐진 주소를 쓰세요.
+
+**목록 파일** — 한 줄에 하나씩, ID와 이름을 섞어 써도 됩니다. 숫자로만 된 줄과
+네이버 지도 URL은 ID로, 나머지는 상호명으로 자동 판별합니다.
+
+```text
+# places.txt
+1529048751
+https://map.naver.com/p/entry/place/1856358676
+몽탄 청담점
+```
+
+이름으로 지정할 때는 동명이업체 오매칭을 줄이기 위해 동네를 함께 적어주세요
+(예: `몽탄 청담점`). 실행 로그의 `[매칭]` 줄에서 어떤 업체가 선택됐는지 확인할 수 있고,
+의도한 곳이 아니면 해당 업체의 ID로 다시 돌리면 됩니다.
+
+기타 옵션 — `--area 라벨`로 DB에 저장할 area 값을 지정할 수 있고(기본값 `직접등록`),
+`--force`를 주면 유효 리뷰 수가 `min_valid_reviews` 미만이어도 저장합니다.
 
 ### 프론트엔드 실행
 
