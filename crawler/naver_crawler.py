@@ -1302,8 +1302,8 @@ def filter_reviews(texts: list[str]) -> dict:
 
 # 프랜차이즈 브랜드 (스캔 단계에서 제외)
 CHAIN_BRANDS = {
-    '맥도날드', '버거킹', 'KFC', '롯데리아', '맘스터치', '노브랜드버거', '쉐이크쉑',
-    '스타벅스', '이디야', '메가커피', '컴포즈', '빽다방', '투썸플레이스', '할리스',
+    '맥도날드', '버거킹', 'KFC', '롯데리아', '맘스터치', '노브랜드버거', '쉐이크쉑', '빕스', '쿠우쿠우', '샤브올데이', 
+    '스타벅스', '이디야', '메가커피', '컴포즈', '빽다방', '투썸플레이스', '할리스', '메가MGC커피',
     '파리바게뜨', '뚜레쥬르', '베이커리', '베스킨라빈스', '배스킨', '던킨',
     'GS25', 'CU편의점', '세븐일레븐', '미니스톱', 'GS수퍼',
     '피자헛', '도미노', '파파존스', '피자알볼로',
@@ -1607,6 +1607,85 @@ async def search_places(query: str, limit: int = 500,
     print(f"  리뷰부족 제외:   -{skip_reviews}개  (기준: {min_reviews}건 미만)")
     print(f"  최종 통과:       {len(result)}개")
     return result
+
+
+# ── 단일 상호명 검색 (임의 지정 리스트용) ─────────────────────────────
+async def search_place_by_name(name: str, ctx) -> dict | None:
+    """상호명 1건을 검색해 가장 관련도 높은 매칭 장소 1곳을 반환.
+
+    search_places(지역 스캔)와 달리 프랜차이즈·최소리뷰수 필터를 적용하지
+    않는다 — 사용자가 특정 업체를 콕 집어 지정했으므로 조건과 무관하게
+    그 업체 자체를 찾아야 한다. 검색어에 '동네/지역명'을 함께 적으면
+    (예: '몽탄 청담점') 동명이업체 오매칭을 줄일 수 있다.
+    """
+    candidates: list[dict] = []
+    ad_ids: set[str] = set()
+
+    async def on_response(resp):
+        if "allSearch" not in resp.url:
+            return
+        try:
+            body = await resp.json()
+            place_obj = body.get("result", {}).get("place", {})
+            items = place_obj.get("list", [])
+            ad_ids.update(_parse_ad_ids_from_gql([json.dumps(body, ensure_ascii=False)]))
+            for item in items:
+                pid = str(item.get("id", ""))
+                if not pid:
+                    continue
+                cats = item.get("category", [])
+                bs   = item.get("businessStatus", {})
+                stat = bs.get("status", {})
+                visitor_count = int(item.get("placeReviewCount") or 0)
+                blog_count    = int(item.get("reviewCount") or 0)
+                _GENERIC = {"음식점", "식당", "레스토랑", "먹거리", "푸드코트"}
+                cat = next((c for c in cats if c not in _GENERIC),
+                           cats[0] if cats else "기타")
+                candidates.append({
+                    "id":                   pid,
+                    "name":                 item.get("name", ""),
+                    "category":             cat,
+                    "address":              item.get("roadAddress") or item.get("address", ""),
+                    "x":                    item.get("x", "0"),
+                    "y":                    item.get("y", "0"),
+                    "review_count":         visitor_count + blog_count,
+                    "visitor_review_count": visitor_count,
+                    "blog_review_count":    blog_count,
+                    "business_status":      stat.get("text", ""),
+                    "business_hours_today": bs.get("businessHours", ""),
+                    "break_time_today":     bs.get("breakTime", ""),
+                    "last_order":           bs.get("lastOrder", ""),
+                    "last_review_date":     "",
+                    "is_ad":                pid in ad_ids or bool(item.get("adId")),
+                })
+        except Exception:
+            pass
+
+    page = await ctx.new_page()
+    page.on("response", on_response)
+    encoded = name.replace(" ", "+")
+    try:
+        await page.goto(
+            f"https://map.naver.com/p/search/{encoded}",
+            wait_until="load", timeout=25000
+        )
+    except Exception:
+        pass
+    await asyncio.sleep(4)
+    await page.close()
+
+    if not candidates:
+        print(f"  [검색실패] '{name}' — 검색 결과 없음")
+        return None
+
+    # 광고 슬롯 제외 후 첫 결과 = 검색 관련도 1위 매칭으로 간주
+    non_ad = [c for c in candidates if not c["is_ad"]]
+    best = (non_ad or candidates)[0]
+    print(f"  [매칭] '{name}' → {best['name']} ({best['id']}) {best['address']}")
+    if len(candidates) > 1:
+        others = ", ".join(f"{c['name']}({c['id']})" for c in candidates[1:4])
+        print(f"    (그 외 후보: {others})")
+    return best
 
 
 # ── 개별 장소 크롤링 ──────────────────────────────────────────────────

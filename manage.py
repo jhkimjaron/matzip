@@ -4,6 +4,8 @@ manage.py — 맛집지도 통합 관리 CLI
 명령어:
   python manage.py scan                   config.json의 areas 스캔
   python manage.py scan --area "강남구 음식점"  단일 지역 스캔
+  python manage.py list --names "몽탄 청담점" "산낙지마을 강남점"   지정한 음식점만 검색·크롤링
+  python manage.py list --file places.txt  파일에 적힌 음식점 이름 목록 크롤링 (한 줄에 하나)
   python manage.py crawl                  DB의 미크롤링/오래된 장소 크롤링
   python manage.py reanalyze              저장된 원문 리뷰로 분석만 재생성 (재크롤링 X)
   python manage.py awards                  홈 페이지 재방문으로 공식 수상 배지 백필
@@ -26,7 +28,7 @@ sys.path.insert(0, str(ROOT / "crawler"))
 
 import db as _db
 from naver_crawler import (
-    search_places, crawl_place, check_recent_activity,
+    search_places, search_place_by_name, crawl_place, check_recent_activity,
     build_review_analysis, _dedup_blog_against_visitor, analyze_sentiment,
     _crawl_hours, _stealth, MIN_REVIEWS,
 )
@@ -87,6 +89,71 @@ async def cmd_scan(args):
 
     st = _db.status()
     print(f"\n[scan 완료] 누적 {st['total']}곳 (스캔대기 {st['scan_only']}곳, 크롤링완료 {st['crawled']}곳)")
+
+
+# ── LIST (지역 검색 없이 지정한 음식점 이름 목록만 크롤링) ─────────────
+async def cmd_list(args):
+    """config.json의 areas나 지역 검색을 거치지 않고, --names/--file 로
+    직접 지정한 상호명 목록만 검색해 바로 크롤링·DB 저장한다.
+    프랜차이즈 필터·리뷰수 스캔 필터는 적용하지 않는다(사용자가 콕 집어 지정했으므로).
+    """
+    names: list[str] = list(args.names or [])
+    if args.file:
+        path = Path(args.file)
+        if not path.exists():
+            print(f"파일을 찾을 수 없습니다: {path}")
+            return
+        for line in path.read_text(encoding="utf-8-sig").splitlines():
+            line = line.strip()
+            if line and not line.startswith("#"):
+                names.append(line)
+
+    if not names:
+        print("--names 또는 --file 로 음식점 이름을 하나 이상 지정하세요.")
+        return
+
+    cfg = load_config()
+    min_valid = cfg["min_valid_reviews"]
+    _db.init_db()
+
+    print(f"[list] {len(names)}곳 검색·크롤링 시작")
+    stats = {"done": 0, "not_found": 0, "skip_valid": 0, "error": 0}
+
+    async with _stealth.use_async(async_playwright()) as p:
+        browser = await p.chromium.launch(headless=True)
+        ctx = await browser.new_context(
+            locale="ko-KR",
+            extra_http_headers={"Accept-Language": "ko-KR,ko;q=0.9"},
+        )
+        for i, name in enumerate(names, 1):
+            print(f"\n[{i}/{len(names)}] {name}")
+            try:
+                place = await search_place_by_name(name, ctx)
+                if not place:
+                    stats["not_found"] += 1
+                    continue
+                result = await crawl_place(place, ctx)
+                if not result:
+                    stats["error"] += 1
+                    continue
+                if result["filtered_reviews"] < min_valid and not args.force:
+                    print(f"  [skip] 유효리뷰 {result['filtered_reviews']}건 < {min_valid}건 "
+                          f"(--force 로 강제 저장 가능)")
+                    stats["skip_valid"] += 1
+                    continue
+                result["area"] = args.area or "직접등록"
+                _db.upsert_crawl(result)
+                stats["done"] += 1
+                print(f"  [저장] {place['name']} — 유효리뷰 {result['filtered_reviews']}건, "
+                      f"긍정률 {result.get('positive_rate', 0)}%")
+            except Exception as e:
+                stats["error"] += 1
+                print(f"  [error] {name} — {type(e).__name__}: {str(e)[:90]}")
+            await asyncio.sleep(1)
+        await ctx.close()
+
+    print(f"\n[list 완료] 저장 {stats['done']}곳 / 미발견 {stats['not_found']}곳 "
+          f"/ 리뷰부족 {stats['skip_valid']}곳 / 오류 {stats['error']}곳")
 
 
 # ── CRAWL ──────────────────────────────────────────────────────────────
@@ -323,6 +390,14 @@ def main():
     p_scan.add_argument("--area",  type=str, help="단일 지역 (예: '강남구 음식점')")
     p_scan.add_argument("--limit", type=int, help="지역당 최대 수집 수")
 
+    # list
+    p_list = sub.add_parser("list", help="지역 검색 없이 지정한 음식점 이름 목록만 크롤링")
+    p_list.add_argument("--names", nargs="+", help="음식점 이름들 (공백 구분, 여러 개 가능)")
+    p_list.add_argument("--file",  type=str, help="이름 목록 파일 경로 (한 줄에 하나, #으로 주석)")
+    p_list.add_argument("--area",  type=str, help="DB에 저장할 area 라벨 (기본: '직접등록')")
+    p_list.add_argument("--force", action="store_true",
+                        help="유효리뷰 수가 min_valid_reviews 미만이어도 저장")
+
     # crawl
     p_crawl = sub.add_parser("crawl", help="DB의 장소 전체 크롤링")
     p_crawl.add_argument("--older-than", type=int, dest="older_than",
@@ -354,6 +429,8 @@ def main():
 
     if args.cmd == "scan":
         asyncio.run(cmd_scan(args))
+    elif args.cmd == "list":
+        asyncio.run(cmd_list(args))
     elif args.cmd == "crawl":
         asyncio.run(cmd_crawl(args))
     elif args.cmd == "reanalyze":

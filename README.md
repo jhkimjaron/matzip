@@ -35,6 +35,10 @@ playwright install chromium
 # 1) 스캔 — 검색어로 음식점 목록 수집 (프랜차이즈·리뷰부족 제외) → DB 저장
 python manage.py scan --area "천안시 동남구 음식점" --limit 100
 
+# 1-1) list — 지역 검색 없이 직접 지정한 음식점 이름만 검색·크롤링 → DB 저장
+python manage.py list --names "몽탄 청담점" "산낙지마을 강남점"
+python manage.py list --file places.txt   # 한 줄에 하나씩 적은 이름 목록 파일
+
 # 2) 크롤링 — 스캔된 곳의 리뷰·영업정보 수집·분석 → DB 저장
 python manage.py crawl
 
@@ -55,6 +59,11 @@ python manage.py status
 ```
 
 `--area` 없이 `scan`을 실행하면 `config.json`의 `areas` 목록 전체를 스캔합니다.
+
+`list`는 프랜차이즈 제외·최소 리뷰수 같은 스캔 필터를 적용하지 않고 지정한 업체를
+그대로 찾아 크롤링합니다. 동명이업체 오매칭을 줄이려면 이름에 동네를 함께 적어주세요
+(예: `몽탄 청담점`). `--area 라벨`로 DB에 저장할 area 값을 지정할 수 있고(기본값
+`직접등록`), `--force`를 주면 유효 리뷰 수가 `min_valid_reviews` 미만이어도 저장합니다.
 
 ### 프론트엔드 실행
 
