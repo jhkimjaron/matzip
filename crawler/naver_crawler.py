@@ -97,7 +97,16 @@ _POS_VALUE = [
     "행복", "감동", "완벽", "훌륭", "최고", "대박", "굿",
 ]
 
-POSITIVE_KEYWORDS = _POS_TASTE + _POS_REVISIT + _POS_SERVICE + _POS_VALUE
+# 긍정: 범용 만족·풍경·체험 (음식 어휘가 희박한 명소·관광지 리뷰 대응)
+_POS_GENERAL = [
+    "너무 좋았", "정말 좋았", "진짜 좋았", "좋았어요", "좋았습니다", "너무 좋아요",
+    "예뻐요", "예쁘다", "예쁘네요", "아름답", "아름다워", "경치가 좋", "경치 좋",
+    "뷰가 좋", "뷰 맛집", "전망이 좋", "힐링", "힐링됐", "인생샷",
+    "가볼만", "가볼 만", "볼거리가 많", "재밌", "재미있", "재미있었",
+    "즐거웠", "즐거운 시간", "만족스러웠", "다시 가고 싶", "또 가고 싶",
+]
+
+POSITIVE_KEYWORDS = _POS_TASTE + _POS_REVISIT + _POS_SERVICE + _POS_VALUE + _POS_GENERAL
 
 # 부정: 맛·품질
 _NEG_TASTE = [
@@ -131,7 +140,16 @@ _NEG_VALUE = [
     "속았", "속은 기분", "사기",
 ]
 
-NEGATIVE_KEYWORDS = _NEG_TASTE + _NEG_REVISIT + _NEG_SERVICE + _NEG_VALUE
+# 부정: 범용 불만·혼잡·명소 특유 이슈
+_NEG_GENERAL = [
+    "복잡했", "너무 복잡", "혼잡", "사람이 너무 많", "인파가 너무",
+    "주차가 힘들", "주차하기 힘들", "주차가 너무 힘들",
+    "입장료가 비싸", "입장료 아깝", "입장료가 아깝",
+    "줄이 너무 길", "대기가 너무 길", "대기시간이 너무",
+    "볼게 별로", "볼거리가 없", "실망스러웠", "생각보다 별로",
+]
+
+NEGATIVE_KEYWORDS = _NEG_TASTE + _NEG_REVISIT + _NEG_SERVICE + _NEG_VALUE + _NEG_GENERAL
 
 
 # ── KoNLPy 리뷰 분석 ──────────────────────────────────────────────────
@@ -891,9 +909,19 @@ def _detect_awards(html: str) -> list[str]:
 
 
 # ── 영업 정보 추출 ────────────────────────────────────────────────────
+_NAVER_RATING_RE = re.compile(r'"visitorReviewsScore"\s*:\s*"?([\d.]+)"?')
+
+
 async def _crawl_hours(pid: str, ctx) -> dict:
-    """홈 페이지 GraphQL에서 영업시간·휴무일·브레이크타임 + 공식 수상 배지 추출"""
-    hours_info = {"business_hours": "", "break_time": "", "closed_days": "", "awards": []}
+    """홈 페이지 GraphQL에서 영업시간·휴무일·브레이크타임 + 공식 수상 배지 + 네이버 자체 평점 추출.
+
+    naver_rating(visitorReviewsScore)은 네이버가 방문자 리뷰 별점을 집계한 값(5점 만점)
+    으로, 우리 키워드 기반 감성분석(positive_rate)과 별개의 신호다. 특히 음식 어휘가
+    희박한 명소(관광지) 리뷰에서는 우리 키워드 매칭이 성기게 걸려 positive_rate가
+    과소평가될 수 있어, 이 값을 교차검증·보조 랭킹 지표로 함께 저장한다.
+    """
+    hours_info = {"business_hours": "", "break_time": "", "closed_days": "", "awards": [],
+                  "naver_rating": 0.0}
     page = await ctx.new_page()
 
     try:
@@ -910,6 +938,10 @@ async def _crawl_hours(pid: str, ctx) -> dict:
 
         # 공식 수상 배지 (미쉐린·빕구르망·블루리본) — 렌더된 신호만
         hours_info["awards"] = _detect_awards(all_text)
+
+        rating_m = _NAVER_RATING_RE.search(all_text)
+        if rating_m:
+            hours_info["naver_rating"] = _safe_float(rating_m.group(1))
 
         # 영업시간 패턴 탐색
         hours_m = re.search(
@@ -1609,6 +1641,187 @@ async def search_places(query: str, limit: int = 500,
     return result
 
 
+# ── 명소/놀거리 검색 ───────────────────────────────────────────────
+# 음식점 검색(pcmap.place.naver.com/restaurant/list, __typename=
+# PlaceListBusinessesItem)과는 완전히 다른 API. 명소는
+# pcmap.place.naver.com/travel/domestic/list iframe이 담당하고, Apollo
+# 캐시에 __typename=TripSummary 로 내려온다. 다만 상세 페이지·리뷰 수집은
+# 카테고리와 무관하게 동일한 /restaurant/{id}/... 경로를 그대로 쓰므로
+# (실사 확인: 해수욕장·전망대 등도 PlaceDetailBase가 정상 응답)
+# crawl_place() 이후 파이프라인은 손댈 필요가 없다.
+def _parse_trip_summaries_from_gql(gql_bodies: list[str]) -> list[dict]:
+    results: list[dict] = []
+    seen_ids: set[str] = set()
+
+    def walk(node):
+        if isinstance(node, dict):
+            if node.get("__typename") == "TripSummary":
+                pid = str(node.get("id", ""))
+                if pid and pid not in seen_ids:
+                    seen_ids.add(pid)
+                    results.append(node)
+                return
+            for v in node.values():
+                walk(v)
+        elif isinstance(node, list):
+            for x in node:
+                walk(x)
+
+    for body in gql_bodies:
+        try:
+            obj = json.loads(body)
+        except Exception:
+            continue
+        walk(obj)
+    return results
+
+
+async def search_attractions(query: str, limit: int = 50,
+                             min_reviews: int = 30) -> list[dict]:
+    """명소/놀거리 검색. 반환 형식은 search_places()와 동일해 crawl_place()에
+    그대로 넘길 수 있다. 프랜차이즈 필터는 없음(관광지에 해당사항 없음).
+    """
+    print(f"[naver] 명소 '{query}' 검색 중 (목표 {limit}개, 최소리뷰 {min_reviews}건)...")
+    places: list[dict] = []
+    seen_ids: set[str] = set()
+    total_seen = skip_reviews = 0
+
+    async with _stealth.use_async(async_playwright()) as p:
+        browser = await p.chromium.launch(headless=True)
+        ctx = await browser.new_context(
+            viewport={"width": 1600, "height": 900},
+            locale="ko-KR",
+            extra_http_headers={"Accept-Language": "ko-KR,ko;q=0.9"}
+        )
+        page = await ctx.new_page()
+        try:
+            await page.goto(f"https://map.naver.com/p/search/{query.replace(' ', '+')}",
+                            wait_until="load", timeout=25000)
+        except Exception:
+            pass
+        await asyncio.sleep(4)
+
+        travel_url = next(
+            (fr.url for fr in page.frames if fr.url and "travel/domestic/list" in fr.url),
+            None
+        )
+        if not travel_url:
+            print("  [travel] travel/domestic/list iframe 미발견 — 결과 없음")
+            await ctx.close()
+            return []
+
+        list_page = await ctx.new_page()
+        nav_url = re.sub(r'display=\d+', f'display={max(limit * 2, 50)}', travel_url)
+        if 'display=' not in nav_url:
+            nav_url += f'&display={max(limit * 2, 50)}'
+
+        gql_extra: list[str] = []
+
+        async def cap(resp):
+            try:
+                if "json" not in (resp.headers or {}).get("content-type", ""):
+                    return
+                txt = await resp.text()
+                if len(txt) > 200 and "TripSummary" in txt:
+                    gql_extra.append(txt)
+            except Exception:
+                pass
+
+        list_page.on("response", cap)
+        try:
+            await list_page.goto(nav_url, wait_until="load", timeout=25000)
+        except Exception:
+            pass
+        await asyncio.sleep(3)
+
+        scroll_js = """() => {
+            let best = null, bestH = 0;
+            for (const el of document.querySelectorAll('div, ul, section')) {
+                const s = getComputedStyle(el);
+                if ((s.overflowY === 'auto' || s.overflowY === 'scroll')
+                    && el.scrollHeight > el.clientHeight + 100) {
+                    if (el.scrollHeight > bestH) { best = el; bestH = el.scrollHeight; }
+                }
+            }
+            if (best) { best.scrollTop = best.scrollHeight; return best.scrollHeight; }
+            return -1;
+        }"""
+
+        prev_parsed = -1
+        stall = 0
+        for _ in range(15):
+            apollo_state = None
+            try:
+                apollo_state = await list_page.evaluate(
+                    "() => window.__APOLLO_STATE__ ? JSON.stringify(window.__APOLLO_STATE__) : null"
+                )
+            except Exception:
+                pass
+            sources = ([apollo_state] if apollo_state else []) + gql_extra
+            trips = _parse_trip_summaries_from_gql(sources)
+
+            for item in trips:
+                if len(places) >= limit:
+                    break
+                pid = str(item.get("id", ""))
+                if not pid or pid in seen_ids:
+                    continue
+                seen_ids.add(pid)
+                total_seen += 1
+
+                name = item.get("name", "")
+                if not name:
+                    continue
+
+                visitor_count = _to_int(item.get("visitorReviewCount"))
+                blog_count    = _to_int(item.get("blogCafeReviewCount"))
+                total_count   = visitor_count + blog_count
+                if total_count < min_reviews:
+                    skip_reviews += 1
+                    continue
+
+                cat = item.get("category") or "명소"
+                places.append({
+                    "id":                   pid,
+                    "name":                 name,
+                    "category":             cat,
+                    "address":              item.get("roadAddress") or item.get("address", ""),
+                    "x":                    str(item.get("x", "0")),
+                    "y":                    str(item.get("y", "0")),
+                    "review_count":         total_count,
+                    "visitor_review_count": visitor_count,
+                    "blog_review_count":    blog_count,
+                    "business_status":      "",
+                    "business_hours_today": "",
+                    "break_time_today":     "",
+                    "last_order":           "",
+                    "last_review_date":     "",
+                })
+
+            if len(places) >= limit:
+                break
+            if len(trips) == prev_parsed:
+                stall += 1
+                if stall >= 2:
+                    break
+            else:
+                stall = 0
+            prev_parsed = len(trips)
+
+            try:
+                await list_page.evaluate(scroll_js)
+            except Exception:
+                pass
+            await asyncio.sleep(1.0)
+
+        await list_page.close()
+        await ctx.close()
+
+    result = places[:limit]
+    print(f"[naver] 명소 스캔 완료: 전체 {total_seen}개 / 리뷰부족 제외 -{skip_reviews}개 / 통과 {len(result)}개")
+    return result
+
+
 # ── 단일 상호명 검색 (임의 지정 리스트용) ─────────────────────────────
 async def search_place_by_name(name: str, ctx) -> dict | None:
     """상호명 1건을 검색해 가장 관련도 높은 매칭 장소 1곳을 반환.
@@ -1885,6 +2098,8 @@ async def crawl_place(place: dict, ctx) -> dict | None:
 
         # 공식 수상 (네이버가 표시한 경우만)
         "awards": hours_info.get("awards", []),
+        # 네이버 자체 방문자 평점(5점 만점) — 우리 키워드 감성분석과 별개의 교차검증 지표
+        "naver_rating": hours_info.get("naver_rating", 0.0),
 
         # 방문자 리뷰
         "visitor_total":      visitor_api_cnt,
@@ -1919,6 +2134,13 @@ async def crawl_place(place: dict, ctx) -> dict | None:
         # 유효 리뷰 텍스트 + 작성일 저장 (방문자 ≤100, 블로그 ≤50)
         # 작성일은 텍스트와 같은 순서(최신순)의 병렬 배열, YYYY-MM-DD 정규화.
         # 날짜를 못 얻은 경우(DOM fallback 등)는 "".
+        # 원문(raw) — 광고·중복 필터 적용 전, 이번 크롤링에서 실제로 스크랩한
+        # 배치 전체(방문자 ≤VISITOR_TARGET, 블로그는 fetch_goal 이하 중 BLOG_MIN_LEN
+        # 이상만). valid 세트가 걸러낸 리뷰까지 그대로 남겨 재검증·재분석에 쓴다.
+        "visitor_reviews_raw":       visitor_texts,
+        "visitor_reviews_raw_dates": [_normalize_date(visitor_date_of.get(t, "")) for t in visitor_texts],
+        "blog_reviews_raw":          blog_texts,
+        "blog_reviews_raw_dates":    [_normalize_date(blog_date_of.get(t, "")) for t in blog_texts],
         "visitor_reviews":       visitor_valid,
         "visitor_reviews_dates": [_normalize_date(visitor_date_of.get(t, "")) for t in visitor_valid],
         "blog_reviews":          blog_valid,

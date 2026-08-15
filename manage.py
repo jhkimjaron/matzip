@@ -4,6 +4,7 @@ manage.py — 맛집지도 통합 관리 CLI
 명령어:
   python manage.py scan                   config.json의 areas 스캔
   python manage.py scan --area "강남구 음식점"  단일 지역 스캔
+  python manage.py scan --area "부산 기장 명소" --kind attraction --min-reviews 30  명소 스캔
   python manage.py list --ids 1529048751 1856358676   place 고유번호로 정확히 지정 (권장)
   python manage.py list --names "몽탄 청담점"            상호명 검색으로 지정
   python manage.py list --file places.txt              목록 파일 (ID·이름 혼용, 한 줄에 하나)
@@ -29,7 +30,8 @@ sys.path.insert(0, str(ROOT / "crawler"))
 
 import db as _db
 from naver_crawler import (
-    search_places, search_place_by_name, fetch_place_by_id, parse_place_id,
+    search_places, search_attractions, search_place_by_name,
+    fetch_place_by_id, parse_place_id,
     crawl_place, check_recent_activity,
     build_review_analysis, _dedup_blog_against_visitor, analyze_sentiment,
     _crawl_hours, _stealth, MIN_REVIEWS,
@@ -64,16 +66,20 @@ async def cmd_scan(args):
         return
 
     limit       = args.limit or cfg["limit_per_area"]
-    min_reviews = cfg["min_reviews"]
+    min_reviews = args.min_reviews if getattr(args, "min_reviews", None) is not None else cfg["min_reviews"]
     active_days = cfg["active_days"]
     cutoff_date = (datetime.now() - timedelta(days=active_days)).strftime("%Y%m%d")
+    kind = getattr(args, "kind", "restaurant")
 
     _db.init_db()
     total_new = 0
 
     for area in areas:
-        print(f"\n[scan] {area}")
-        places = await search_places(area, limit=limit, min_reviews=min_reviews)
+        print(f"\n[scan:{kind}] {area}")
+        if kind == "attraction":
+            places = await search_attractions(area, limit=limit, min_reviews=min_reviews)
+        else:
+            places = await search_places(area, limit=limit, min_reviews=min_reviews)
 
         added = 0
         for p in places:
@@ -133,46 +139,64 @@ async def cmd_list(args):
     n_id = sum(1 for t in tokens if parse_place_id(t))
     print(f"[list] {len(tokens)}곳 크롤링 시작 (ID 지정 {n_id}곳, 이름 검색 {len(tokens) - n_id}곳)")
     stats = {"done": 0, "not_found": 0, "skip_valid": 0, "error": 0}
+    BATCH = 25  # cmd_crawl과 동일 — 이 수마다 브라우저를 새로 띄워 장시간 실행 안정성 확보
 
-    async with _stealth.use_async(async_playwright()) as p:
-        browser = await p.chromium.launch(headless=True)
-        ctx = await browser.new_context(
-            locale="ko-KR",
-            extra_http_headers={"Accept-Language": "ko-KR,ko;q=0.9"},
-        )
-        for i, token in enumerate(tokens, 1):
-            print(f"\n[{i}/{len(tokens)}] {token}")
-            try:
-                # place id면 검색을 건너뛰고 상세 페이지에서 바로 메타를 읽는다.
-                pid = parse_place_id(token)
-                if pid:
-                    place = await fetch_place_by_id(pid, ctx)
-                    if place:
-                        print(f"  [ID조회] {place['name']} ({pid}) {place['address']}")
-                else:
-                    place = await search_place_by_name(token, ctx)
-                if not place:
-                    stats["not_found"] += 1
-                    continue
-                result = await crawl_place(place, ctx)
-                if not result:
-                    stats["error"] += 1
-                    continue
-                if result["filtered_reviews"] < min_valid and not args.force:
-                    print(f"  [skip] 유효리뷰 {result['filtered_reviews']}건 < {min_valid}건 "
-                          f"(--force 로 강제 저장 가능)")
-                    stats["skip_valid"] += 1
-                    continue
-                result["area"] = args.area or "직접등록"
-                _db.upsert_crawl(result)
-                stats["done"] += 1
-                print(f"  [저장] {place['name']} — 유효리뷰 {result['filtered_reviews']}건, "
-                      f"긍정률 {result.get('positive_rate', 0)}%")
-            except Exception as e:
-                stats["error"] += 1
-                print(f"  [error] {token} — {type(e).__name__}: {str(e)[:90]}")
-            await asyncio.sleep(1)
-        await ctx.close()
+    async def process_one(token, ctx):
+        # place id면 검색을 건너뛰고 상세 페이지에서 바로 메타를 읽는다.
+        pid = parse_place_id(token)
+        if pid:
+            place = await fetch_place_by_id(pid, ctx)
+            if place:
+                print(f"  [ID조회] {place['name']} ({pid}) {place['address']}")
+        else:
+            place = await search_place_by_name(token, ctx)
+        if not place:
+            stats["not_found"] += 1
+            return
+        result = await crawl_place(place, ctx)
+        if not result:
+            stats["error"] += 1
+            return
+        if result["filtered_reviews"] < min_valid and not args.force:
+            print(f"  [skip] 유효리뷰 {result['filtered_reviews']}건 < {min_valid}건 "
+                  f"(--force 로 강제 저장 가능)")
+            stats["skip_valid"] += 1
+            return
+        result["area"] = args.area or "직접등록"
+        _db.upsert_crawl(result)
+        stats["done"] += 1
+        print(f"  [저장] {place['name']} — 유효리뷰 {result['filtered_reviews']}건, "
+              f"긍정률 {result.get('positive_rate', 0)}%")
+
+    # 배치 단위로 브라우저를 새로 띄운다 (cmd_crawl과 동일 패턴). 한 곳에서 드라이버가
+    # 죽어도(connection closed 등) 그 배치만 재시작하고 나머지는 이어간다 — 장시간
+    # 무인 실행 중 브라우저 프로세스가 예기치 않게 죽어도 전체가 멈추지 않게 하기 위함.
+    i = 0
+    while i < len(tokens):
+        try:
+            async with _stealth.use_async(async_playwright()) as p:
+                browser = await p.chromium.launch(headless=True)
+                ctx = await browser.new_context(
+                    locale="ko-KR",
+                    extra_http_headers={"Accept-Language": "ko-KR,ko;q=0.9"},
+                )
+                batch_end = min(i + BATCH, len(tokens))
+                while i < batch_end:
+                    token = tokens[i]
+                    print(f"\n[{i+1}/{len(tokens)}] {token}")
+                    try:
+                        await process_one(token, ctx)
+                    except Exception as e:
+                        stats["error"] += 1
+                        print(f"  [error] {token} — {type(e).__name__}: {str(e)[:90]}")
+                        i += 1
+                        raise  # 배치 종료 → 새 브라우저로 재시작
+                    i += 1
+                    await asyncio.sleep(1)
+                await ctx.close()
+        except Exception:
+            print("  [batch-restart] 브라우저 재시작 후 계속")
+            continue
 
     print(f"\n[list 완료] 저장 {stats['done']}곳 / 미발견 {stats['not_found']}곳 "
           f"/ 리뷰부족 {stats['skip_valid']}곳 / 오류 {stats['error']}곳")
@@ -411,6 +435,10 @@ def main():
     p_scan = sub.add_parser("scan", help="지역 스캔")
     p_scan.add_argument("--area",  type=str, help="단일 지역 (예: '강남구 음식점')")
     p_scan.add_argument("--limit", type=int, help="지역당 최대 수집 수")
+    p_scan.add_argument("--kind", choices=["restaurant", "attraction"], default="restaurant",
+                        help="restaurant(기본, 음식점/카페) 또는 attraction(명소/놀거리)")
+    p_scan.add_argument("--min-reviews", type=int, dest="min_reviews",
+                        help="스캔 통과 최소 리뷰 수 (기본: config.json min_reviews)")
 
     # list
     p_list = sub.add_parser("list", help="지역 검색 없이 지정한 음식점만 크롤링 (ID 또는 이름)")

@@ -15,3 +15,6 @@ venv/
 test_stealth*.py
 .playwright-mcp/
 crawler/_debug_*
+
+# 리포트 생성 중간 산출물 (select_targets.py 임시 파일)
+reports/targets_*.txt

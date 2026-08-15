@@ -69,13 +69,22 @@ def init_db():
             -- 공식 수상 (네이버 표시 배지: 미쉐린/빕구르망/블루리본) JSON 배열
             awards          TEXT DEFAULT '[]',
 
-            -- 리뷰 원문 (키워드 분석용)
+            -- 네이버 자체 방문자 평점(5점 만점, visitorReviewsScore) — 키워드 감성분석과 별개 지표
+            naver_rating    REAL DEFAULT 0,
+
+            -- 리뷰 원문 (유효 리뷰만 — 광고·중복 필터 통과분, 키워드 분석용)
             visitor_reviews_json TEXT DEFAULT '[]',
             blog_reviews_json    TEXT DEFAULT '[]',
 
             -- 리뷰 작성일 (원문과 같은 순서·길이의 병렬 배열, 최신순)
             visitor_dates_json   TEXT DEFAULT '[]',
             blog_dates_json      TEXT DEFAULT '[]',
+
+            -- 리뷰 raw (광고·중복 필터 적용 전, 이번 크롤링에서 스크랩한 전체 배치)
+            visitor_reviews_raw_json TEXT DEFAULT '[]',
+            blog_reviews_raw_json    TEXT DEFAULT '[]',
+            visitor_dates_raw_json   TEXT DEFAULT '[]',
+            blog_dates_raw_json      TEXT DEFAULT '[]',
 
             -- 관리 메타
             area             TEXT DEFAULT '',
@@ -99,6 +108,11 @@ def init_db():
             ("visitor_dates_json",   "TEXT DEFAULT '[]'"),
             ("blog_dates_json",      "TEXT DEFAULT '[]'"),
             ("awards",               "TEXT DEFAULT '[]'"),
+            ("naver_rating",         "REAL DEFAULT 0"),
+            ("visitor_reviews_raw_json", "TEXT DEFAULT '[]'"),
+            ("blog_reviews_raw_json",    "TEXT DEFAULT '[]'"),
+            ("visitor_dates_raw_json",   "TEXT DEFAULT '[]'"),
+            ("blog_dates_raw_json",      "TEXT DEFAULT '[]'"),
         ]:
             try:
                 conn.execute(f"ALTER TABLE places ADD COLUMN {col} {definition}")
@@ -166,8 +180,10 @@ def upsert_crawl(result: dict):
             review_analysis,
             visitor_reviews_json, blog_reviews_json,
             visitor_dates_json, blog_dates_json,
+            visitor_reviews_raw_json, blog_reviews_raw_json,
+            visitor_dates_raw_json, blog_dates_raw_json,
             business_hours, break_time, closed_days, business_status,
-            awards,
+            awards, naver_rating,
             area, scan_only, last_crawled, first_seen, verdict
         ) VALUES (
             :id, :name, :category, :address, :lat, :lng,
@@ -182,8 +198,10 @@ def upsert_crawl(result: dict):
             :review_analysis,
             :visitor_reviews_json, :blog_reviews_json,
             :visitor_dates_json, :blog_dates_json,
+            :visitor_reviews_raw_json, :blog_reviews_raw_json,
+            :visitor_dates_raw_json, :blog_dates_raw_json,
             :business_hours, :break_time, :closed_days, :business_status,
-            :awards,
+            :awards, :naver_rating,
             :area, 0, :last_crawled,
             COALESCE((SELECT first_seen FROM places WHERE id=:id), :last_crawled),
             '맛집'
@@ -197,7 +215,12 @@ def upsert_crawl(result: dict):
             "blog_reviews_json":    json.dumps(result.get("blog_reviews", []), ensure_ascii=False),
             "visitor_dates_json":   json.dumps(result.get("visitor_reviews_dates", []), ensure_ascii=False),
             "blog_dates_json":      json.dumps(result.get("blog_reviews_dates", []), ensure_ascii=False),
+            "visitor_reviews_raw_json": json.dumps(result.get("visitor_reviews_raw", []), ensure_ascii=False),
+            "blog_reviews_raw_json":    json.dumps(result.get("blog_reviews_raw", []), ensure_ascii=False),
+            "visitor_dates_raw_json":   json.dumps(result.get("visitor_reviews_raw_dates", []), ensure_ascii=False),
+            "blog_dates_raw_json":      json.dumps(result.get("blog_reviews_raw_dates", []), ensure_ascii=False),
             "awards":               json.dumps(result.get("awards", []), ensure_ascii=False),
+            "naver_rating":         result.get("naver_rating", 0.0),
             "last_crawled": datetime.now().isoformat(),
             "area": result.get("area", ""),
         })
@@ -255,6 +278,10 @@ def export_places(min_valid: int = 50) -> list[dict]:
         p.pop("blog_reviews_json", None)
         p.pop("visitor_dates_json", None)
         p.pop("blog_dates_json", None)
+        p.pop("visitor_reviews_raw_json", None)
+        p.pop("blog_reviews_raw_json", None)
+        p.pop("visitor_dates_raw_json", None)
+        p.pop("blog_dates_raw_json", None)
         places.append(p)
     return places
 

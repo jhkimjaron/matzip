@@ -1,0 +1,4293 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>부산 해운대 맛집·카페 25곳 리뷰 분석</title>
+<style>
+      :root {
+        --bg: #f3f6f7;
+        --card: #fff;
+        --ink: #1e2a2e;
+        --sub: #6b6b6b;
+        --line: #dde6e8;
+        --good: #1a7f4b;
+        --good-bg: #e6f4ec;
+        --bad: #c0392b;
+        --bad-bg: #fbeae8;
+        --warn: #b7791f;
+        --warn-bg: #fdf3e0;
+        --neu: #c9c2b5;
+        --accent: #0f6e8c;
+        --accent2: #1a8bab;
+        --naver: #03c75a;
+      }
+      * {
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+        line-height: 1.6;
+        font-size: 16px;
+        -webkit-text-size-adjust: 100%;
+      }
+      .wrap {
+        max-width: 920px;
+        margin: 0 auto;
+        padding: 16px 14px 70px;
+      }
+      header.top {
+        background: linear-gradient(135deg, #0f6e8c, #1fa3c9);
+        color: #fff;
+        border-radius: 16px;
+        padding: 22px 20px;
+        margin-bottom: 16px;
+      }
+      header.top h1 {
+        margin: 0 0 6px;
+        font-size: 1.4rem;
+        line-height: 1.3;
+      }
+      header.top p {
+        margin: 2px 0;
+        opacity: 0.93;
+        font-size: 0.84rem;
+      }
+
+      .toc {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 12px 14px;
+        margin-bottom: 16px;
+        font-size: 0.85rem;
+      }
+      .toc b {
+        color: var(--accent);
+        display: block;
+        margin-bottom: 5px;
+      }
+      .toc a {
+        display: inline-block;
+        color: var(--accent2);
+        text-decoration: none;
+        padding: 4px 9px;
+        margin: 2px;
+        background: #f1ece4;
+        border-radius: 14px;
+        font-size: 0.8rem;
+      }
+      .toc .gmark {
+        color: var(--good);
+      }
+      .toc hr {
+        border: none;
+        border-top: 1px dashed var(--line);
+        margin: 8px 0;
+      }
+
+      h2.sec {
+        font-size: 1.16rem;
+        margin: 32px 0 12px;
+        padding-left: 10px;
+        border-left: 5px solid var(--accent);
+        scroll-margin-top: 10px;
+      }
+      .note {
+        font-size: 0.81rem;
+        color: var(--sub);
+        margin: -4px 0 13px;
+      }
+
+      .tscroll {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        background: var(--card);
+        font-size: 0.83rem;
+        min-width: 540px;
+      }
+      th,
+      td {
+        padding: 9px 10px;
+        text-align: center;
+        border-bottom: 1px solid var(--line);
+      }
+      th {
+        background: #efe9e0;
+        font-weight: 700;
+        white-space: nowrap;
+      }
+      td.l {
+        text-align: left;
+      }
+      tr:last-child td {
+        border-bottom: none;
+      }
+      tr.grp td {
+        background: var(--accent);
+        color: #fff;
+        text-align: left;
+        font-weight: 800;
+        letter-spacing: 0.02em;
+      }
+      .yes {
+        color: var(--good);
+        font-weight: 700;
+      }
+      .no {
+        color: var(--bad);
+        font-weight: 700;
+      }
+      .maybe {
+        color: var(--warn);
+        font-weight: 700;
+      }
+      .star {
+        color: #d89a1e;
+        font-weight: 800;
+        white-space: nowrap;
+      }
+      .nrev {
+        color: var(--sub);
+        font-size: 0.78em;
+        font-weight: 500;
+      }
+      .pill {
+        display: inline-block;
+        padding: 1px 8px;
+        border-radius: 14px;
+        font-size: 0.73rem;
+        font-weight: 700;
+        white-space: nowrap;
+      }
+      .p-go {
+        background: var(--good-bg);
+        color: var(--good);
+      }
+      .p-no {
+        background: var(--bad-bg);
+        color: var(--bad);
+      }
+      .p-warn {
+        background: var(--warn-bg);
+        color: var(--warn);
+      }
+
+      .subh {
+        margin: 24px 0 6px;
+        color: var(--accent);
+        font-size: 1.02rem;
+        border-bottom: 2px solid #e9e2d6;
+        padding-bottom: 4px;
+      }
+      .detail {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 16px 16px 14px;
+        margin: 14px 0;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+        scroll-margin-top: 10px;
+      }
+      .tips {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 9px;
+        margin: 11px 0 4px;
+      }
+      .tips .t {
+        border-radius: 9px;
+        padding: 8px 10px;
+        font-size: 0.8rem;
+      }
+      .t-good {
+        background: var(--good-bg);
+      }
+      .t-bad {
+        background: var(--bad-bg);
+      }
+      .t-tip {
+        background: var(--warn-bg);
+      }
+      .t b {
+        display: block;
+        margin-bottom: 3px;
+      }
+      .tips ul {
+        margin: 0;
+        padding-left: 15px;
+      }
+      .tips li {
+        margin: 2px 0;
+      }
+      .maps {
+        display: flex;
+        gap: 8px;
+        margin-top: 12px;
+      }
+      .maps a {
+        flex: 1;
+        text-align: center;
+        text-decoration: none;
+        font-weight: 700;
+        padding: 11px 6px;
+        border-radius: 10px;
+        font-size: 0.85rem;
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .m-naver {
+        background: var(--naver);
+        color: #fff;
+      }
+      .m-kakao {
+        background: var(--kakao);
+        color: var(--kakaoink);
+      }
+      .totop {
+        display: block;
+        text-align: right;
+        font-size: 0.74rem;
+        color: var(--accent2);
+        text-decoration: none;
+        margin-top: 6px;
+      }
+
+      .legend {
+        font-size: 0.79rem;
+        color: var(--sub);
+        margin: 10px 0 0;
+      }
+      .tip {
+        background: #eef3ee;
+        border: 1px solid #cfe0d3;
+        border-radius: 12px;
+        padding: 14px 16px;
+        margin-top: 12px;
+      }
+      .tip.mon {
+        background: #f2eef6;
+        border-color: #ddd0e6;
+      }
+      .tip h4 {
+        margin: 0 0 6px;
+        color: var(--good);
+        font-size: 1rem;
+      }
+      .tip.mon h4 {
+        color: #7d4ba3;
+      }
+      ul.tight {
+        margin: 6px 0;
+        padding-left: 18px;
+      }
+      ul.tight li {
+        margin: 4px 0;
+        font-size: 0.85rem;
+      }
+      .em {
+        background: #fff3cf;
+        padding: 0 3px;
+        border-radius: 3px;
+      }
+      .foot {
+        font-size: 0.75rem;
+        color: var(--sub);
+        margin-top: 26px;
+        border-top: 1px solid var(--line);
+        padding-top: 12px;
+      }
+      @media (max-width: 680px) {
+        body {
+          font-size: 15px;
+        }
+        .wrap {
+          padding: 12px 10px 60px;
+        }
+        header.top h1 {
+          font-size: 1.2rem;
+        }
+        .tips {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* ===== v5 스타일 ===== */
+      /* TOC — sticky & compact */
+      .toc {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 0;
+        padding: 6px 14px;
+        margin-bottom: 12px;
+        font-size: 0.82rem;
+      }
+      .toc b {
+        color: var(--accent);
+        display: inline;
+        margin-right: 4px;
+      }
+      .toc a {
+        padding: 3px 8px;
+        margin: 1px;
+        font-size: 0.75rem;
+      }
+      .toc hr {
+        border: none;
+        border-top: 1px dashed var(--line);
+        margin: 4px 0;
+      }
+
+      /* 레스토랑 카드 */
+      .rest-sec {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 16px 16px 14px;
+        margin: 14px 0;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+        scroll-margin-top: 60px;
+      }
+
+      /* 헤더 — 식당명 + 리뷰 건수 (좌) / 지도 버튼 (우) */
+      .rest-hd {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        gap: 8px 10px;
+        border-bottom: 1px solid var(--line);
+        padding-bottom: 8px;
+        margin-bottom: 12px;
+      }
+      .rest-hd-l {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        min-width: 0;
+      }
+      .hd-maps {
+        display: flex;
+        gap: 6px;
+        flex-shrink: 0;
+        margin-left: auto;
+      }
+      .hd-maps a {
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 0.74rem;
+        padding: 6px 11px;
+        border-radius: 8px;
+        white-space: nowrap;
+        line-height: 1.2;
+        display: inline-flex;
+        align-items: center;
+      }
+      .rest-name {
+        margin: 0;
+        font-size: 1.32rem;
+        font-weight: 800;
+        letter-spacing: -0.01em;
+      }
+      .rest-cat {
+        font-size: 0.8rem;
+        color: var(--sub);
+        font-weight: 500;
+        margin-left: 6px;
+      }
+      .rest-sub {
+        font-size: 0.8rem;
+        color: var(--sub);
+        font-weight: 400;
+      }
+      .rev-cnt {
+        font-size: 0.72rem;
+        color: #b0a898;
+        white-space: nowrap;
+        letter-spacing: 0.01em;
+      }
+
+      /* 영업정보 — 텍스트 배치 (영업시간 줄 / 기타 줄 분리) */
+      .biz-info {
+        font-size: 0.84rem;
+        margin: 4px 0 2px;
+        color: #3a352e;
+      }
+      .bi-hours {
+        line-height: 1.7;
+        margin-bottom: 3px;
+      }
+      .bi-hours .bi-day {
+        font-weight: 600;
+      }
+      .bi-etc {
+        line-height: 1.8;
+        color: #5a534a;
+      }
+      .biz-info .bi-lab {
+        color: #8a5a3b;
+        font-weight: 700;
+        margin-right: 3px;
+      }
+      .biz-info .bi-warn {
+        color: var(--bad);
+      }
+      .biz-info .bi-sep {
+        color: #cdc6b8;
+        margin: 0 3px;
+      }
+
+      /* 섹션 소제목 — 크기·간격 확대 */
+      .rs-title {
+        font-size: 1.02rem;
+        font-weight: 700;
+        color: var(--accent);
+        border-left: 4px solid var(--accent);
+        padding-left: 10px;
+        margin: 24px 0 10px;
+        line-height: 1.4;
+      }
+      .rs-sec {
+        margin-bottom: 3px;
+      }
+      .rs-sec:first-of-type .rs-title {
+        margin-top: 6px;
+      }
+
+      /* 감성 바 */
+      .sent-bar-wrap {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 5px 0;
+        flex-wrap: wrap;
+      }
+      .sent-label {
+        width: 115px;
+        flex-shrink: 0;
+        font-weight: 600;
+        color: #555;
+        font-size: 0.79rem;
+      }
+      .n-cnt {
+        font-weight: 400;
+        color: var(--sub);
+      }
+      .warn-tag {
+        color: var(--warn);
+        font-size: 0.72rem;
+      }
+      .bar-track {
+        flex: 1;
+        min-width: 80px;
+        background: #e9e4dd;
+        border-radius: 4px;
+        height: 15px;
+        overflow: hidden;
+        display: flex;
+      }
+      .bar-pos {
+        background: var(--good);
+        height: 100%;
+      }
+      .bar-neg {
+        background: var(--bad);
+        height: 100%;
+      }
+      .bar-neu {
+        background: #c9c2b5;
+        height: 100%;
+      }
+      .sent-nums {
+        font-size: 0.74rem;
+        color: #666;
+        white-space: nowrap;
+      }
+
+      /* 영업정보 그리드 */
+      .info-grid2 {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+        gap: 5px;
+        font-size: 0.82rem;
+        margin: 4px 0;
+      }
+      .ig-row {
+        background: #f7f3ec;
+        border-radius: 6px;
+        padding: 6px 10px;
+      }
+      .ig-lab {
+        font-weight: 700;
+        color: #666;
+        font-size: 0.72rem;
+        display: block;
+        margin-bottom: 1px;
+      }
+      .ig-val {
+        line-height: 1.5;
+      }
+      .ig-warn {
+        color: var(--bad);
+        font-weight: 700;
+      }
+
+      /* 메뉴 */
+      .menu-recs {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(165px, 1fr));
+        gap: 5px;
+        margin: 4px 0;
+      }
+      .mrec {
+        background: #f7f3ec;
+        border-radius: 6px;
+        padding: 6px 10px;
+        font-size: 0.81rem;
+      }
+      .mr-name {
+        font-weight: 700;
+        display: block;
+      }
+      .mr-price {
+        color: var(--accent2);
+        font-size: 0.77rem;
+        display: block;
+      }
+      .mr-desc {
+        color: var(--sub);
+        font-size: 0.73rem;
+        display: block;
+        margin-top: 1px;
+      }
+
+      /* 메뉴 — 정성 분석 (메뉴별 줄바꿈) */
+      .menu-q {
+        margin: 4px 0 2px;
+      }
+      .menu-q p {
+        margin: 9px 0 4px;
+        font-size: 0.84rem;
+        line-height: 1.6;
+      }
+      .mq-tag {
+        display: inline-block;
+        font-size: 0.72rem;
+        font-weight: 800;
+        border-radius: 5px;
+        padding: 1px 8px;
+        margin-right: 6px;
+        white-space: nowrap;
+        vertical-align: middle;
+      }
+      .mq-sig {
+        background: #f5e2c8;
+        color: #8a5311;
+      }
+      .mq-rec {
+        background: var(--good-bg);
+        color: var(--good);
+      }
+      .mq-combo {
+        background: #e6eef6;
+        color: #2f5d8a;
+      }
+      .mq-surp {
+        background: #efe6f6;
+        color: #7d4ba3;
+      }
+      .mq-miss {
+        background: var(--bad-bg);
+        color: var(--bad);
+      }
+      .menu-q q {
+        color: #6b6b6b;
+        font-style: italic;
+      }
+      .mq-price {
+        color: var(--accent2);
+        font-weight: 600;
+        font-size: 0.79rem;
+      }
+      /* 메뉴별 한 줄 리스트 */
+      .mq-list {
+        list-style: none;
+        margin: 3px 0 6px;
+        padding: 0;
+      }
+      .mq-list li {
+        font-size: 0.84rem;
+        line-height: 1.55;
+        margin: 3px 0;
+        padding-left: 14px;
+        position: relative;
+      }
+      .mq-list li::before {
+        content: "•";
+        position: absolute;
+        left: 2px;
+        color: var(--accent2);
+      }
+      .mq-list .mq-name {
+        font-weight: 700;
+      }
+
+      /* 주문팁 */
+      .otips {
+        margin: 4px 0;
+        padding-left: 16px;
+        font-size: 0.82rem;
+      }
+      .otips li {
+        margin: 3px 0;
+      }
+
+      /* 트렌드 */
+      .trend-p {
+        font-size: 0.82rem;
+        color: #555;
+        margin: 4px 0;
+        line-height: 1.7;
+      }
+
+      /* 예약·대기 */
+      .resv-p {
+        font-size: 0.82rem;
+        margin: 4px 0;
+      }
+      .waiting-tag {
+        display: inline-block;
+        background: #f1ece4;
+        border-radius: 8px;
+        padding: 2px 10px;
+        font-size: 0.79rem;
+        font-weight: 700;
+        margin-top: 4px;
+      }
+
+      /* 부정 이슈 */
+      .neg-box {
+        margin: 4px 0;
+      }
+      .neg-pattern {
+        margin: 7px 0;
+        padding: 7px 10px;
+        background: var(--bad-bg);
+        border-radius: 8px;
+      }
+      .neg-ph {
+        font-size: 0.81rem;
+        font-weight: 700;
+        color: #7a241b;
+        margin-bottom: 3px;
+      }
+      .neg-cnt {
+        color: var(--bad);
+      }
+      .neg-dr {
+        color: var(--sub);
+        font-size: 0.73rem;
+        font-weight: 400;
+        margin-left: 4px;
+      }
+      .neg-q {
+        border-left: 3px solid #e0a89f;
+        padding: 3px 0 3px 8px;
+        margin: 4px 0 0;
+        font-size: 0.77rem;
+        color: #555;
+        font-style: italic;
+      }
+      .neg-qd {
+        color: var(--sub);
+        font-size: 0.72rem;
+        font-style: normal;
+      }
+      .no-neg,
+      .no-data {
+        font-size: 0.8rem;
+        color: var(--sub);
+        margin: 4px 0;
+      }
+      .neg-an {
+        font-size: 0.79rem;
+        color: #5a4b46;
+        margin: 2px 0 3px;
+        line-height: 1.55;
+      }
+      .neg-trend {
+        font-size: 0.79rem;
+        border-radius: 8px;
+        padding: 7px 10px;
+        margin: 7px 0;
+        line-height: 1.55;
+      }
+      .neg-trend.up {
+        background: #fbeae8;
+        color: #7a241b;
+      }
+      .neg-trend.flat {
+        background: #eef1ec;
+        color: #4a5a48;
+      }
+      .neg-trend b {
+        font-weight: 800;
+      }
+      .neg-single {
+        margin: 7px 0;
+        padding: 7px 10px;
+        background: #faf6ef;
+        border: 1px dashed #e0d6c4;
+        border-radius: 8px;
+      }
+      .neg-single .ns-h {
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: #8a5a3b;
+        margin-bottom: 2px;
+      }
+      .neg-minor {
+        font-size: 0.79rem;
+        color: #6b6b6b;
+        margin: 5px 0 2px;
+      }
+
+      /* 추천/비추/팁 3열 */
+      .tips3col {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 7px;
+        margin: 10px 0 6px;
+      }
+      .t3 {
+        border-radius: 9px;
+        padding: 8px 10px;
+        font-size: 0.79rem;
+      }
+      .t3 b {
+        display: block;
+        font-size: 0.81rem;
+        margin-bottom: 4px;
+      }
+      .t3 ul {
+        margin: 0;
+        padding-left: 14px;
+      }
+      .t3 li {
+        margin: 2px 0;
+      }
+      .t3-good {
+        background: var(--good-bg);
+      }
+      .t3-good b {
+        color: var(--good);
+      }
+      .t3-bad {
+        background: var(--bad-bg);
+      }
+      .t3-bad b {
+        color: var(--bad);
+      }
+      .t3-tip {
+        background: var(--warn-bg);
+      }
+      .t3-tip b {
+        color: var(--warn);
+      }
+
+      /* 종합의견 */
+      .verdict-box {
+        background: #f9f5ef;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 10px 13px;
+        font-size: 0.85rem;
+        margin-top: 8px;
+      }
+      .verdict-box b {
+        color: var(--accent);
+      }
+
+      @media (max-width: 680px) {
+        .tips3col {
+          grid-template-columns: 1fr;
+        }
+        .info-grid2,
+        .menu-recs {
+          grid-template-columns: 1fr;
+        }
+        .rest-hd {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+        .rev-cnt {
+          font-size: 0.69rem;
+        }
+      }
+
+      /* TOC 그룹 행 */
+      .toc-row {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        margin: 1px 0;
+      }
+      .toc-gl {
+        font-size: 0.72rem;
+        font-weight: 800;
+        color: var(--accent);
+        padding: 3px 6px 3px 2px;
+        white-space: nowrap;
+      }
+
+      /* 메뉴 추천 박스 */
+      .mq-box {
+        border-radius: 8px;
+        padding: 9px 12px;
+        margin: 5px 0;
+        font-size: 0.84rem;
+        line-height: 1.65;
+      }
+      .mq-box-sig {
+        background: #fef6eb;
+        border-left: 3px solid #c88a4a;
+      }
+      .mq-box-rec {
+        background: #eef8f2;
+        border-left: 3px solid var(--good);
+      }
+      .mq-box-combo {
+        background: #edf3fa;
+        border-left: 3px solid #4a7db5;
+      }
+      .mq-box-surp {
+        background: #f3effe;
+        border-left: 3px solid #9b5ad4;
+      }
+      .mq-box-miss {
+        background: var(--bad-bg);
+        border-left: 3px solid var(--bad);
+      }
+      .mq-box q {
+        color: #6b6b6b;
+        font-style: italic;
+      }
+      .mq-box .mq-list {
+        margin: 5px 0 0;
+      }
+    </style>
+</head>
+<body>
+<div class="wrap" id="top">
+  <header class="top">
+    <h1>🌊 부산 해운대 맛집·카페 25곳 리뷰 분석</h1>
+    <p>식사 13곳 · 카페·디저트 12곳 · 분석 기준일 2026-08-14</p>
+    <p>네이버 방문자·블로그 리뷰 기반 (광고·협찬·중복·무지성 리뷰 제외, 여행 맛집 탐색용)</p>
+  </header>
+
+  <div class="toc">
+    <div class="toc-row"><span class="toc-gl">🍽 식사</span><a href="#스미스씨네농장">스미스씨네농장</a><a href="#해목해운대점">해목 해운대점</a><a href="#극동돼지국밥">극동돼지국밥</a><a href="#전설의우대갈비해운대직영점">전설의우대갈비 해운대직영점</a><a href="#미포집해운대본점">미포집 해운대본점</a><a href="#혜자네산곰장어본점">혜자네 산곰장어 본점</a><a href="#달인막창해운대본점">달인막창 해운대 본점</a><a href="#루아앤티그리">루아앤티그리</a><a href="#해운대가야밀면">해운대 가야밀면</a><a href="#개미집국제시장본점">개미집국제시장본점</a><a href="#스무고개해운대점">스무고개 해운대점</a><a href="#상국이네">상국이네</a><a href="#밀양순대돼지국밥부산본점">밀양순대돼지국밥 부산본점</a></div>
+    <div class="toc-row"><span class="toc-gl">☕ 카페·디저트</span><a href="#달콤부엌">달콤부엌</a><a href="#금송덕미해운대해리단길점">금송 덕미 해운대 해리단길점</a><a href="#코오리마찌해운대해리단길">코오리마찌 해운대해리단길</a><a href="#듀플릿부산해운대해리단길점">듀플릿 부산 해운대 해리단길점</a><a href="#워킹홀리데이해운대">워킹홀리데이 해운대</a><a href="#고재해운대해리단길점">고재 해운대해리단길점</a><a href="#비비비당">비비비당</a><a href="#카페해운대1994">카페해운대1994</a><a href="#옵스해운대점">옵스 해운대점</a><a href="#까사부사노해운대점">까사 부사노 해운대점</a><a href="#옵스마린시티점">옵스 마린시티점</a><a href="#호랑이젤라떡부산해운대본점">호랑이젤라떡 부산해운대본점</a></div>
+  </div>
+
+  <h2 class="sec" id="summary">① 해운대 한눈 요약</h2>
+  <p class="note">
+    긍정률은 방문자+블로그 유효 리뷰(광고·중복 제거) 기준 감성 분석 결과입니다.
+    영업시간은 원문에서 명확히 확인된 경우만 표기하며, "확인필요"는 방문 전 매장 문의를 권장합니다.
+  </p>
+  <div class="tscroll">
+    <table>
+      <tr><th>이름</th><th>종류</th><th>영업시간</th><th>유효리뷰</th><th>긍정률</th><th>대표 메뉴</th></tr>
+      <tr class="grp"><td colspan="6">🍽 식사 (13곳)</td></tr>
+      
+          <tr>
+            <td class="l"><a href="#스미스씨네농장"><b>스미스씨네농장</b></a></td>
+            <td>양식</td>
+            <td class="l">매일 11:00-22:00</td>
+            <td>123건</td>
+            <td><span class="pill p-go">96%</span></td>
+            <td class="l">돌문어스테이크, 쉬림프오일파스타, 주먹밥</td>
+          </tr>
+          <tr>
+            <td class="l"><a href="#해목해운대점"><b>해목 해운대점</b></a></td>
+            <td>일식당</td>
+            <td class="l">매일 11:00 - 22:00</td>
+            <td>125건</td>
+            <td><span class="pill p-go">95%</span></td>
+            <td class="l">장어덮밥, 히츠마부시, 오차즈케</td>
+          </tr>
+          <tr>
+            <td class="l"><a href="#극동돼지국밥"><b>극동돼지국밥</b></a></td>
+            <td>국밥</td>
+            <td class="l">매일 08:00 - 21:00</td>
+            <td>127건</td>
+            <td><span class="pill p-go">94%</span></td>
+            <td class="l">돼지국밥, 식감, 살코기국밥</td>
+          </tr>
+          <tr>
+            <td class="l"><a href="#전설의우대갈비해운대직영점"><b>전설의우대갈비 해운대직영점</b></a></td>
+            <td>육류,고기요리</td>
+            <td class="l">확인필요</td>
+            <td>118건</td>
+            <td><span class="pill p-go">94%</span></td>
+            <td class="l">우대갈비, 와사비, 풍미</td>
+          </tr>
+          <tr>
+            <td class="l"><a href="#미포집해운대본점"><b>미포집 해운대본점</b></a></td>
+            <td>한식</td>
+            <td class="l">매일 11:00 ~ 21:00</td>
+            <td>118건</td>
+            <td><span class="pill p-go">92%</span></td>
+            <td class="l">미녀해물장정식, 평소해산물, 솥밥</td>
+          </tr>
+          <tr>
+            <td class="l"><a href="#혜자네산곰장어본점"><b>혜자네 산곰장어 본점</b></a></td>
+            <td>장어,먹장어요리</td>
+            <td class="l">월~목, 일 15:00 ~ 01:00</td>
+            <td>125건</td>
+            <td><span class="pill p-go">90%</span></td>
+            <td class="l">곰장어, 꼼장어, 조개구이</td>
+          </tr>
+          <tr>
+            <td class="l"><a href="#달인막창해운대본점"><b>달인막창 해운대 본점</b></a></td>
+            <td>곱창,막창,양</td>
+            <td class="l">확인필요</td>
+            <td>113건</td>
+            <td><span class="pill p-go">87%</span></td>
+            <td class="l">전골, 볶음밥, 부위</td>
+          </tr>
+          <tr>
+            <td class="l"><a href="#루아앤티그리"><b>루아앤티그리</b></a></td>
+            <td>양식</td>
+            <td class="l">확인필요</td>
+            <td>126건</td>
+            <td><span class="pill p-go">87%</span></td>
+            <td class="l">청사포세트, 화덕피자, 오션뷰</td>
+          </tr>
+          <tr>
+            <td class="l"><a href="#해운대가야밀면"><b>해운대 가야밀면</b></a></td>
+            <td>국수</td>
+            <td class="l">매일 09:00 - 20:40</td>
+            <td>122건</td>
+            <td><span class="pill p-go">85%</span></td>
+            <td class="l">만두, 겨자, 해운대가야밀면</td>
+          </tr>
+          <tr>
+            <td class="l"><a href="#개미집국제시장본점"><b>개미집국제시장본점</b></a></td>
+            <td>낙지요리</td>
+            <td class="l">확인필요</td>
+            <td>125건</td>
+            <td><span class="pill p-go">82%</span></td>
+            <td class="l">낙곱새, 우동사리, 낙새볶음</td>
+          </tr>
+          <tr>
+            <td class="l"><a href="#스무고개해운대점"><b>스무고개 해운대점</b></a></td>
+            <td>소고기구이</td>
+            <td class="l">매일 11:30-15:00</td>
+            <td>125건</td>
+            <td><span class="pill p-go">81%</span></td>
+            <td class="l">부위, 해운대한우, 화로구이</td>
+          </tr>
+          <tr>
+            <td class="l"><a href="#상국이네"><b>상국이네</b></a></td>
+            <td>종합분식</td>
+            <td class="l">확인필요</td>
+            <td>128건</td>
+            <td><span class="pill p-warn">70%</span></td>
+            <td class="l">떡볶이, 튀김, 김밥</td>
+          </tr>
+          <tr>
+            <td class="l"><a href="#밀양순대돼지국밥부산본점"><b>밀양순대돼지국밥 부산본점</b></a></td>
+            <td>국밥</td>
+            <td class="l">확인필요</td>
+            <td>127건</td>
+            <td><span class="pill p-warn">67%</span></td>
+            <td class="l">돼지국밥, 수육, 순대국밥</td>
+          </tr>
+      <tr class="grp"><td colspan="6">☕ 카페·디저트 (12곳)</td></tr>
+      
+          <tr>
+            <td class="l"><a href="#달콤부엌"><b>달콤부엌</b></a></td>
+            <td>케이크전문</td>
+            <td class="l">확인필요</td>
+            <td>118건</td>
+            <td><span class="pill p-go">95%</span></td>
+            <td class="l">망고케이크, 과일케이크, 복숭아</td>
+          </tr>
+          <tr>
+            <td class="l"><a href="#금송덕미해운대해리단길점"><b>금송 덕미 해운대 해리단길점</b></a></td>
+            <td>카페,디저트</td>
+            <td class="l">확인필요</td>
+            <td>110건</td>
+            <td><span class="pill p-go">90%</span></td>
+            <td class="l">디저트, 오레오치즈케이크, 망고그라니타</td>
+          </tr>
+          <tr>
+            <td class="l"><a href="#코오리마찌해운대해리단길"><b>코오리마찌 해운대해리단길</b></a></td>
+            <td>카페,디저트</td>
+            <td class="l">확인필요</td>
+            <td>127건</td>
+            <td><span class="pill p-go">88%</span></td>
+            <td class="l">크림브륄레빙수, 디저트, 겉면</td>
+          </tr>
+          <tr>
+            <td class="l"><a href="#듀플릿부산해운대해리단길점"><b>듀플릿 부산 해운대 해리단길점</b></a></td>
+            <td>카페,디저트</td>
+            <td class="l">확인필요</td>
+            <td>124건</td>
+            <td><span class="pill p-go">87%</span></td>
+            <td class="l">디저트, 몽실카토, 케이크</td>
+          </tr>
+          <tr>
+            <td class="l"><a href="#워킹홀리데이해운대"><b>워킹홀리데이 해운대</b></a></td>
+            <td>카페,디저트</td>
+            <td class="l">확인필요</td>
+            <td>127건</td>
+            <td><span class="pill p-go">86%</span></td>
+            <td class="l">홀리데이라떼, 디저트, 연어</td>
+          </tr>
+          <tr>
+            <td class="l"><a href="#고재해운대해리단길점"><b>고재 해운대해리단길점</b></a></td>
+            <td>카페,디저트</td>
+            <td class="l">매일 11:00-19:30</td>
+            <td>123건</td>
+            <td><span class="pill p-go">84%</span></td>
+            <td class="l">옥수수빙수, 유기농산딸기빙수, 전통디저트</td>
+          </tr>
+          <tr>
+            <td class="l"><a href="#비비비당"><b>비비비당</b></a></td>
+            <td>차</td>
+            <td class="l">화~금, 월 10:30 ~ 21:30</td>
+            <td>127건</td>
+            <td><span class="pill p-go">80%</span></td>
+            <td class="l">단호박빙수, 다과, 디저트</td>
+          </tr>
+          <tr>
+            <td class="l"><a href="#카페해운대1994"><b>카페해운대1994</b></a></td>
+            <td>카페,디저트</td>
+            <td class="l">매일 6:30 - 24:00</td>
+            <td>100건</td>
+            <td><span class="pill p-go">80%</span></td>
+            <td class="l">디저트, 소금빵크로플, 외부뷰</td>
+          </tr>
+          <tr>
+            <td class="l"><a href="#옵스해운대점"><b>옵스 해운대점</b></a></td>
+            <td>베이커리</td>
+            <td class="l">08:00~22:00</td>
+            <td>126건</td>
+            <td><span class="pill p-warn">78%</span></td>
+            <td class="l">슈크림빵, 옵스, 크림치즈데니쉬</td>
+          </tr>
+          <tr>
+            <td class="l"><a href="#까사부사노해운대점"><b>까사 부사노 해운대점</b></a></td>
+            <td>카페,디저트</td>
+            <td class="l">확인필요</td>
+            <td>124건</td>
+            <td><span class="pill p-warn">78%</span></td>
+            <td class="l">칵테일, 디저트, 부사노에스프레소</td>
+          </tr>
+          <tr>
+            <td class="l"><a href="#옵스마린시티점"><b>옵스 마린시티점</b></a></td>
+            <td>베이커리</td>
+            <td class="l">매일 08:00 ~ 22:00</td>
+            <td>127건</td>
+            <td><span class="pill p-warn">70%</span></td>
+            <td class="l">슈크림빵, 드마히니오픈샌드위치, 디저트</td>
+          </tr>
+          <tr>
+            <td class="l"><a href="#호랑이젤라떡부산해운대본점"><b>호랑이젤라떡 부산해운대본점</b></a></td>
+            <td>카페,디저트</td>
+            <td class="l">매일 12:00 - 21:30</td>
+            <td>125건</td>
+            <td><span class="pill p-warn">69%</span></td>
+            <td class="l">젤라떡, 아이스크림, 디저트</td>
+          </tr>
+    </table>
+  </div>
+
+  <h2 class="sec" id="pick">② 해운대 추천 픽 (긍정률 상위)</h2>
+  <div class="tips3col">
+    <div class="t3 t3-good">
+      <b>🍽 식사 TOP5</b>
+      <ul><li><b>스미스씨네농장</b> <span class="nrev">(96%, 유효리뷰 123건)</span></li><li><b>해목 해운대점</b> <span class="nrev">(95%, 유효리뷰 125건)</span></li><li><b>극동돼지국밥</b> <span class="nrev">(94%, 유효리뷰 127건)</span></li><li><b>전설의우대갈비 해운대직영점</b> <span class="nrev">(94%, 유효리뷰 118건)</span></li><li><b>미포집 해운대본점</b> <span class="nrev">(92%, 유효리뷰 118건)</span></li></ul>
+    </div>
+    <div class="t3 t3-good">
+      <b>☕ 카페·디저트 TOP5</b>
+      <ul><li><b>달콤부엌</b> <span class="nrev">(95%, 유효리뷰 118건)</span></li><li><b>금송 덕미 해운대 해리단길점</b> <span class="nrev">(90%, 유효리뷰 110건)</span></li><li><b>코오리마찌 해운대해리단길</b> <span class="nrev">(88%, 유효리뷰 127건)</span></li><li><b>듀플릿 부산 해운대 해리단길점</b> <span class="nrev">(87%, 유효리뷰 124건)</span></li><li><b>워킹홀리데이 해운대</b> <span class="nrev">(86%, 유효리뷰 127건)</span></li></ul>
+    </div>
+    <div class="t3 t3-tip">
+      <b>📊 지역 평균 긍정률</b>
+      <ul><li>식사 평균 86.2%</li><li>카페·디저트 평균 82.1%</li></ul>
+    </div>
+  </div>
+  <div class="tip"><h4>🏅 공식 수상 배지 보유</h4><ul class="tight"><li><b>해목 해운대점</b> — 빕구르망</li><li><b>비비비당</b> — 블루리본</li></ul></div>
+
+  <h2 class="sec" id="detail">③ 가게별 세부 분석</h2>
+  <h3 class="subh">식사 (13곳)</h3>
+  
+      <section class="rest-sec" id="스미스씨네농장">
+        <div class="rest-hd">
+          <div class="rest-hd-l">
+            <h3 class="rest-name">스미스씨네농장 <span class="rest-cat">양식</span></h3>
+            <span class="rev-cnt">방문자 99 · 블로그 24 · 종합 긍정률 96%</span>
+          </div>
+          <div class="hd-maps">
+            <a class="m-naver" href="https://map.naver.com/p/entry/place/1559749328" target="_blank">네이버지도</a>
+          </div>
+        </div>
+        
+        <div class="rs-sec">
+          <div class="rs-title">영업 정보</div>
+          <div class="biz-info">
+            <div class="bi-hours"><b class="bi-lab">영업시간</b> <span class="yes">매일 11:00-22:00</span></div>
+            <div class="bi-etc"><b class="bi-lab">휴무</b> 연중무휴</div>
+          </div>
+          <p class="resv-p">📱 리뷰에서 언급된 예약/웨이팅 앱: <span class="waiting-tag">캐치테이블</span>, <span class="waiting-tag">네이버예약</span></p>
+        </div>
+        <div class="rs-sec">
+          <div class="rs-title">전반적 평가</div>
+          
+        <div class="sent-bar-wrap">
+          <span class="sent-label">네이버 방문자 <span class="n-cnt">(99건)</span></span>
+          <div class="bar-track">
+            <div class="bar-pos" style="width:94.9%"></div>
+            <div class="bar-neu" style="width:5.1%"></div>
+            <div class="bar-neg" style="width:0.0%"></div>
+          </div>
+          <span class="sent-nums">긍정 94.9% / 중립 5.1% / 부정 0.0%</span>
+        </div>
+          
+        <div class="sent-bar-wrap">
+          <span class="sent-label">네이버 블로그 <span class="n-cnt">(24건)</span></span>
+          <div class="bar-track">
+            <div class="bar-pos" style="width:100.0%"></div>
+            <div class="bar-neu" style="width:0.0%"></div>
+            <div class="bar-neg" style="width:0.0%"></div>
+          </div>
+          <span class="sent-nums">긍정 100.0% / 중립 0.0% / 부정 0.0%</span>
+        </div>
+          
+        </div>
+        
+        <div class="rs-sec">
+          <div class="rs-title">대표 메뉴 (리뷰 언급 기준)</div>
+          <div class="menu-q"><div class="mq-box mq-box-sig"><span class="mq-tag mq-sig">시그니처</span><b>돌문어스테이크</b> — <q>…다양한 메뉴 먹고왔더니 더 만족~ 👍 
+로메인샐러드, 돌문어스테이크, 감자뇨끼, 잠봉피자 만족스러웠구요
+레몬생맥주 만족스…</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>쉬림프오일파스타</b> — 리뷰 언급 빈도 상위</div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>주먹밥</b> — <q>…​
+
+​
+
+드디어입장! 
+
+뼈구이3인과 계란찜, 주먹밥을 같이 주문했다. 오래 기다리지 않고 음식들이 나왔고…</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>뇨끼</b> — <q>…니 더 만족~ 👍 
+로메인샐러드, 돌문어스테이크, 감자뇨끼, 잠봉피자 만족스러웠구요
+레몬생맥주 만족스러웠네요.…</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>​​</b> — 리뷰 언급 빈도 상위</div></div>
+        </div>
+        
+        <div class="rs-sec">
+          <div class="rs-title">항목별 리뷰 언급</div>
+          
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">😋 음식의 맛
+                <span class="neg-dr">언급 100건</span></div>
+              <div class="neg-q">"…샐러드였는데, 이 날 먹은 양배추 샐러드가 너무너무 맛있는거에요! 사진은 없는데 크림에 양배츄 스테이크같구 위…"</div><div class="neg-q">"…고 문어는 부드러워서 칼질도 쉽고 버터랑 잘 어울려서 맛있었어요. 리조또도 위에 올라간 새송이버섯이랑 밥이 참…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🍚 음식의 양
+                <span class="neg-dr">언급 15건</span></div>
+              <div class="neg-q">"제 인생 최고의 양식집입니다. 지금까지 정말 많은 양식을 먹어봤지만 스미스씨네농장만큼 음식과 서비스 모두…"</div><div class="neg-q">"…다 내 스타일 ~~♡♡완전 잘 먹었어요 ㅎ  사장님의 푸짐한 서비스 대인 백 인증입니다 ~~집만 안 멀면 진짜…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🤝 서비스
+                <span class="neg-dr">언급 73건</span></div>
+              <div class="neg-q">"…새로운 메뉴가 있어서 더욱 좋았어요.
+감사합니다~
+
+직원 모두 배부르게 먹고왔는데 1인 4만원정도였어요.
+또…"</div><div class="neg-q">"…농장은 모든 메뉴가 다 맛있어요!!
+그리고.. 넘흐 친절♡♡♡♡"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🧹 위생
+                <span class="neg-dr">언급 2건</span></div>
+              <div class="neg-q">"…부담없이 가셔요 
+주차장있고 아기의자잇고 화장실 넓고 깨끗하고 너무 친절하시고 음식도 맛잇어요
+남편이 집 가까이…"</div><div class="neg-q">"…되어 더욱 만족스러웠습니다. 분위기도 편안하고 매장도 깨끗해서 친구들과 즐겁게 이야기하며 행복한 시간을 보냈습니…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🚻 편의
+                <span class="neg-dr">언급 21건</span></div>
+              <div class="neg-q">"…ㅋ)
+아이랑 부담없이 가셔요 
+주차장있고 아기의자잇고 화장실 넓고 깨끗하고 너무 친절하시고 음식도 맛잇어요
+남편이…"</div><div class="neg-q">"올때마다 너무 맛있고 메뉴가 다양해서 좋아요 ㅎㅎ
+주차장이 협소한게 아쉽지만 맛있어서 오게 됩니다!!!"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">⏱ 웨이팅
+                <span class="neg-dr">언급 23건</span></div>
+              <div class="neg-q">"…애 레스토랑 스미스씨네 농장 n번째 방문이예요~
+당일 예약하고 방문해서 둥근테이블자리에 앉았구요~ 예전엔 예약하…"</div><div class="neg-q">"예약하고 갔는데 너무 친절하고 음식도 너무 맛있었습니다.…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">✨ 분위기
+                <span class="neg-dr">언급 59건</span></div>
+              <div class="neg-q">"여름휴가를 이용해서 오랜만에 같이 가족과 여행왔어요
+맛있다는 소문을 듣고 오긴 했는데 소문이…"</div><div class="neg-q">"뇨끼, 파스타 시켰는데 둘다 맛있어요! 분위기도 좋고 맛있습니당👍🏻🧡"</div>
+            </div>
+        </div>
+        <a class="totop" href="#top">↑ 목록으로</a>
+      </section>
+      <section class="rest-sec" id="해목해운대점">
+        <div class="rest-hd">
+          <div class="rest-hd-l">
+            <h3 class="rest-name">해목 해운대점 <span class="rest-cat">일식당</span></h3>
+            <span class="rev-cnt">방문자 100 · 블로그 25 · 종합 긍정률 95%<span class="pill p-go" style="margin-left:4px">빕구르망</span></span>
+          </div>
+          <div class="hd-maps">
+            <a class="m-naver" href="https://map.naver.com/p/entry/place/193024519" target="_blank">네이버지도</a>
+          </div>
+        </div>
+        
+        <div class="rs-sec">
+          <div class="rs-title">영업 정보</div>
+          <div class="biz-info">
+            <div class="bi-hours"><b class="bi-lab">영업시간</b> <span class="yes">매일 11:00 - 22:00</span></div>
+            <div class="bi-etc"><b class="bi-lab">휴무</b> 연중무휴</div>
+          </div>
+          <p class="resv-p">📱 리뷰에서 언급된 예약/웨이팅 앱: <span class="waiting-tag">캐치테이블</span>, <span class="waiting-tag">테이블링</span>, <span class="waiting-tag">네이버예약</span></p>
+        </div>
+        <div class="rs-sec">
+          <div class="rs-title">전반적 평가</div>
+          
+        <div class="sent-bar-wrap">
+          <span class="sent-label">네이버 방문자 <span class="n-cnt">(100건)</span></span>
+          <div class="bar-track">
+            <div class="bar-pos" style="width:94.0%"></div>
+            <div class="bar-neu" style="width:6.0%"></div>
+            <div class="bar-neg" style="width:0.0%"></div>
+          </div>
+          <span class="sent-nums">긍정 94.0% / 중립 6.0% / 부정 0.0%</span>
+        </div>
+          
+        <div class="sent-bar-wrap">
+          <span class="sent-label">네이버 블로그 <span class="n-cnt">(25건)</span></span>
+          <div class="bar-track">
+            <div class="bar-pos" style="width:100.0%"></div>
+            <div class="bar-neu" style="width:0.0%"></div>
+            <div class="bar-neg" style="width:0.0%"></div>
+          </div>
+          <span class="sent-nums">긍정 100.0% / 중립 0.0% / 부정 0.0%</span>
+        </div>
+          
+        </div>
+        
+        <div class="rs-sec">
+          <div class="rs-title">대표 메뉴 (리뷰 언급 기준)</div>
+          <div class="menu-q"><div class="mq-box mq-box-sig"><span class="mq-tag mq-sig">시그니처</span><b>장어덮밥</b> — <q>거의 2시간을 웨이팅하고 먹은 해목 장어덮밥! 아내, 아이와함께 맛있는 점심을 잘 즐겼습니다. 웨…</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>히츠마부시</b> — <q>2명이서 히츠마부시 특, 우니동 먹었구요~~
+기대를 충족시키는 맛이었고,…</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>오차즈케</b> — <q>…에 3번 구운 장어가 정말 부드럽고 육수를 부어 먹는 오차즈케까지 만족!</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>카이센동</b> — <q>…어린이 장어덮밥(11000원) 2개 시키고 장어덮밥, 카이센동, 튀김, 생맥주2(하이볼 품절ㅠ) 주문. 128000…</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>우메보시에이드</b> — <q>…는방법 안내로 기분 좋게 즐길 수 있었습니다~상콤하게 우메보시에이드 한잔으로 마무리 완벽한 한끼였습니다</q></div></div>
+        </div>
+        
+        <div class="rs-sec">
+          <div class="rs-title">항목별 리뷰 언급</div>
+          
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">😋 음식의 맛
+                <span class="neg-dr">언급 106건</span></div>
+              <div class="neg-q">"…을 웨이팅하고 먹은 해목 장어덮밥! 아내, 아이와함께 맛있는 점심을 잘 즐겼습니다. 웨이팅이 조금만 짧았으면 좋…"</div><div class="neg-q">"음식이 맛있습니다. 분위기도 좋아요"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🍚 음식의 양
+                <span class="neg-dr">언급 15건</span></div>
+              <div class="neg-q">"…신선하고 다양해서 물리지않았고
+장어덮밥은 말모~
+밥 양이 많아서 야식 못먹음ㅠ
+아이들 밥도 양이 꽤 됨
+재방문 의…"</div><div class="neg-q">"…맛만 드린 이유는 
+1. 가격이 넘 비쌈.. 김조교는 가성비가 중요하거든요
+2. 너무 더움.. 여름철 제일 더운…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🤝 서비스
+                <span class="neg-dr">언급 36건</span></div>
+              <div class="neg-q">"…게 하는 경험이었어요..
+특히 무엇보다도 점장님 너무 친절하세요~~~~~
+손님들이 넘쳐나는 바쁜 상황에서도 
+손…"</div><div class="neg-q">"…네요.
+급하시면 10시에 가심 될 것 같네여.
+
+일단 서비스도 좋고 메뉴 구성도 아주 고급지고 완벽해요.
+
+맛은…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🧹 위생
+                <span class="neg-dr">언급 6건</span></div>
+              <div class="neg-q">"…장어덮밥 진짜 맛있네요
+직원분들도 친절하시고 화장실 깨끗해요"</div><div class="neg-q">"카이센동 너무 맛나고 장어덮밥 첫 냄새가 강렬하니 너무 맛났어요 너무 잘먹고 갑니다
+갠적으로…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🚻 편의
+                <span class="neg-dr">언급 23건</span></div>
+              <div class="neg-q">"…주문. 128000원 나옴.
+내부 무척넓고 일률적인 좌석구성이 아니라 좋음. 2층에서 먹었는데 뷰도 좋고 조용…"</div><div class="neg-q">"…든요
+2. 너무 더움.. 여름철 제일 더운 날이었지만 화장실이 젤 시원해서 밥 먹기 힘들었어요."</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">⏱ 웨이팅
+                <span class="neg-dr">언급 49건</span></div>
+              <div class="neg-q">"거의 2시간을 웨이팅하고 먹은 해목 장어덮밥! 아내, 아이와함께 맛있는 점…"</div><div class="neg-q">"부산에서 웨이팅으로 유명한 해목 해운대점 다녀왔어요. 평일 5시 26…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">✨ 분위기
+                <span class="neg-dr">언급 36건</span></div>
+              <div class="neg-q">"음식이 맛있습니다. 분위기도 좋아요"</div><div class="neg-q">"…좌석구성이 아니라 좋음. 2층에서 먹었는데 뷰도 좋고 조용하고 좌석도 넓어서 만족.
+카이센동 여름이지만 신선하고…"</div>
+            </div>
+        </div>
+        <a class="totop" href="#top">↑ 목록으로</a>
+      </section>
+      <section class="rest-sec" id="극동돼지국밥">
+        <div class="rest-hd">
+          <div class="rest-hd-l">
+            <h3 class="rest-name">극동돼지국밥 <span class="rest-cat">국밥</span></h3>
+            <span class="rev-cnt">방문자 100 · 블로그 27 · 종합 긍정률 94%</span>
+          </div>
+          <div class="hd-maps">
+            <a class="m-naver" href="https://map.naver.com/p/entry/place/1185023911" target="_blank">네이버지도</a>
+          </div>
+        </div>
+        
+        <div class="rs-sec">
+          <div class="rs-title">영업 정보</div>
+          <div class="biz-info">
+            <div class="bi-hours"><b class="bi-lab">영업시간</b> <span class="yes">매일 08:00 - 21:00</span></div>
+            <div class="bi-etc"><b class="bi-lab">휴무</b> 연중무휴</div>
+          </div>
+          <p class="resv-p">📱 리뷰에서 언급된 예약/웨이팅 앱: <span class="waiting-tag">캐치테이블</span>, <span class="waiting-tag">테이블링</span></p>
+        </div>
+        <div class="rs-sec">
+          <div class="rs-title">전반적 평가</div>
+          
+        <div class="sent-bar-wrap">
+          <span class="sent-label">네이버 방문자 <span class="n-cnt">(100건)</span></span>
+          <div class="bar-track">
+            <div class="bar-pos" style="width:93.0%"></div>
+            <div class="bar-neu" style="width:7.0%"></div>
+            <div class="bar-neg" style="width:0.0%"></div>
+          </div>
+          <span class="sent-nums">긍정 93.0% / 중립 7.0% / 부정 0.0%</span>
+        </div>
+          
+        <div class="sent-bar-wrap">
+          <span class="sent-label">네이버 블로그 <span class="n-cnt">(27건)</span></span>
+          <div class="bar-track">
+            <div class="bar-pos" style="width:96.3%"></div>
+            <div class="bar-neu" style="width:3.7%"></div>
+            <div class="bar-neg" style="width:0.0%"></div>
+          </div>
+          <span class="sent-nums">긍정 96.3% / 중립 3.7% / 부정 0.0%</span>
+        </div>
+          
+        </div>
+        
+        <div class="rs-sec">
+          <div class="rs-title">대표 메뉴 (리뷰 언급 기준)</div>
+          <div class="menu-q"><div class="mq-box mq-box-sig"><span class="mq-tag mq-sig">시그니처</span><b>돼지국밥</b> — <q>해변열차 타러 미포정거장에 갔다가 극동돼지국밥에 다녀왔어요.
+맑고 개운한 국물에 돼지고기가 어마어마…</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>식감</b> — <q>…대로 보여주었습니다.
+
+​
+
+​
+
+​
+
+평소에 쫄깃한 식감을 즐기는 편이라 내장국밥도 함께
+
+맛보았는데, 이곳은…</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>살코기국밥</b> — <q>…마어마하게 푸짐해서 깜짝 놀랐던 곳!
+돼지국밥 1개, 살코기국밥 2개 주문했는데 모두 11,000원이라 가격도 부담…</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>수육백반</b> — <q>…국밥이 있고 가격은 11000원으로 동일해요.
+
+​
+
+수육백반 13000원 / 맛보기수육 15000원 / 수육 35…</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>김치</b> — <q>…팅도 가능하니 참고하세요.
+새우젓 올린 고기 한 점에 김치까지 곁들이니 정말 맛있더라고요.
+부산 돼지국밥 맛집…</q></div></div>
+        </div>
+        
+        <div class="rs-sec">
+          <div class="rs-title">항목별 리뷰 언급</div>
+          
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">😋 음식의 맛
+                <span class="neg-dr">언급 99건</span></div>
+              <div class="neg-q">"처음 방문했는데 생각보다 너무 맛있어서 만족했어요.
+국물이 진하고 깊은데 너무 자극적이지…"</div><div class="neg-q">"엄마 추천으로 온 곳인데 진짜 맛있어요~"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🍚 음식의 양
+                <span class="neg-dr">언급 19건</span></div>
+              <div class="neg-q">"…달랐습니다. 국물도 추가가 되고 고기만 리필도 되고 양이 많으신분들도 부담없이 드실수 있어. 좋을것 같네요~~~"</div><div class="neg-q">"…녀왔어요.
+맑고 개운한 국물에 돼지고기가 어마어마하게 푸짐해서 깜짝 놀랐던 곳!
+돼지국밥 1개, 살코기국밥 2개…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🤝 서비스
+                <span class="neg-dr">언급 16건</span></div>
+              <div class="neg-q">"음식도 맛있고 친절해요"</div><div class="neg-q">"…진짜 너무맛있어요 김치도 미쳤고 매장분위기 청결상태 직원분들 다 만족합니다 담부터 부신 돼지국밥은 극동돼지국밥…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🧹 위생
+                <span class="neg-dr">언급 14건</span></div>
+              <div class="neg-q">"음식맛있어요. 금방나오고 냄새없이 맛나요.
+또올게요."</div><div class="neg-q">"…대기가 있었지만 그렇게 길진 않았어요!
+매장이 엄청 깨끗하고 음식도 신선합니다😍
+완전 맛있어요💕💕"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🚻 편의
+                <span class="neg-dr">언급 16건</span></div>
+              <div class="neg-q">"…국밥 제대로 먹는것인거 다들 아시됴? 😋
+
+가게 자체 주차장x , 인근 공영주차장 많아서 아무대나 이용하면됨.…"</div><div class="neg-q">"…트오더 20:30
+
+0507-1494-7880
+
+​
+
+주차장은 따로 없으며
+
+근처에 공영주차장이 있어요.
+
+​…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">⏱ 웨이팅
+                <span class="neg-dr">언급 32건</span></div>
+              <div class="neg-q">"…00원이라 가격도 부담 없었어요.
+평일 오전 9시에는 웨이팅 없이 입장했지만 10시쯤 나올 때는 만석!
+테이블링…"</div><div class="neg-q">"맛있다고 유명해서 왔는데 웨이팅도 빨리 빠져서 맛있게 잘 먹었어요"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">✨ 분위기
+                <span class="neg-dr">언급 28건</span></div>
+              <div class="neg-q">"분위기도 좋고 음식 맛도 좋습니다 밑반찬 깔끔하고 셀프바도…"</div><div class="neg-q">"위치가 좋고 매장 분위기도 깔끔하고 음식도 맛나요"</div>
+            </div>
+        </div>
+        <a class="totop" href="#top">↑ 목록으로</a>
+      </section>
+      <section class="rest-sec" id="전설의우대갈비해운대직영점">
+        <div class="rest-hd">
+          <div class="rest-hd-l">
+            <h3 class="rest-name">전설의우대갈비 해운대직영점 <span class="rest-cat">육류,고기요리</span></h3>
+            <span class="rev-cnt">방문자 100 · 블로그 18 · 종합 긍정률 94%</span>
+          </div>
+          <div class="hd-maps">
+            <a class="m-naver" href="https://map.naver.com/p/entry/place/1309450475" target="_blank">네이버지도</a>
+          </div>
+        </div>
+        
+        <div class="rs-sec">
+          <div class="rs-title">영업 정보</div>
+          <div class="biz-info">
+            <div class="bi-hours"><b class="bi-lab">영업시간</b> <span class="maybe">정보 미확인(매장 문의 권장)</span></div>
+            <div class="bi-etc"><b class="bi-lab">휴무</b> 연중무휴</div>
+          </div>
+          <p class="resv-p">📱 리뷰에서 언급된 예약/웨이팅 앱: <span class="waiting-tag">네이버예약</span></p>
+        </div>
+        <div class="rs-sec">
+          <div class="rs-title">전반적 평가</div>
+          
+        <div class="sent-bar-wrap">
+          <span class="sent-label">네이버 방문자 <span class="n-cnt">(100건)</span></span>
+          <div class="bar-track">
+            <div class="bar-pos" style="width:94.0%"></div>
+            <div class="bar-neu" style="width:6.0%"></div>
+            <div class="bar-neg" style="width:0.0%"></div>
+          </div>
+          <span class="sent-nums">긍정 94.0% / 중립 6.0% / 부정 0.0%</span>
+        </div>
+          
+        <div class="sent-bar-wrap">
+          <span class="sent-label">네이버 블로그 <span class="n-cnt">(18건)</span></span>
+          <div class="bar-track">
+            <div class="bar-pos" style="width:100.0%"></div>
+            <div class="bar-neu" style="width:0.0%"></div>
+            <div class="bar-neg" style="width:0.0%"></div>
+          </div>
+          <span class="sent-nums">긍정 100.0% / 중립 0.0% / 부정 0.0%</span>
+        </div>
+          
+        </div>
+        
+        <div class="rs-sec">
+          <div class="rs-title">대표 메뉴 (리뷰 언급 기준)</div>
+          <div class="menu-q"><div class="mq-box mq-box-sig"><span class="mq-tag mq-sig">시그니처</span><b>우대갈비</b> — <q>해운대오면 들려야하는 맛집💕 우대갈비넘맛나는데 ㅎㅎ 매장도깔끔하고 오션뷰 미침요 ㅎㅎ 맛있…</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>와사비</b> — <q>…왔는데 맛있었어요! 
+첫끼라서 더더 맛있어요!ㅠㅠ
+표고와사비 진짜 맛있어요!</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>풍미</b> — <q>…촉하게 감싸진
+
+풍부한 육즙이 터져 나와 고기 본연의 풍미를 완벽하게 즐길 수 있습니다.
+
+​
+
+2. 손 하나…</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>된장찌개</b> — <q>…메뉴 역시 완성도가 매우 높습니다.
+
+​
+
+우대갈비 된장찌개: 된장찌개는 구수함과 깊은 감칠맛이 일품입니다.…</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>소갈비</b> — <q>…는데 맛도 좋고 가게도 깔끔해서 좋았습니다- 우대갈비 소갈비살 다 맛있어요. 추천해요!!</q></div></div>
+        </div>
+        
+        <div class="rs-sec">
+          <div class="rs-title">항목별 리뷰 언급</div>
+          
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">😋 음식의 맛
+                <span class="neg-dr">언급 91건</span></div>
+              <div class="neg-q">"…갈비넘맛나는데 ㅎㅎ 매장도깔끔하고 오션뷰 미침요 ㅎㅎ 맛있고 친절하게구워주셔서 금상첨화😍 창가석은 예약필수이에요…"</div><div class="neg-q">"고기 먹으러 방문했는데 정말 맛있게 잘 먹고 왔어요! 😊 고기 질이 좋고 잡내 없이 신…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🍚 음식의 양
+                <span class="neg-dr">언급 5건</span></div>
+              <div class="neg-q">"…러운 감자샐러드,
+
+김치와 함께 고급스러운 명이나물이 푸짐하게 제공됩니다.
+
+특히 짭조름하고 상큼한 명이나물에…"</div><div class="neg-q">"…한 분들: 해수욕장 바로 앞이라 동선 짜기 편해요.
+
+가성비보다 특별한 날 분위기를 원하는 분들: 연예인 사인도…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🤝 서비스
+                <span class="neg-dr">언급 54건</span></div>
+              <div class="neg-q">"…나는데 ㅎㅎ 매장도깔끔하고 오션뷰 미침요 ㅎㅎ 맛있고 친절하게구워주셔서 금상첨화😍 창가석은 예약필수이에요~"</div><div class="neg-q">"…나 소스에 다양하게 곁들여 먹기 좋았어요. 직원분들도 친절하시고 매장 분위기도 깔끔해서 편하게 식사할 수 있었습…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🧹 위생
+                <span class="neg-dr">언급 11건</span></div>
+              <div class="neg-q">"…로 해운대방문 했는데 
+너무 맛잇고 직원들도 친절하고 깨끗하고 좋아요"</div><div class="neg-q">"…습니다. 매장도 깔끔하고 테이블이나 전체적인 분위기도 청결하게 관리되는 느낌이라 더 마음에 들었어요. 맛, 친절…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🚻 편의
+                <span class="neg-dr">언급 14건</span></div>
+              <div class="neg-q">"…고기 냄새가 크게 배지 않으며,
+
+ 
+
+안락한 테이블 좌석과 단체석이 마련되어 있어
+
+연인과의 데이트, 친구들과…"</div><div class="neg-q">"…000원), 소막창(29,000원)
+
+찾아가는 길 &amp; 주차
+
+해운대역 5번 출구에서 해운대해수욕장 방향으로 도보…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">⏱ 웨이팅
+                <span class="neg-dr">언급 27건</span></div>
+              <div class="neg-q">"예약해서 왔어요~
+손님 많네요!"</div><div class="neg-q">"…요 ㅎㅎ 맛있고 친절하게구워주셔서 금상첨화😍 창가석은 예약필수이에요~"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">✨ 분위기
+                <span class="neg-dr">언급 37건</span></div>
+              <div class="neg-q">"…게 곁들여 먹기 좋았어요. 직원분들도 친절하시고 매장 분위기도 깔끔해서 편하게 식사할 수 있었습니다. 가족 외식이…"</div><div class="neg-q">"우대갈비 맛있고 가족단위로 오기 좋네요 ㅎ 
+다음에 해운대 오면 또 오겟습…"</div>
+            </div>
+        </div>
+        <a class="totop" href="#top">↑ 목록으로</a>
+      </section>
+      <section class="rest-sec" id="미포집해운대본점">
+        <div class="rest-hd">
+          <div class="rest-hd-l">
+            <h3 class="rest-name">미포집 해운대본점 <span class="rest-cat">한식</span></h3>
+            <span class="rev-cnt">방문자 100 · 블로그 18 · 종합 긍정률 92%</span>
+          </div>
+          <div class="hd-maps">
+            <a class="m-naver" href="https://map.naver.com/p/entry/place/1065410377" target="_blank">네이버지도</a>
+          </div>
+        </div>
+        
+        <div class="rs-sec">
+          <div class="rs-title">영업 정보</div>
+          <div class="biz-info">
+            <div class="bi-hours"><b class="bi-lab">영업시간</b> <span class="yes">매일 11:00 ~ 21:00</span></div>
+            <div class="bi-etc"><b class="bi-lab">휴무</b> 연중무휴</div>
+          </div>
+          <p class="resv-p">📱 리뷰에서 언급된 예약/웨이팅 앱: <span class="waiting-tag">캐치테이블</span>, <span class="waiting-tag">테이블링</span></p>
+        </div>
+        <div class="rs-sec">
+          <div class="rs-title">전반적 평가</div>
+          
+        <div class="sent-bar-wrap">
+          <span class="sent-label">네이버 방문자 <span class="n-cnt">(100건)</span></span>
+          <div class="bar-track">
+            <div class="bar-pos" style="width:90.0%"></div>
+            <div class="bar-neu" style="width:9.0%"></div>
+            <div class="bar-neg" style="width:1.0%"></div>
+          </div>
+          <span class="sent-nums">긍정 90.0% / 중립 9.0% / 부정 1.0%</span>
+        </div>
+          
+        <div class="sent-bar-wrap">
+          <span class="sent-label">네이버 블로그 <span class="n-cnt">(18건)</span></span>
+          <div class="bar-track">
+            <div class="bar-pos" style="width:100.0%"></div>
+            <div class="bar-neu" style="width:0.0%"></div>
+            <div class="bar-neg" style="width:0.0%"></div>
+          </div>
+          <span class="sent-nums">긍정 100.0% / 중립 0.0% / 부정 0.0%</span>
+        </div>
+          
+        </div>
+        
+        <div class="rs-sec">
+          <div class="rs-title">대표 메뉴 (리뷰 언급 기준)</div>
+          <div class="menu-q"><div class="mq-box mq-box-sig"><span class="mq-tag mq-sig">시그니처</span><b>미녀해물장정식</b> — <q>…웨이팅맛집 예약추천
+
+🍽 
+
+대표메뉴
+
+	
+
+미녀해물장정식 (솥밥제공)
+
+💡 
+
+참고사항
+
+	
+
+해운대 블루라인…</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>평소해산물</b> — 리뷰 언급 빈도 상위</div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>솥밥</b> — <q>…해운대 명품 맛집입니다!
+해물장이 대표메뉴인데 저희는 솥밥 매니아라 솥밥만시켰는데 다음엔 해물장도 꼭한번먹어보고…</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>소스</b> — <q>…블루라인캡슐  열차타고
+저녁먹으러와서 메인메뉴시켰는데
+소스가 넘맛있고 해산물도 싱싱하고
+맛있게먹었어요
+다음에 가…</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>연어초밥</b> — <q>…집에서 택배 주문해서 반찬으로 먹고 싶을 만큼!
+
+연어초밥도 만들어 먹었습니다.
+
+그리고 마지막 하이라이트. 간…</q></div></div>
+        </div>
+        
+        <div class="rs-sec">
+          <div class="rs-title">항목별 리뷰 언급</div>
+          
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">😋 음식의 맛
+                <span class="neg-dr">언급 101건</span></div>
+              <div class="neg-q">"음식이 정갈하고 맛있습니다
+매장도 넓고 직원분들도 친절히 응대해주어 여행의…"</div><div class="neg-q">"…기다리지않고 먹었어요~
+이미 사람 가득~~~~
+솥밭 맛있고 반찬도 깔끔하게 나와요^^
+맛있어요^^"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🍚 음식의 양
+                <span class="neg-dr">언급 15건</span></div>
+              <div class="neg-q">"솥밥 양 푸짐하고 장어, 문어 부드럽고 쫄깃해서 더 맛있어요!"</div><div class="neg-q">"푸짐하고 신산해서 맛있게 먹고 갑니다"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🤝 서비스
+                <span class="neg-dr">언급 10건</span></div>
+              <div class="neg-q">"음식이 정갈하고 맛있습니다
+매장도 넓고 직원분들도 친절히 응대해주어 여행의 기분을 더 좋게해주는 해운대 명품…"</div><div class="neg-q">"…식이신선하고 맛있으며 반찬이 정갈하다. 직원분들 또한 친절하다."</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🧹 위생
+                <span class="neg-dr">언급 4건</span></div>
+              <div class="neg-q">"너무 맛있었어요 매장도 넓고 청결해요!!"</div><div class="neg-q">"…아이와 함께 방문하기에도 부담이 없었고, 
+
+앞치마와 위생장갑까지 세심하게 준비되어 있어 편하게 식사를 즐길 수…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🚻 편의
+                <span class="neg-dr">언급 7건</span></div>
+              <div class="neg-q">"…집 미포집 부모님도 극찬한 
+
+해운대 밥집 미포 맛집 주차
+
+사진 글 @ 오늘도자란다
+
+​
+
+✔현지인도 줄서는…"</div><div class="neg-q">"…을 따뜻하고 구수하게 정리해 주는 느낌이 좋았어요.
+
+화장실에는 가글이 준비되어 있어서
+
+깔끔한 마무리까지 기분좋…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">⏱ 웨이팅
+                <span class="neg-dr">언급 36건</span></div>
+              <div class="neg-q">"…자주 여행오는데 드디어 미포집 방문했어요
+오프런하면 기다리지않고 먹었어요~
+이미 사람 가득~~~~
+솥밭 맛있고…"</div><div class="neg-q">"오전에왔다가 실패하고 오후에다시왔어요.오래기다린 보람이있네요.
+아이도 잘먹고 너무 맛있어요!!
+또오…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">✨ 분위기
+                <span class="neg-dr">언급 24건</span></div>
+              <div class="neg-q">"가족끼리 왔는데 너무 잘 먹고 갑니다!! 
+밑반찬도 넘 맛…"</div><div class="neg-q">"…습니다 방문해도 후회하지 않을 맛이에요 방문강추입니다 가족이랑 같이 오기 좋아요👍"</div>
+            </div>
+        </div>
+        <a class="totop" href="#top">↑ 목록으로</a>
+      </section>
+      <section class="rest-sec" id="혜자네산곰장어본점">
+        <div class="rest-hd">
+          <div class="rest-hd-l">
+            <h3 class="rest-name">혜자네 산곰장어 본점 <span class="rest-cat">장어,먹장어요리</span></h3>
+            <span class="rev-cnt">방문자 100 · 블로그 25 · 종합 긍정률 90%</span>
+          </div>
+          <div class="hd-maps">
+            <a class="m-naver" href="https://map.naver.com/p/entry/place/1779882976" target="_blank">네이버지도</a>
+          </div>
+        </div>
+        
+        <div class="rs-sec">
+          <div class="rs-title">영업 정보</div>
+          <div class="biz-info">
+            <div class="bi-hours"><b class="bi-lab">영업시간</b> <span class="yes">월~목, 일 15:00 ~ 01:00</span></div>
+            <div class="bi-etc"><b class="bi-lab">휴무</b> 연중무휴</div>
+          </div>
+          <p class="resv-p">📱 리뷰에서 언급된 예약/웨이팅 앱: <span class="waiting-tag">네이버예약</span></p>
+        </div>
+        <div class="rs-sec">
+          <div class="rs-title">전반적 평가</div>
+          
+        <div class="sent-bar-wrap">
+          <span class="sent-label">네이버 방문자 <span class="n-cnt">(100건)</span></span>
+          <div class="bar-track">
+            <div class="bar-pos" style="width:89.0%"></div>
+            <div class="bar-neu" style="width:11.0%"></div>
+            <div class="bar-neg" style="width:0.0%"></div>
+          </div>
+          <span class="sent-nums">긍정 89.0% / 중립 11.0% / 부정 0.0%</span>
+        </div>
+          
+        <div class="sent-bar-wrap">
+          <span class="sent-label">네이버 블로그 <span class="n-cnt">(25건)</span></span>
+          <div class="bar-track">
+            <div class="bar-pos" style="width:100.0%"></div>
+            <div class="bar-neu" style="width:0.0%"></div>
+            <div class="bar-neg" style="width:0.0%"></div>
+          </div>
+          <span class="sent-nums">긍정 100.0% / 중립 0.0% / 부정 0.0%</span>
+        </div>
+          
+        </div>
+        
+        <div class="rs-sec">
+          <div class="rs-title">대표 메뉴 (리뷰 언급 기준)</div>
+          <div class="menu-q"><div class="mq-box mq-box-sig"><span class="mq-tag mq-sig">시그니처</span><b>곰장어</b> — <q>골라먹자2가지 했는데 곰장어랑 회 골라서 먹었어요 회도 쫄깃하니 맛있고 꼼장어 양…</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>꼼장어</b> — <q>조개구이 회 낙지 그리고 가장맛있는 꼼장어 초벌구이 !!! 꼼장어가 가장 맛있었습니다. 해운대…</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>조개구이</b> — <q>조개구이 회 낙지 그리고 가장맛있는 꼼장어 초벌구이 !!! 꼼…</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>볶음밥</b> — <q>…는데 두가지 다 너무 맛있어요👍👍
+특히나 양념은 바로 볶음밥 생각나는 맛😭
+직접 다 구워주셔서 너무 편했어요ㅎㅎ…</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>해산물</b> — <q>…서 조개찜으로 선택..
+
+각종 조개에 새우, 낙지 등 해산물이 잔뜩 들어가 있다..
+
+그리고 산곰장어..
+
+피자도…</q></div></div>
+        </div>
+        
+        <div class="rs-sec">
+          <div class="rs-title">항목별 리뷰 언급</div>
+          
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">😋 음식의 맛
+                <span class="neg-dr">언급 82건</span></div>
+              <div class="neg-q">"조개구이 회 낙지 그리고 가장맛있는 꼼장어 초벌구이 !!! 꼼장어가 가장 맛있었습니다.…"</div><div class="neg-q">"직원분들 친절하고 착하시고 맛있어요
+다음에 또 올게요"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🍚 음식의 양
+                <span class="neg-dr">언급 19건</span></div>
+              <div class="neg-q">"세트메뉴도 있어서 가성비 좋구
+아이들은 밖에서 치킨사서 먹어도 된다해서 남편이…"</div><div class="neg-q">"푸짐하고 맛나용ㅎㅎ"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🤝 서비스
+                <span class="neg-dr">언급 46건</span></div>
+              <div class="neg-q">"직원분들 친절하고 착하시고 맛있어요
+다음에 또 올게요"</div><div class="neg-q">"…네이버 검색해서 왔는데
+분위기도 좋고 양도 많고
+맛도 친절도 짱이에요~~
+
+그릇들도 너무 예뻐요~~^^"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🧹 위생
+                <span class="neg-dr">언급 8건</span></div>
+              <div class="neg-q">"…린듯 들어온 혜자네! 직원분들 넘 친절하시구, 매장도 깨끗~ 분위기도 휴양지 느낌이라 좋아요!! 메뉴도 곰장어랑…"</div><div class="neg-q">"…가게 입구에 들어서자마자 느껴지는 활기찬 분위기와 깨끗하게 관리된 수조 속 싱싱한 해산물들을 보니 오늘 메뉴…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🚻 편의
+                <span class="neg-dr">언급 16건</span></div>
+              <div class="neg-q">"…발견한 이곳!!!
+세트메뉴 구성 알차고 분위기도 좋고 화장실까지 실내에 있고 인기 있는 곳은 이유가 있네요!!!…"</div><div class="neg-q">"…길 18
+
+• 운영시간: 15:00~01:00 
+
+• 주차장없음
+
+ 
+
+​
+
+해운대시장 안에 있는 곳이라 주변에…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">⏱ 웨이팅
+                <span class="neg-dr">언급 21건</span></div>
+              <div class="neg-q">"…어 맛집을 찾다가 우연히 숙소와 가까운데를 찾아왔어요
+예약 없이 이용했는데 바로 들어갈수 있어서 좋았고 
+직원분…"</div><div class="neg-q">"세트메뉴로 몇가지 푸짐하게 먹을수있어서 좋고 대기 없고 직원들도 많아서 빨라서 좋아요 손님많고 맛집인정…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">✨ 분위기
+                <span class="neg-dr">언급 49건</span></div>
+              <div class="neg-q">"…!!! 꼼장어가 가장 맛있었습니다. 해운대 놀러와서  가족들과 맛있는 저녁예뉴를 즐기고있답니다!!!"</div><div class="neg-q">"부산이 처음인데 네이버 검색해서 왔는데
+분위기도 좋고 양도 많고
+맛도 친절도 짱이에요~~
+
+그릇들도…"</div>
+            </div>
+        </div>
+        <a class="totop" href="#top">↑ 목록으로</a>
+      </section>
+      <section class="rest-sec" id="달인막창해운대본점">
+        <div class="rest-hd">
+          <div class="rest-hd-l">
+            <h3 class="rest-name">달인막창 해운대 본점 <span class="rest-cat">곱창,막창,양</span></h3>
+            <span class="rev-cnt">방문자 98 · 블로그 15 · 종합 긍정률 87%</span>
+          </div>
+          <div class="hd-maps">
+            <a class="m-naver" href="https://map.naver.com/p/entry/place/1088169857" target="_blank">네이버지도</a>
+          </div>
+        </div>
+        
+        <div class="rs-sec">
+          <div class="rs-title">영업 정보</div>
+          <div class="biz-info">
+            <div class="bi-hours"><b class="bi-lab">영업시간</b> <span class="maybe">정보 미확인(매장 문의 권장)</span></div>
+            <div class="bi-etc"><b class="bi-lab">휴무</b> 수요일 휴무</div>
+          </div>
+          <p class="resv-p">📱 리뷰에서 언급된 예약/웨이팅 앱: <span class="waiting-tag">캐치테이블</span></p>
+        </div>
+        <div class="rs-sec">
+          <div class="rs-title">전반적 평가</div>
+          
+        <div class="sent-bar-wrap">
+          <span class="sent-label">네이버 방문자 <span class="n-cnt">(98건)</span></span>
+          <div class="bar-track">
+            <div class="bar-pos" style="width:87.8%"></div>
+            <div class="bar-neu" style="width:12.2%"></div>
+            <div class="bar-neg" style="width:0.0%"></div>
+          </div>
+          <span class="sent-nums">긍정 87.8% / 중립 12.2% / 부정 0.0%</span>
+        </div>
+          
+        <div class="sent-bar-wrap">
+          <span class="sent-label">네이버 블로그 <span class="n-cnt">(15건)</span></span>
+          <div class="bar-track">
+            <div class="bar-pos" style="width:93.3%"></div>
+            <div class="bar-neu" style="width:6.7%"></div>
+            <div class="bar-neg" style="width:0.0%"></div>
+          </div>
+          <span class="sent-nums">긍정 93.3% / 중립 6.7% / 부정 0.0%</span>
+        </div>
+          
+        </div>
+        
+        <div class="rs-sec">
+          <div class="rs-title">대표 메뉴 (리뷰 언급 기준)</div>
+          <div class="menu-q"><div class="mq-box mq-box-sig"><span class="mq-tag mq-sig">시그니처</span><b>전골</b> — <q>…구랑 부산 여행 와서 먹고 가요~! 
+모둠세트도 있고 전골도 같이 있는 세트도 있어서 좋아요! 불판도 예열 되고…</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>볶음밥</b> — <q>맛있어요~도시락 볶음밥도 맛있어요~~</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>부위</b> — <q>…온 모둠구이에는 곱창과 대창, 막창, 염통 등 다양한 부위가 골고루 담겨 있었어요. 
+
+​
+
+젊고 훈훈한 사장님…</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>돼지막창구이</b> — <q>…달인막창세트1 모듬구이(중)+한우곱창전골(중)에
+
+돼지막창구이(180g) 1인분 추가했고
+
+나중에 볶음밥도 추가했어…</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>한우곱창</b> — <q>…2인 60,000 원인데 자주 오고 싶어요
+모듬구이랑 한우곱창전골 같이 나와요
+해운대에서 막창드시려면 여기오세요</q></div></div>
+        </div>
+        
+        <div class="rs-sec">
+          <div class="rs-title">항목별 리뷰 언급</div>
+          
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">😋 음식의 맛
+                <span class="neg-dr">언급 81건</span></div>
+              <div class="neg-q">"거족여행으로 부산 여행중
+제일 맛있어요"</div><div class="neg-q">"구이도 맛있는데  전골도 최고네요
+다음에 또올께요"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🍚 음식의 양
+                <span class="neg-dr">언급 12건</span></div>
+              <div class="neg-q">"가성비가 좋은 막창집 달인막창!
+제 첫 부산여행에서 먹은 막…"</div><div class="neg-q">"…고 갑니다 ! 모듬구이랑 전골 세트가 있어서 시켰는데 가성비도 너무 좋았어용 담에 또 방문할게요 🩷🩷🩷"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🤝 서비스
+                <span class="neg-dr">언급 39건</span></div>
+              <div class="neg-q">"…되고 올려주셔서 빨리 구워져서 좋아용
+직원분들 모두 친절하세요!! 최고!!"</div><div class="neg-q">"깨끗하고 친절하시고 맛도 훌륭합니다
+다음에 또 와서 먹을거 같아요!…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🧹 위생
+                <span class="neg-dr">언급 9건</span></div>
+              <div class="neg-q">"깨끗하고 친절하시고 맛도 훌륭합니다
+다음에 또 와서 먹을거…"</div><div class="neg-q">"오랜만에 온 부산에서 맛집 찾았너요
+신선하고 냄새안나고 맛나요
+전골도 칼칼하니 좋아요"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🚻 편의
+                <span class="neg-dr">언급 12건</span></div>
+              <div class="neg-q">"…00:00
+
+매주 수요일 정기 휴무
+
+🚗 인근 유료 주차장 이용
+
+✅️ 단체 o 예약 o 포장 o 유아 의자…"</div><div class="neg-q">"…모습을  보니 기대감 상승 
+
+​
+
+매장은 깔끔하고 좌석도 넉넉해서 편하고
+
+1층뿐 아니라 2층도 운영하고 있…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">⏱ 웨이팅
+                <span class="neg-dr">언급 21건</span></div>
+              <div class="neg-q">"캐치테이블로 예약해서 금방 들어왔어용
+직원분들도 친절하시거 너무 맛있어…"</div><div class="neg-q">"웨이팅 있었지만 맛집입니다!!!! 재방문 할게용"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">✨ 분위기
+                <span class="neg-dr">언급 17건</span></div>
+              <div class="neg-q">"분위기가 너무 좋아요~~~"</div><div class="neg-q">"부산으로 가족여행왔는데 아이들이 먹고싶다고 하여 검색해서 방문했는데…"</div>
+            </div>
+        </div>
+        <a class="totop" href="#top">↑ 목록으로</a>
+      </section>
+      <section class="rest-sec" id="루아앤티그리">
+        <div class="rest-hd">
+          <div class="rest-hd-l">
+            <h3 class="rest-name">루아앤티그리 <span class="rest-cat">양식</span></h3>
+            <span class="rev-cnt">방문자 100 · 블로그 26 · 종합 긍정률 87%</span>
+          </div>
+          <div class="hd-maps">
+            <a class="m-naver" href="https://map.naver.com/p/entry/place/1212481537" target="_blank">네이버지도</a>
+          </div>
+        </div>
+        
+        <div class="rs-sec">
+          <div class="rs-title">영업 정보</div>
+          <div class="biz-info">
+            <div class="bi-hours"><b class="bi-lab">영업시간</b> <span class="maybe">정보 미확인(매장 문의 권장)</span></div>
+            <div class="bi-etc"><b class="bi-lab">휴무</b> 연중무휴</div>
+          </div>
+          
+        </div>
+        <div class="rs-sec">
+          <div class="rs-title">전반적 평가</div>
+          
+        <div class="sent-bar-wrap">
+          <span class="sent-label">네이버 방문자 <span class="n-cnt">(100건)</span></span>
+          <div class="bar-track">
+            <div class="bar-pos" style="width:86.0%"></div>
+            <div class="bar-neu" style="width:12.0%"></div>
+            <div class="bar-neg" style="width:2.0%"></div>
+          </div>
+          <span class="sent-nums">긍정 86.0% / 중립 12.0% / 부정 2.0%</span>
+        </div>
+          
+        <div class="sent-bar-wrap">
+          <span class="sent-label">네이버 블로그 <span class="n-cnt">(26건)</span></span>
+          <div class="bar-track">
+            <div class="bar-pos" style="width:100.0%"></div>
+            <div class="bar-neu" style="width:0.0%"></div>
+            <div class="bar-neg" style="width:0.0%"></div>
+          </div>
+          <span class="sent-nums">긍정 100.0% / 중립 0.0% / 부정 0.0%</span>
+        </div>
+          
+        </div>
+        
+        <div class="rs-sec">
+          <div class="rs-title">대표 메뉴 (리뷰 언급 기준)</div>
+          <div class="menu-q"><div class="mq-box mq-box-sig"><span class="mq-tag mq-sig">시그니처</span><b>청사포세트</b> — 리뷰 언급 빈도 상위</div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>화덕피자</b> — <q>화덕피자랑  너무  맛있어요
+주위 볼거도 많고  
+좋아요</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>오션뷰</b> — <q>…청사포에서 가족과 함께 방문한 루아앤티그리. 탁 트인 오션뷰를 바라보며 여유로운 시간을 보내기 좋은 곳이었어요.…</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>디저트</b> — <q>…희가 메뉴 주문은 왼쪽건물에서 하고 
+
+여기서 커피와 디저트를 먹을 곳입니다 ㅎ
+
+빵이 생각보다 다양하게 있더라구…</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>아메리카노</b> — <q>피자와 아이스아메리카노 자몽에이드 모두 너무 맛있고 
+분위기도 좋아요~
+
+직…</q></div></div>
+        </div>
+        
+        <div class="rs-sec">
+          <div class="rs-title">항목별 리뷰 언급</div>
+          
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">😋 음식의 맛
+                <span class="neg-dr">언급 94건</span></div>
+              <div class="neg-q">"화덕피자랑  너무  맛있어요
+주위 볼거도 많고  
+좋아요"</div><div class="neg-q">"콘프라이?생각보다 맛있어요 다맛있게  먹었습니다"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🍚 음식의 양
+                <span class="neg-dr">언급 14건</span></div>
+              <div class="neg-q">"…니 피자와 치킨, 파스타 조합이 정말 좋았어요. 양도 푸짐해서 여럿이 함께 먹기 좋고 분위기도 편안해서 친구들과…"</div><div class="neg-q">"…보다 음식이 맛있어서 좋았고 곁들여먹을 소스같은 것도 넉넉해서 만족스러웠습니다!"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🤝 서비스
+                <span class="neg-dr">언급 12건</span></div>
+              <div class="neg-q">"…심할지 감도 안오네요 ㅡㅡ 커피값도 비싸게 받으면서 직원교육이나 똑바로 시키세요"</div><div class="neg-q">"친절하고 피자도 맛있어요~~~^^ 매장도 넓고 애들 데리고…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🧹 위생
+                <span class="neg-dr">언급 4건</span></div>
+              <div class="neg-q">"매장이 쾌적하고 깨끗해서 좋았어요!
+무엇보다 음식이 맛있어서 좋았고 곁들여…"</div><div class="neg-q">"…혀지는 모습을 보는 재미도 있었습니다.
+
+​
+
+맛있는 냄새가 매장 안에 퍼져 있어서 기다리는 시간도 즐거웠어요.…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🚻 편의
+                <span class="neg-dr">언급 28건</span></div>
+              <div class="neg-q">"주차장부터 뷰가 너무 좋아요. 멋진 뷰와 함께 맛있는 피자…"</div><div class="neg-q">"가족모임으로 온 곳인데 맛도 너무 맛있고 주차도 너무 좋고 너무 만족입니다!! 꼭 재방문할거에용"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">⏱ 웨이팅
+                <span class="neg-dr">언급 21건</span></div>
+              <div class="neg-q">"…래라 저래라 하는게 많은지 영수증 올리지마라 뒤에가서 기다려라 그런 짜증나는 표정으로 그렇게 이야기하면서 왜 일…"</div><div class="neg-q">"…뷰에 좋은
+분이랑 함께 해서 더 행복합니다.
+다음에는 예약 필수"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">✨ 분위기
+                <span class="neg-dr">언급 47건</span></div>
+              <div class="neg-q">"휴가맞이 가족과 함께 방문 했어요
+음식이 너무너무 맛있네요
+셀프바가…"</div><div class="neg-q">"가족들과 너무 좋은시간 보냈어요 늘 오는곳.. 맛있어요!"</div>
+            </div>
+        </div>
+        <a class="totop" href="#top">↑ 목록으로</a>
+      </section>
+      <section class="rest-sec" id="해운대가야밀면">
+        <div class="rest-hd">
+          <div class="rest-hd-l">
+            <h3 class="rest-name">해운대 가야밀면 <span class="rest-cat">국수</span></h3>
+            <span class="rev-cnt">방문자 99 · 블로그 23 · 종합 긍정률 85%</span>
+          </div>
+          <div class="hd-maps">
+            <a class="m-naver" href="https://map.naver.com/p/entry/place/20430372" target="_blank">네이버지도</a>
+          </div>
+        </div>
+        
+        <div class="rs-sec">
+          <div class="rs-title">영업 정보</div>
+          <div class="biz-info">
+            <div class="bi-hours"><b class="bi-lab">영업시간</b> <span class="yes">매일 09:00 - 20:40</span></div>
+            <div class="bi-etc"><b class="bi-lab">브레이크타임</b> 09:00 - 20:40 <span class='bi-sep'>·</span> <b class="bi-lab">휴무</b> 연중무휴</div>
+          </div>
+          <p class="resv-p">📱 리뷰에서 언급된 예약/웨이팅 앱: <span class="waiting-tag">캐치테이블</span>, <span class="waiting-tag">테이블링</span></p>
+        </div>
+        <div class="rs-sec">
+          <div class="rs-title">전반적 평가</div>
+          
+        <div class="sent-bar-wrap">
+          <span class="sent-label">네이버 방문자 <span class="n-cnt">(99건)</span></span>
+          <div class="bar-track">
+            <div class="bar-pos" style="width:84.8%"></div>
+            <div class="bar-neu" style="width:15.2%"></div>
+            <div class="bar-neg" style="width:0.0%"></div>
+          </div>
+          <span class="sent-nums">긍정 84.8% / 중립 15.2% / 부정 0.0%</span>
+        </div>
+          
+        <div class="sent-bar-wrap">
+          <span class="sent-label">네이버 블로그 <span class="n-cnt">(23건)</span></span>
+          <div class="bar-track">
+            <div class="bar-pos" style="width:95.7%"></div>
+            <div class="bar-neu" style="width:4.3%"></div>
+            <div class="bar-neg" style="width:0.0%"></div>
+          </div>
+          <span class="sent-nums">긍정 95.7% / 중립 4.3% / 부정 0.0%</span>
+        </div>
+          
+        </div>
+        
+        <div class="rs-sec">
+          <div class="rs-title">대표 메뉴 (리뷰 언급 기준)</div>
+          <div class="menu-q"><div class="mq-box mq-box-sig"><span class="mq-tag mq-sig">시그니처</span><b>만두</b> — <q>…다 너무 맛있어서 열심히 먹었네요 밀면 육수도 맛있고 만두도 맛있어서 전체적으로 만족스러웠어요.
+웨이팅이 길다는…</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>겨자</b> — <q>…완전 탱글하고 양도 푸짐해서 만족스럽습니다.
+양념장이 겨자랑 딱 맞아떨어져서 국물까지 다 마셨네요.</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>해운대가야밀면</b> — <q>…겠어요? 😋
+
+집 근처에 밀면맛집이 있어요. 이름하야 해운대가야밀면 !!!! 
+
+남편이랑 26개월 아기랑 함께 다녀왔습니…</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>비빔면</b> — <q>만두피는 쫄깃하고 비빔면은 새콤달콤해서 두 개 같이 먹는 게 진리입니다 ㅎㅎㅎ…</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>비빔밀면</b> — <q>비빔밀면 양념장이 자극적이지 않고 달콤매콤해서 착착 감기는데…</q></div></div>
+        </div>
+        
+        <div class="rs-sec">
+          <div class="rs-title">항목별 리뷰 언급</div>
+          
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">😋 음식의 맛
+                <span class="neg-dr">언급 43건</span></div>
+              <div class="neg-q">"…는 방식이에요.
+기본으로 나오는 육수가 생각보다 너무 맛있어서 열심히 먹었네요 밀면 육수도 맛있고 만두도 맛있어…"</div><div class="neg-q">"…어요!! 진짜 해운대 맛집 중에서 이렇게 가성비 좋고 맛있는 곳은 처음 보네요~~"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🍚 음식의 양
+                <span class="neg-dr">언급 21건</span></div>
+              <div class="neg-q">"…지는 줄 알았어요!! 진짜 해운대 맛집 중에서 이렇게 가성비 좋고 맛있는 곳은 처음 보네요~~"</div><div class="neg-q">"…시원해서 계속 마시게 되네요.
+면발도 쫄깃하고 양도 넉넉해서 든든하게 잘 먹었어요 ㅋㅋㅋ
+해운대 맛집으로 인정…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🤝 서비스
+                <span class="neg-dr">언급 11건</span></div>
+              <div class="neg-q">"사장님이 주문받을 때부터 친절하게 응대해주셔서 기분 좋게 식사했어요. 밀면 면발 쫄…"</div><div class="neg-q">"…먹었는데 양이 많아서 든든하게 배불렀어요. 사장님도 친절하게 응대해주셔서 기분 좋았고, 좌동순환로 지나갈 때…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🧹 위생
+                <span class="neg-dr">언급 4건</span></div>
+              <div class="neg-q">"비빔면은 고소한 참기름 냄새부터 예술이라 젓가락을 멈출 수가 없어요 ㅎㅎㅎ 자극적…"</div><div class="neg-q">"가게 안이 깨끗하게 관리되어 있어서 마음 편히 앉아 먹었어요. 비빔면…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🚻 편의
+                <span class="neg-dr">언급 20건</span></div>
+              <div class="neg-q">"…먹어해서 근처에 있는 밀면집을 검색해서 찾아갔어요.
+주차장이 넓지 않다고 해서 각오하고 갔는데, 다행히 금방…"</div><div class="neg-q">"#오늘클립챌린지 주차가 너무 힘들었어요.밀면먹다가 주차만 2번옮기고 먹는시…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">⏱ 웨이팅
+                <span class="neg-dr">언급 31건</span></div>
+              <div class="neg-q">"…도 맛있고 만두도 맛있어서 전체적으로 만족스러웠어요.
+웨이팅이 길다는 이야기를 듣고 갔는데, 시간대를 잘 맞춰서…"</div><div class="neg-q">"…지 메뉴 조합이 환상적입니다 ㅠㅠ
+여기는 앞으로 단골 예약해야 할 찐 해운대 맛집이에요!!"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">✨ 분위기
+                <span class="neg-dr">언급 8건</span></div>
+              <div class="neg-q">"…싹 가셨어요. 만두도 같이 먹으니 배부르고, 좌동에서 데이트할 때 또 생각날 맛이에요."</div><div class="neg-q">"…양념이 진짜 새콤하니 취향이었어요. 좌동순환로 쪽이라 데이트 코스로도 딱 좋더라고요."</div>
+            </div>
+        </div>
+        <a class="totop" href="#top">↑ 목록으로</a>
+      </section>
+      <section class="rest-sec" id="개미집국제시장본점">
+        <div class="rest-hd">
+          <div class="rest-hd-l">
+            <h3 class="rest-name">개미집국제시장본점 <span class="rest-cat">낙지요리</span></h3>
+            <span class="rev-cnt">방문자 100 · 블로그 25 · 종합 긍정률 82%</span>
+          </div>
+          <div class="hd-maps">
+            <a class="m-naver" href="https://map.naver.com/p/entry/place/16573113" target="_blank">네이버지도</a>
+          </div>
+        </div>
+        
+        <div class="rs-sec">
+          <div class="rs-title">영업 정보</div>
+          <div class="biz-info">
+            <div class="bi-hours"><b class="bi-lab">영업시간</b> <span class="maybe">정보 미확인(매장 문의 권장)</span></div>
+            <div class="bi-etc"><b class="bi-lab">휴무</b> 연중무휴</div>
+          </div>
+          
+        </div>
+        <div class="rs-sec">
+          <div class="rs-title">전반적 평가</div>
+          
+        <div class="sent-bar-wrap">
+          <span class="sent-label">네이버 방문자 <span class="n-cnt">(100건)</span></span>
+          <div class="bar-track">
+            <div class="bar-pos" style="width:78.0%"></div>
+            <div class="bar-neu" style="width:17.0%"></div>
+            <div class="bar-neg" style="width:5.0%"></div>
+          </div>
+          <span class="sent-nums">긍정 78.0% / 중립 17.0% / 부정 5.0%</span>
+        </div>
+          
+        <div class="sent-bar-wrap">
+          <span class="sent-label">네이버 블로그 <span class="n-cnt">(25건)</span></span>
+          <div class="bar-track">
+            <div class="bar-pos" style="width:96.0%"></div>
+            <div class="bar-neu" style="width:4.0%"></div>
+            <div class="bar-neg" style="width:0.0%"></div>
+          </div>
+          <span class="sent-nums">긍정 96.0% / 중립 4.0% / 부정 0.0%</span>
+        </div>
+          
+        </div>
+        
+        <div class="rs-sec">
+          <div class="rs-title">대표 메뉴 (리뷰 언급 기준)</div>
+          <div class="menu-q"><div class="mq-box mq-box-sig"><span class="mq-tag mq-sig">시그니처</span><b>낙곱새</b> — <q>…이나 만족하지
+부산 사람이 먹기엔 손에 꼽게 맛 없는 낙곱새..
+3인분 5만원도 아깝게 느껴짐</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>우동사리</b> — <q>…는 이번엔 기본으로만 
+
+먹었지만 다음에 방문하면 꼭 우동사리를 
+
+추가해서 진한 국물에 폭 익혀 먹어보고 
+
+싶다…</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>낙새볶음</b> — <q>…위기였어요.
+
+​
+
+​
+
+​
+
+​
+
+저는 대표 메뉴인 낙새볶음을 보통맛으로 주문했습니다.
+
+가격은 1인 15,000…</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>곱창</b> — <q>곱창은 단 한개도 들어있지않습니다^^
+대창만 덜렁 몇개 들…</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>부산</b> — <q>관광객이나 만족하지
+부산 사람이 먹기엔 손에 꼽게 맛 없는 낙곱새..
+3인분…</q></div></div>
+        </div>
+        
+        <div class="rs-sec">
+          <div class="rs-title">항목별 리뷰 언급</div>
+          
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">😋 음식의 맛
+                <span class="neg-dr">언급 77건</span></div>
+              <div class="neg-q">"관광객이나 만족하지
+부산 사람이 먹기엔 손에 꼽게 맛 없는 낙곱새..
+3인분 5만원도 아깝게 느껴짐"</div><div class="neg-q">"부산 놀러와서 맛있게 먹고 갑니다! 양이 많아 배부르고 맛있게 먹었어요ㅋ…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🍚 음식의 양
+                <span class="neg-dr">언급 26건</span></div>
+              <div class="neg-q">"부산 놀러와서 맛있게 먹고 갑니다! 양이 많아 배부르고 맛있게 먹었어요ㅋ 낙곱새도 맛있지만 전골도…"</div><div class="neg-q">"…들리는 개미집은 언제 먹어도 너무 맛있어요! 재료도 푸짐하게 들어서 식감이 좋고 맵기와 간 모든 게 취향을 충…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🤝 서비스
+                <span class="neg-dr">언급 32건</span></div>
+              <div class="neg-q">"…좋아서 만족스러웠어요 다만 유일하게 아쉬웠던건 카운터 직원 분이 통화를 하면서 성의없게 결제하는 태도가 아쉬웠네…"</div><div class="neg-q">"…외국인들만 있는 이유가 있구나..  
+직원 여사님들은 친절하셨으나, 계산해주는 사장님은 큰소리로 지인이랑 통화하…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🧹 위생
+                <span class="neg-dr">언급 7건</span></div>
+              <div class="neg-q">"청결도, 친절도, 맛도 최고였습니다.
+해장으로도 최고^~^…"</div><div class="neg-q">"…지만 깊은맛 부족
+직원분들 친절도도 잘 모르겠고
+컵도 더럽고 여러모로 밀면먹을껄
+후회했어요. 그렇지만 개인 입맛…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🚻 편의
+                <span class="neg-dr">언급 17건</span></div>
+              <div class="neg-q">"남편이랑  데이트 왔다가 방문했어요.
+주차하기 편하고 너무 맛있게 잘 먹었어요~"</div><div class="neg-q">"…나  동치미에 털같은게 있질않나 ...  여기 장점은 주차장넓네요"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">⏱ 웨이팅
+                <span class="neg-dr">언급 32건</span></div>
+              <div class="neg-q">"…않고 적당히 맛있었어요. 동치미도 맛있어요. 의외로 대기줄이 빨리 줄어들어요"</div><div class="neg-q">"…딱 적당합니다! 직원분들도 친절하세요ㅎㅎ 주말 점심에 웨이팅있어요!"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">✨ 분위기
+                <span class="neg-dr">언급 11건</span></div>
+              <div class="neg-q">"남편이랑  데이트 왔다가 방문했어요.
+주차하기 편하고 너무 맛있게 잘…"</div><div class="neg-q">"가족들과 함께 간 해운대 맛집인데 부모님도 맛있게 드셨어요…"</div>
+            </div>
+        </div>
+        <a class="totop" href="#top">↑ 목록으로</a>
+      </section>
+      <section class="rest-sec" id="스무고개해운대점">
+        <div class="rest-hd">
+          <div class="rest-hd-l">
+            <h3 class="rest-name">스무고개 해운대점 <span class="rest-cat">소고기구이</span></h3>
+            <span class="rev-cnt">방문자 99 · 블로그 26 · 종합 긍정률 81%</span>
+          </div>
+          <div class="hd-maps">
+            <a class="m-naver" href="https://map.naver.com/p/entry/place/1390003666" target="_blank">네이버지도</a>
+          </div>
+        </div>
+        
+        <div class="rs-sec">
+          <div class="rs-title">영업 정보</div>
+          <div class="biz-info">
+            <div class="bi-hours"><b class="bi-lab">영업시간</b> <span class="yes">매일 11:30-15:00</span></div>
+            <div class="bi-etc"><b class="bi-lab">휴무</b> 연중무휴</div>
+          </div>
+          <p class="resv-p">📱 리뷰에서 언급된 예약/웨이팅 앱: <span class="waiting-tag">캐치테이블</span>, <span class="waiting-tag">네이버예약</span></p>
+        </div>
+        <div class="rs-sec">
+          <div class="rs-title">전반적 평가</div>
+          
+        <div class="sent-bar-wrap">
+          <span class="sent-label">네이버 방문자 <span class="n-cnt">(99건)</span></span>
+          <div class="bar-track">
+            <div class="bar-pos" style="width:79.8%"></div>
+            <div class="bar-neu" style="width:18.2%"></div>
+            <div class="bar-neg" style="width:2.0%"></div>
+          </div>
+          <span class="sent-nums">긍정 79.8% / 중립 18.2% / 부정 2.0%</span>
+        </div>
+          
+        <div class="sent-bar-wrap">
+          <span class="sent-label">네이버 블로그 <span class="n-cnt">(26건)</span></span>
+          <div class="bar-track">
+            <div class="bar-pos" style="width:100.0%"></div>
+            <div class="bar-neu" style="width:0.0%"></div>
+            <div class="bar-neg" style="width:0.0%"></div>
+          </div>
+          <span class="sent-nums">긍정 100.0% / 중립 0.0% / 부정 0.0%</span>
+        </div>
+          
+        </div>
+        
+        <div class="rs-sec">
+          <div class="rs-title">대표 메뉴 (리뷰 언급 기준)</div>
+          <div class="menu-q"><div class="mq-box mq-box-sig"><span class="mq-tag mq-sig">시그니처</span><b>부위</b> — <q>…소고기집!!
+한옥 인테리어도 너무 마음에 들어요😃
+고기부위 설명까지 해주면 더좋을것같아용ㅎㅎㅎ</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>해운대한우</b> — <q>…요
+
+​
+
+특별한 날이나 중요한 분을 모시고 방문할
+
+해운대한우 고깃집, 해운대 오마카세 스타일의
+
+ 한우 맛집을 찾…</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>화로구이</b> — <q>…준비되어 있어 가족 외식하기 편했어요.
+아이와 함께 화로구이 드실 분들께 추천합니다!</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>소고기</b> — <q>부산 여행 왔는데 소고기 먹고 싶어서 찾아 왔어요.신선하고 정말 맛있어요~~!…</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>오마카세</b> — <q>…일은 밥이 좋아 한우 양념갈비로 나왔었나봐요. 1층은 오마카세 2층에서는 원하는 고기 알아서 구워먹는 시스템.
+주차…</q></div></div>
+        </div>
+        
+        <div class="rs-sec">
+          <div class="rs-title">항목별 리뷰 언급</div>
+          
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">😋 음식의 맛
+                <span class="neg-dr">언급 80건</span></div>
+              <div class="neg-q">"룸도있고 고기가 너무 부드럽고 맛있습니다."</div><div class="neg-q">"…왔는데 소고기 먹고 싶어서 찾아 왔어요.신선하고 정말 맛있어요~~!!!"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🍚 음식의 양
+                <span class="neg-dr">언급 23건</span></div>
+              <div class="neg-q">"…웨이팅이 있을 정도로 유명한 곳입니다 점심특선이 아주 가성비 좋아보였는데 저희는 고기 먹고 싶어서 마늘갈비 시켰어…"</div><div class="neg-q">"육회가 맛나고 가성비 좋아요
+4번째 방문입니다"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🤝 서비스
+                <span class="neg-dr">언급 32건</span></div>
+              <div class="neg-q">"맛있고 친절해요 좋아요!!! ㅋ"</div><div class="neg-q">"…에요. 고기 퀄리티는 올 때마다 만족스럽고 직원분들도 친절해서 편하게 식사하기 좋습니다.
+
+이번에 새로 나온 참…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🧹 위생
+                <span class="neg-dr">언급 6건</span></div>
+              <div class="neg-q">"공간도 협소하고 고기도 질긴거도 많고 청결도 더럽고 음식도 완전 시장 음식 수준이고 김치도 시어…"</div><div class="neg-q">"평일에 쉬게 되어 방문했는데 장산에 이렇게 크고 깨끗한 고기집이 있는지 몰랏어요. 보니까 꽤 된 가게 같은…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🚻 편의
+                <span class="neg-dr">언급 26건</span></div>
+              <div class="neg-q">"…카세 2층에서는 원하는 고기 알아서 구워먹는 시스템.
+주차장도 넓어서 주차하기편했어요"</div><div class="neg-q">"…기에 좋을듯 합니다.
+(미리 예약하시면 됩니다)
+
+* 주차장 가게 뒷편 있습니다만, 좁습니다.
+* 아기의자 있습…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">⏱ 웨이팅
+                <span class="neg-dr">언급 36건</span></div>
+              <div class="neg-q">"해운대 한우 맛집! 평일 낮에 방문했는데도 웨이팅이 있을 정도로 유명한 곳입니다 점심특선이 아주 가성비…"</div><div class="neg-q">"…고기생각이 나서 예약없이 왔는데 
+오픈시간이라 그런지 대기없이 들어와서 식사했어요
+뭉티기고기는 저녁에 들어온대서…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">✨ 분위기
+                <span class="neg-dr">언급 64건</span></div>
+              <div class="neg-q">"한우를 고급진 분위기에서 먹을 수 있는 곳 가족단위로 오기에도 너무 좋고…"</div><div class="neg-q">"…고기도 진짜 넘 맛있었어용!
+담에 또 오고 싶울만큼 분위기도 좋아용!"</div>
+            </div>
+        </div>
+        <a class="totop" href="#top">↑ 목록으로</a>
+      </section>
+      <section class="rest-sec" id="상국이네">
+        <div class="rest-hd">
+          <div class="rest-hd-l">
+            <h3 class="rest-name">상국이네 <span class="rest-cat">종합분식</span></h3>
+            <span class="rev-cnt">방문자 100 · 블로그 28 · 종합 긍정률 70%</span>
+          </div>
+          <div class="hd-maps">
+            <a class="m-naver" href="https://map.naver.com/p/entry/place/13573487" target="_blank">네이버지도</a>
+          </div>
+        </div>
+        
+        <div class="rs-sec">
+          <div class="rs-title">영업 정보</div>
+          <div class="biz-info">
+            <div class="bi-hours"><b class="bi-lab">영업시간</b> <span class="maybe">정보 미확인(매장 문의 권장)</span></div>
+            <div class="bi-etc"><b class="bi-lab">휴무</b> 정기휴무</div>
+          </div>
+          
+        </div>
+        <div class="rs-sec">
+          <div class="rs-title">전반적 평가</div>
+          
+        <div class="sent-bar-wrap">
+          <span class="sent-label">네이버 방문자 <span class="n-cnt">(100건)</span></span>
+          <div class="bar-track">
+            <div class="bar-pos" style="width:61.0%"></div>
+            <div class="bar-neu" style="width:34.0%"></div>
+            <div class="bar-neg" style="width:5.0%"></div>
+          </div>
+          <span class="sent-nums">긍정 61.0% / 중립 34.0% / 부정 5.0%</span>
+        </div>
+          
+        <div class="sent-bar-wrap">
+          <span class="sent-label">네이버 블로그 <span class="n-cnt">(28건)</span></span>
+          <div class="bar-track">
+            <div class="bar-pos" style="width:100.0%"></div>
+            <div class="bar-neu" style="width:0.0%"></div>
+            <div class="bar-neg" style="width:0.0%"></div>
+          </div>
+          <span class="sent-nums">긍정 100.0% / 중립 0.0% / 부정 0.0%</span>
+        </div>
+          
+        </div>
+        
+        <div class="rs-sec">
+          <div class="rs-title">대표 메뉴 (리뷰 언급 기준)</div>
+          <div class="menu-q"><div class="mq-box mq-box-sig"><span class="mq-tag mq-sig">시그니처</span><b>떡볶이</b> — <q>튀김 잘 못 넣어주심 …
+우리가 고른박스 아님 ..
+떡볶이 가래떡이라 굿!</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>튀김</b> — <q>튀김 잘 못 넣어주심 …
+우리가 고른박스 아님 ..
+떡볶이…</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>김밥</b> — <q>…갈때마다 
+여기는 꼭 들러서 먹습니다.
+맵달 떡뽁이에 김밥도 맛집♡</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>어묵</b> — <q>…보다 빨리 입장했어요. 저희는 떡볶이, 순대, 튀김, 어묵, 김밥이 모두 나오는 세트 B를 주문했습니다. 특히…</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>순대</b> — <q>…감이 정말 좋았고 양념도 맛있었습니다. 특히 튀김이랑 순대, 내장이 정말 맛있어서 떡볶이와 같이 먹으니 조합이…</q></div></div>
+        </div>
+        
+        <div class="rs-sec">
+          <div class="rs-title">항목별 리뷰 언급</div>
+          
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">😋 음식의 맛
+                <span class="neg-dr">언급 74건</span></div>
+              <div class="neg-q">"…렸다가 들어갔는데, 기다린 시간이 아깝지 않을 정도로 맛있었습니다. 떡볶이는 떡이 크고 두툼한데 쫄깃쫄깃해서 식…"</div><div class="neg-q">"…줄 긴 곳 중에 으뜸이에요!
+포장이라 금방 가져가서 맛있게 먹었습니다. 
+떡볶이 매콤달달하긴한데.. 오히려 튀…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🍚 음식의 양
+                <span class="neg-dr">언급 12건</span></div>
+              <div class="neg-q">"…!
+바로 상국이네!ㅎㅎㅎㅎ
+가격도 저렴하도 양도 많고 가성비 좋아요!"</div><div class="neg-q">"…사서 세트아닌 개별로 구입했어요 다음에 세트 주문이 가성비있는거 같아요
+떡볶이 소스는 달달한 맛이며 떡이 쫀득…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🤝 서비스
+                <span class="neg-dr">언급 20건</span></div>
+              <div class="neg-q">"…어요~ 이래서 찾나 봅니다~^^
+그리고 더운날씨인데도 친절하셨어요~"</div><div class="neg-q">"…소와서 소화가 안되서 낑낑 거리는중
+참고로 직원분도 불친절함~~"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🧹 위생
+                <span class="neg-dr">언급 11건</span></div>
+              <div class="neg-q">"…고 방문했는데.. 떡볶이는 그냥 저냥
+순대는 내장에서 냄새나고 말라있슴. 오뎅은 그냥 무난. 김밥은 1줄은 맛없…"</div><div class="neg-q">"깨끗하고 맛이 좋아요"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🚻 편의
+                <span class="neg-dr">언급 10건</span></div>
+              <div class="neg-q">"…볼 수 있고, 냉장고엔 포장용 소스도 판매하네요^^
+
+주차는 해운대 시장 내 주차장을 이용하면 되요~"</div><div class="neg-q">"…매장 사이즈가 넉넉하더라고요.
+
+ 
+ 
+
+1층 2층 좌석이 생각보다 넉넉했어요. 1층에 자리가 없으면 2층으로…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">⏱ 웨이팅
+                <span class="neg-dr">언급 37건</span></div>
+              <div class="neg-q">"…. 주변에 분식집이 여러 곳 있었는데 유독 상국이네만 기다리는 사람이 많아서 유명한 곳이라는 게 바로 느껴졌습니…"</div><div class="neg-q">"해운대 온김에 유명하다고해서 길서서 사먹어봤음.
+줄 서면서까지는 글쎄~ 줄이 없다면 또 사먹을정도의 맛"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">✨ 분위기
+                <span class="neg-dr">언급 15건</span></div>
+              <div class="neg-q">"…하고 잘 마련되어 있어 편안하게 이용하였습니다 다음에 가족들과 여행가도 꼭 상국이네 이용할거에요"</div><div class="neg-q">"2층에서 먹고 있는데.. 세척기 있어서 시끄럽고 정신없고.. 더워서 에어컨 켜 달라고 하니..시원하…"</div>
+            </div>
+        </div>
+        <a class="totop" href="#top">↑ 목록으로</a>
+      </section>
+      <section class="rest-sec" id="밀양순대돼지국밥부산본점">
+        <div class="rest-hd">
+          <div class="rest-hd-l">
+            <h3 class="rest-name">밀양순대돼지국밥 부산본점 <span class="rest-cat">국밥</span></h3>
+            <span class="rev-cnt">방문자 99 · 블로그 28 · 종합 긍정률 67%</span>
+          </div>
+          <div class="hd-maps">
+            <a class="m-naver" href="https://map.naver.com/p/entry/place/20601620" target="_blank">네이버지도</a>
+          </div>
+        </div>
+        
+        <div class="rs-sec">
+          <div class="rs-title">영업 정보</div>
+          <div class="biz-info">
+            <div class="bi-hours"><b class="bi-lab">영업시간</b> <span class="maybe">정보 미확인(매장 문의 권장)</span></div>
+            <div class="bi-etc"><b class="bi-lab">휴무</b> 연중무휴</div>
+          </div>
+          
+        </div>
+        <div class="rs-sec">
+          <div class="rs-title">전반적 평가</div>
+          
+        <div class="sent-bar-wrap">
+          <span class="sent-label">네이버 방문자 <span class="n-cnt">(99건)</span></span>
+          <div class="bar-track">
+            <div class="bar-pos" style="width:61.6%"></div>
+            <div class="bar-neu" style="width:27.3%"></div>
+            <div class="bar-neg" style="width:11.1%"></div>
+          </div>
+          <span class="sent-nums">긍정 61.6% / 중립 27.3% / 부정 11.1%</span>
+        </div>
+          
+        <div class="sent-bar-wrap">
+          <span class="sent-label">네이버 블로그 <span class="n-cnt">(28건)</span></span>
+          <div class="bar-track">
+            <div class="bar-pos" style="width:89.3%"></div>
+            <div class="bar-neu" style="width:7.1%"></div>
+            <div class="bar-neg" style="width:3.6%"></div>
+          </div>
+          <span class="sent-nums">긍정 89.3% / 중립 7.1% / 부정 3.6%</span>
+        </div>
+          
+        </div>
+        
+        <div class="rs-sec">
+          <div class="rs-title">대표 메뉴 (리뷰 언급 기준)</div>
+          <div class="menu-q"><div class="mq-box mq-box-sig"><span class="mq-tag mq-sig">시그니처</span><b>돼지국밥</b> — <q>…서 왔어요.
+매장이 넓어 회전율이 넘 좋은것 같아요.
+돼지국밥이 맛있어요. 테이블간격이 너무 쫍아 옆테이블이랑 같이…</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>수육</b> — <q>…이팅은 필수
+ 순대는 쏘쏘.
+다음기회가 있다면 맛보기 수육을 선택예정
+국밥은 맛남
+맥주는 시원
+반찬 셀프리필 눈…</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>순대국밥</b> — <q>부산여행와서 후기보고 밀양순대국밥집에 갔어요. 
+한달전 부산와서 극동돼지국밥광안리점에…</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>소면</b> — <q>아침에 든든하게 국밥먹으니 좋아요~~~
+소면을 줘서 아이가 잘 먹었어요~~^^</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>그릇</b> — <q>…있었는데...아닙니다. 역시 기대를 져 버리지 않아 그릇 바닥이 보일정도로 남김없이 맛있게 다 먹고 갑니다.…</q></div></div>
+        </div>
+        
+        <div class="rs-sec">
+          <div class="rs-title">항목별 리뷰 언급</div>
+          
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">😋 음식의 맛
+                <span class="neg-dr">언급 65건</span></div>
+              <div class="neg-q">"…매장이 넓어 회전율이 넘 좋은것 같아요.
+돼지국밥이 맛있어요. 테이블간격이 너무 쫍아 옆테이블이랑 같이 밥먹는…"</div><div class="neg-q">"맛있게 잘 먹었어요 다른곳은 앉을 자리가 없었는데
+여기서…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🍚 음식의 양
+                <span class="neg-dr">언급 15건</span></div>
+              <div class="neg-q">"돼지국밥 맛있어요. 순대도 맛있는데 양이 적어요"</div><div class="neg-q">"…해운대 밀양순대돼지국밥 본점으로 바로 달려갔어요. 고기양이 많고 따뜻해서 먹는동안 힐링하고 행복했어요. 2시반 넘어…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🤝 서비스
+                <span class="neg-dr">언급 26건</span></div>
+              <div class="neg-q">"…뮬도 맛잇고 고기는 야들야들 뾰애서 잘 분리되고
+너무 친절들 하시고. 잘먹고 왓습니다!"</div><div class="neg-q">"서비스 최악. 위생 최악.
+
+주문하고 15분 넘었는데도 안나…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🧹 위생
+                <span class="neg-dr">언급 16건</span></div>
+              <div class="neg-q">"우연히 들어간 곳인데 돼지국밥이 입맛에 맛더라고요 냄새도 없고 김치도 맛있고 순대랑 1개씩 시켜 먹었어요~"</div><div class="neg-q">"서비스 최악. 위생 최악.
+
+주문하고 15분 넘었는데도 안나와서 주문 들…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🚻 편의
+                <span class="neg-dr">언급 14건</span></div>
+              <div class="neg-q">"순대고기국밥이 잡내도 없이 맛있네요. 주차는 3군데 연계 40분 무료주차 지원(15000원이상)…"</div><div class="neg-q">"설명해놓으신 건물들이 네이버지도 조회가 안되서 주차장 찾기가 살짝 어렵고 지원은 되는데 단가자체가 세다보…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">⏱ 웨이팅
+                <span class="neg-dr">언급 35건</span></div>
+              <div class="neg-q">"…먹는동안 힐링하고 행복했어요. 2시반 넘어 도착하니 웨이팅 없이 방문했고 그래도 식사하시는 분들도 많았어요.
+부…"</div><div class="neg-q">"웨이팅은 필수
+ 순대는 쏘쏘.
+다음기회가 있다면 맛보기 수육…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">✨ 분위기
+                <span class="neg-dr">언급 15건</span></div>
+              <div class="neg-q">"…​
+
+​
+
+​
+
+​
+
+​
+
+​
+
+​
+
+​
+
+종원이랑 데이트
+
+ 
+
+어 나 안 울엌ㅋ
+
+진자얔ㅋㅋ
+
+ㅜ...😭😭…"</div><div class="neg-q">"…방문도 가능할 만큼 넓었고, 깔끔한 인테리어와 밝은 분위기가 인상적이었어요.
+
+손님이 많았지만 회전율이 빨라 오…"</div>
+            </div>
+        </div>
+        <a class="totop" href="#top">↑ 목록으로</a>
+      </section>
+  <h3 class="subh">카페·디저트 (12곳)</h3>
+  
+      <section class="rest-sec" id="달콤부엌">
+        <div class="rest-hd">
+          <div class="rest-hd-l">
+            <h3 class="rest-name">달콤부엌 <span class="rest-cat">케이크전문</span></h3>
+            <span class="rev-cnt">방문자 98 · 블로그 20 · 종합 긍정률 95%</span>
+          </div>
+          <div class="hd-maps">
+            <a class="m-naver" href="https://map.naver.com/p/entry/place/1072455047" target="_blank">네이버지도</a>
+          </div>
+        </div>
+        
+        <div class="rs-sec">
+          <div class="rs-title">영업 정보</div>
+          <div class="biz-info">
+            <div class="bi-hours"><b class="bi-lab">영업시간</b> <span class="maybe">정보 미확인(매장 문의 권장)</span></div>
+            <div class="bi-etc"><b class="bi-lab">휴무</b> 월요일 휴무</div>
+          </div>
+          <p class="resv-p">📱 리뷰에서 언급된 예약/웨이팅 앱: <span class="waiting-tag">네이버예약</span></p>
+        </div>
+        <div class="rs-sec">
+          <div class="rs-title">전반적 평가</div>
+          
+        <div class="sent-bar-wrap">
+          <span class="sent-label">네이버 방문자 <span class="n-cnt">(98건)</span></span>
+          <div class="bar-track">
+            <div class="bar-pos" style="width:93.9%"></div>
+            <div class="bar-neu" style="width:5.1%"></div>
+            <div class="bar-neg" style="width:1.0%"></div>
+          </div>
+          <span class="sent-nums">긍정 93.9% / 중립 5.1% / 부정 1.0%</span>
+        </div>
+          
+        <div class="sent-bar-wrap">
+          <span class="sent-label">네이버 블로그 <span class="n-cnt">(20건)</span></span>
+          <div class="bar-track">
+            <div class="bar-pos" style="width:100.0%"></div>
+            <div class="bar-neu" style="width:0.0%"></div>
+            <div class="bar-neg" style="width:0.0%"></div>
+          </div>
+          <span class="sent-nums">긍정 100.0% / 중립 0.0% / 부정 0.0%</span>
+        </div>
+          
+        </div>
+        
+        <div class="rs-sec">
+          <div class="rs-title">대표 메뉴 (리뷰 언급 기준)</div>
+          <div class="menu-q"><div class="mq-box mq-box-sig"><span class="mq-tag mq-sig">시그니처</span><b>망고케이크</b> — <q>해운대 우동 달콤부엌에서 복숭아망고케이크 사봤어요🍑🥭
+
+복숭아랑 망고가 듬뿍 올라가 있어서 보…</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>과일케이크</b> — <q>…낌없이 들어가 있어서 만족스러웠어요. 해운대 우동에서 과일케이크 찾는다면 달콤부엌 복숭아망고케이크 추천해요!</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>복숭아</b> — <q>해운대 우동 달콤부엌에서 복숭아망고케이크 사봤어요🍑🥭
+
+복숭아랑 망고가 듬뿍 올라가…</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>쿠키</b> — <q>마카롱 쿠키도 맛있고, 케이크도 맛있었습니다~~</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>크림케이크</b> — <q>오늘은 우리 첫찌 생일이라 달콤부엌에서 멜론 생크림케이크를 준비했어요. 케이크 위뿐만 아니라 안쪽까지 멜론이…</q></div></div>
+        </div>
+        
+        <div class="rs-sec">
+          <div class="rs-title">항목별 리뷰 언급</div>
+          
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">😋 음식의 맛
+                <span class="neg-dr">언급 92건</span></div>
+              <div class="neg-q">"일단 비싼만큼 값어치를 해요.너무 맛있고 달지도 않고 제 입맛에 딱입니다.우리 아이들도 좋아…"</div><div class="neg-q">"친구 출산기념 겸 생일 케익으로 선물했는데, 엄청 맛있다고 연락까지 따로 받았어요ㅎ생크림 안좋아하는 친구인데…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🍚 음식의 양
+                <span class="neg-dr">언급 7건</span></div>
+              <div class="neg-q">"…단면에도 멜론이 가득 들어있었고 
+
+양도 정말 많은 가성비 케잌 이더라구요 ㅎㅎㅎ 
+
+너무 달달한 케잌은 싫어하…"</div><div class="neg-q">"…맛있는 시기에는 망고 케이크를 주문했다. 
+
+과일이 넉넉하게 들어가는 것도 좋았지만, 다시 찾게 된 가장 큰…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🤝 서비스
+                <span class="neg-dr">언급 48건</span></div>
+              <div class="neg-q">"…적게 먹는데 미니 사이즈 있어서 딱입니다.  사장님도 친절하셔요.  #내돈내산"</div><div class="neg-q">"엄청 친절하시고, 운이좋아서 빨리 받아볼수있어서 좋았어요 ㅎㅎ…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🧹 위생
+                <span class="neg-dr">언급 2건</span></div>
+              <div class="neg-q">"…크 생과일 멜론케이크 달콤부엌
+
+개별 포장되어 있어서 위생적 이에요!
+
+​
+
+ 
+
+​
+
+이번에 주문한 멜론케이크…"</div><div class="neg-q">"…요!
+
+내부
+
+ 
+
+문을 열고 들어가자마자 달콤한 빵 냄새가 솔솔~🍰
+
+아기자기하게 꾸며진 내부도 정말 귀여웠어…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🚻 편의
+                <span class="neg-dr">언급 20건</span></div>
+              <div class="neg-q">"…부드러워서 가족들 모두 순식간에 완판했네요. 
+상가 주차장이 있어 픽업도 편하고, 귀여운 파티용 초도 많아서…"</div><div class="neg-q">"…족들이 다 어디서 샀냐고 ㅎㅎ 너무 좋아해줬어요
+그리고주차도 가능해서 너무 편해요!!!!"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">⏱ 웨이팅
+                <span class="neg-dr">언급 36건</span></div>
+              <div class="neg-q">"친구 생일이라 케이크 예약하고 방문했습니다!
+케이크가 너무 맛있었고 친구도 좋아…"</div><div class="neg-q">"케이크 최고예요!!! 따로 예약을 못해서 혹시 10분만에 만들어주실 수 있는지 부탁했…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">✨ 분위기
+                <span class="neg-dr">언급 24건</span></div>
+              <div class="neg-q">"…럽 없이 통으로 올려주셔서 신선하게 먹을 수 있어요. 가족들이 다들 적게 먹는데 미니 사이즈 있어서 딱입니다.…"</div><div class="neg-q">"가족 생일이 있어 처음 망고케이크를 주문했는데
+먼저 케이스…"</div>
+            </div>
+        </div>
+        <a class="totop" href="#top">↑ 목록으로</a>
+      </section>
+      <section class="rest-sec" id="금송덕미해운대해리단길점">
+        <div class="rest-hd">
+          <div class="rest-hd-l">
+            <h3 class="rest-name">금송 덕미 해운대 해리단길점 <span class="rest-cat">카페,디저트</span></h3>
+            <span class="rev-cnt">방문자 87 · 블로그 23 · 종합 긍정률 90%</span>
+          </div>
+          <div class="hd-maps">
+            <a class="m-naver" href="https://map.naver.com/p/entry/place/1768473259" target="_blank">네이버지도</a>
+          </div>
+        </div>
+        
+        <div class="rs-sec">
+          <div class="rs-title">영업 정보</div>
+          <div class="biz-info">
+            <div class="bi-hours"><b class="bi-lab">영업시간</b> <span class="maybe">정보 미확인(매장 문의 권장)</span></div>
+            <div class="bi-etc"><b class="bi-lab">휴무</b> 연중무휴</div>
+          </div>
+          <p class="resv-p">📱 리뷰에서 언급된 예약/웨이팅 앱: <span class="waiting-tag">캐치테이블</span></p>
+        </div>
+        <div class="rs-sec">
+          <div class="rs-title">전반적 평가</div>
+          
+        <div class="sent-bar-wrap">
+          <span class="sent-label">네이버 방문자 <span class="n-cnt">(87건)</span></span>
+          <div class="bar-track">
+            <div class="bar-pos" style="width:90.8%"></div>
+            <div class="bar-neu" style="width:9.2%"></div>
+            <div class="bar-neg" style="width:0.0%"></div>
+          </div>
+          <span class="sent-nums">긍정 90.8% / 중립 9.2% / 부정 0.0%</span>
+        </div>
+          
+        <div class="sent-bar-wrap">
+          <span class="sent-label">네이버 블로그 <span class="n-cnt">(23건)</span></span>
+          <div class="bar-track">
+            <div class="bar-pos" style="width:100.0%"></div>
+            <div class="bar-neu" style="width:0.0%"></div>
+            <div class="bar-neg" style="width:0.0%"></div>
+          </div>
+          <span class="sent-nums">긍정 100.0% / 중립 0.0% / 부정 0.0%</span>
+        </div>
+          
+        </div>
+        
+        <div class="rs-sec">
+          <div class="rs-title">대표 메뉴 (리뷰 언급 기준)</div>
+          <div class="menu-q"><div class="mq-box mq-box-sig"><span class="mq-tag mq-sig">시그니처</span><b>디저트</b> — <q>부산여행중에 유명하다고해서 왔는데 음료랑 디저트 다 너무 맛있어요!!! 사장님도 친절하시고 나중에 또…</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>오레오치즈케이크</b> — <q>…다 맛있어요 ❛ ڡ ❛
+#해운대카페 #해리단길카페 #오레오치즈케이크</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>망고그라니타</b> — <q>…페 #화이트피치티나미수 #피스타치오라즈베리치즈케이크 #망고그라니타 #말타딸기라떼 #딥인초콜릿</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>여유</b> — <q>…있는 금송덕미를 찾게 되었어요! 매장이 넓고 쾌적해서 여유롭게 쉬다 가기 좋았어요. 클래식 티라미수도 정말 맛있…</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>화이트피치티라미수</b> — <q>맛있어요😆
+
+
+
+
+#해운대카페 #해리단길 카페 # 화이트피치티라미수</q></div></div>
+        </div>
+        
+        <div class="rs-sec">
+          <div class="rs-title">항목별 리뷰 언급</div>
+          
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">😋 음식의 맛
+                <span class="neg-dr">언급 91건</span></div>
+              <div class="neg-q">"…산 놀러와서 처음으로 방문한 카페!
+우선 커피가 너무 맛있어요 ㅜㅜ
+포스트잇을 붙힐 수 있는 공간도 아기자기 귀…"</div><div class="neg-q">"…요~
+바닐라빈라떼와 말차라떼 시켰는데 다른곳보다 너무 맛있네요ㅋ 말라차떼 달지않고 괜찮아요"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🍚 음식의 양
+                <span class="neg-dr">언급 4건</span></div>
+              <div class="neg-q">"…도적인 망고 티라미수 !
+
+보시다시피 싱싱한 생망고가 푸짐하게 얹어져 나와요.
+
+​
+
+​
+
+​
+
+한 숟가락 깊게…"</div><div class="neg-q">"…없이 완벽한 디저트였당!
+
+​
+
+ 
+
+시원한 유리잔에 푸짐하게 담겨 나온 망고 그라니타는 곱게 갈린 입자감 덕분…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🤝 서비스
+                <span class="neg-dr">언급 10건</span></div>
+              <div class="neg-q">"…왔는데 음료랑 디저트 다 너무 맛있어요!!! 사장님도 친절하시고 나중에 또 오고싶어요!!! #해운대 카페 #해리…"</div><div class="neg-q">"…는데 음료도 디저트도 전부 맛있어요!
+직원분들도 모든 친절해요👍
+
+#덕미 #해운대카페 #해리단길카페 #화이트피치…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🧹 위생
+                <span class="neg-dr">언급 3건</span></div>
+              <div class="neg-q">"매장이 청결하고 시원해요!! 직원분도 친절하시고 음료 케이크가 다…"</div><div class="neg-q">"…보통 4개면 일반인 기준 맛집!)
+
+맛 ★★★★☆
+
+청결도 ★★★★★
+
+분위기 ★★★★★"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🚻 편의
+                <span class="neg-dr">언급 22건</span></div>
+              <div class="neg-q">"매장 넓고 좋아용 🩷 화장실도 내부에 있어서 편합니다ㅎㅎ
+음료도 특색있게 맛있고,…"</div><div class="neg-q">"…요!
+케이크랑 초코라떼도 괜찮고 커피랑도 잘어울려요!
+좌석도 많고 쾌적했어요 ㅎㅎ"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">⏱ 웨이팅
+                <span class="neg-dr">언급 13건</span></div>
+              <div class="neg-q">"사라은 많았지만 대기 1분하고 빨리 들어와서 좋았고 바닐라라떼 진짜 맛있어…"</div><div class="neg-q">"운좋게 웨이팅 없이 들어온 핫플
+
+#해운대카페 #해리단길카페 #바닐…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">✨ 분위기
+                <span class="neg-dr">언급 43건</span></div>
+              <div class="neg-q">"여름에만 맛볼수있는 메뉴 먹어봐서 좋았어요! 카페 분위기도 편하게 대화나누기 좋아요!
+
+#해운대 카페 #해리단…"</div><div class="neg-q">"테이블도 널널하게 돼 있어서 쾌적하고 조용해서 얘기하기도 좋았어요 디저트와 음료가 되게 맛있네요…"</div>
+            </div>
+        </div>
+        <a class="totop" href="#top">↑ 목록으로</a>
+      </section>
+      <section class="rest-sec" id="코오리마찌해운대해리단길">
+        <div class="rest-hd">
+          <div class="rest-hd-l">
+            <h3 class="rest-name">코오리마찌 해운대해리단길 <span class="rest-cat">카페,디저트</span></h3>
+            <span class="rev-cnt">방문자 100 · 블로그 27 · 종합 긍정률 88%</span>
+          </div>
+          <div class="hd-maps">
+            <a class="m-naver" href="https://map.naver.com/p/entry/place/1843212662" target="_blank">네이버지도</a>
+          </div>
+        </div>
+        
+        <div class="rs-sec">
+          <div class="rs-title">영업 정보</div>
+          <div class="biz-info">
+            <div class="bi-hours"><b class="bi-lab">영업시간</b> <span class="maybe">정보 미확인(매장 문의 권장)</span></div>
+            <div class="bi-etc"><b class="bi-lab">휴무</b> 정기휴무</div>
+          </div>
+          <p class="resv-p">📱 리뷰에서 언급된 예약/웨이팅 앱: <span class="waiting-tag">캐치테이블</span>, <span class="waiting-tag">테이블링</span></p>
+        </div>
+        <div class="rs-sec">
+          <div class="rs-title">전반적 평가</div>
+          
+        <div class="sent-bar-wrap">
+          <span class="sent-label">네이버 방문자 <span class="n-cnt">(100건)</span></span>
+          <div class="bar-track">
+            <div class="bar-pos" style="width:88.0%"></div>
+            <div class="bar-neu" style="width:12.0%"></div>
+            <div class="bar-neg" style="width:0.0%"></div>
+          </div>
+          <span class="sent-nums">긍정 88.0% / 중립 12.0% / 부정 0.0%</span>
+        </div>
+          
+        <div class="sent-bar-wrap">
+          <span class="sent-label">네이버 블로그 <span class="n-cnt">(27건)</span></span>
+          <div class="bar-track">
+            <div class="bar-pos" style="width:96.3%"></div>
+            <div class="bar-neu" style="width:3.7%"></div>
+            <div class="bar-neg" style="width:0.0%"></div>
+          </div>
+          <span class="sent-nums">긍정 96.3% / 중립 3.7% / 부정 0.0%</span>
+        </div>
+          
+        </div>
+        
+        <div class="rs-sec">
+          <div class="rs-title">대표 메뉴 (리뷰 언급 기준)</div>
+          <div class="menu-q"><div class="mq-box mq-box-sig"><span class="mq-tag mq-sig">시그니처</span><b>크림브륄레빙수</b> — <q>…🍧 여러빙수들이 다 맛있지만!!! 다른데서는 먹기힘든 크림브륄레빙수가 완전 맛있어요!!!!!!!!!👍당고들도 진짜 맛있고…</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>디저트</b> — <q>디저트가 너무 맛있어서 다음 부산올때 꼭 다시오고 싶은 집입…</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>겉면</b> — <q>…니처는
+
+크림브륄레 빙수예요.
+
+​
+
+귀여운 망치로
+
+겉면을 깨는 순간,
+
+​
+
+그리고 불빙수 위로
+
+타오르는…</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>단호박빙수</b> — <q>헉 단호박빙수 진짜 맛있어요 하나도 안달고 너무 맛있어요 !!!
+당…</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>설탕코팅</b> — 리뷰 언급 빈도 상위</div></div>
+        </div>
+        
+        <div class="rs-sec">
+          <div class="rs-title">항목별 리뷰 언급</div>
+          
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">😋 음식의 맛
+                <span class="neg-dr">언급 94건</span></div>
+              <div class="neg-q">"디저트가 너무 맛있어서 다음 부산올때 꼭 다시오고 싶은 집입니다!! 강추…"</div><div class="neg-q">"묘하게 계속 손이가는 맛이에요! 맛있게 잘 먹었고 분위기도 좋아서 다음에 다른 빙수 먹으러…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🍚 음식의 양
+                <span class="neg-dr">언급 8건</span></div>
+              <div class="neg-q">"…가 더해져 끝까지 맛있게 먹었습니다.
+2인용인데 양도 넉넉해서 둘이 나눠 먹기 딱 좋았고, 해리단길에서 색다른…"</div><div class="neg-q">"…🎃🍯 부산 기장꿀 단호박빙수 26,000원 / 2인
+
+푸짐한 비주얼에 한 번 놀라고😳
+
+꿀과 단호박이 어우러진…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🤝 서비스
+                <span class="neg-dr">언급 13건</span></div>
+              <div class="neg-q">"…맛있고 분위기도 좋고 여름에 최고에요 ㄹㅎ 사장님들도 친절하시구 아늑해서 더좋은거같아요!!! 다음엔 망고빙수먹어…"</div><div class="neg-q">"자리도 친절하게 안내해주셨고 무엇보다 메뉴가 하나하나 다 맛있었어…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🧹 위생
+                <span class="neg-dr">언급 1건</span></div>
+              <div class="neg-q">"…다면 코오리마찌 추천해요.
+
+​
+
+매장에는 크림브륄레 냄새가
+
+가득해서 먹고 싶은 충동이ㅋㅋㅋ
+
+​
+
+어느 빙수…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🚻 편의
+                <span class="neg-dr">언급 19건</span></div>
+              <div class="neg-q">"…로 깨먹는 특별함이 있고
+맛은 바삭한 달고나맛이에요.
+화장실은 남여 구분해주시면
+좋을거같은데  많은 인파에 남여구…"</div><div class="neg-q">"…이 조건을 참고해서
+
+방문 계획을 세워보세요.
+
+🚗 주차 정보
+
+​
+
+이 매장은
+
+주차가 불가능해요.
+
+​…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">⏱ 웨이팅
+                <span class="neg-dr">언급 24건</span></div>
+              <div class="neg-q">"아이들이 왜 웨이팅하는지 알겠다고하니 
+멀리까지 온 보람이 있네요❣️
+합…"</div><div class="neg-q">"…!! 인스타에서 보고 왔어요~ 예약없이 바로 방문했고 웨이팅 없이 바로 입장 했어요~ 크림브륄레 빙수!! 먹어본…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">✨ 분위기
+                <span class="neg-dr">언급 37건</span></div>
+              <div class="neg-q">"묘하게 계속 손이가는 맛이에요! 맛있게 잘 먹었고 분위기도 좋아서 다음에 다른 빙수 먹으러 또 오고싶어요!"</div><div class="neg-q">"분위기 너무 좋고 
+당고랑 빙수 너무 맛있어요!!!"</div>
+            </div>
+        </div>
+        <a class="totop" href="#top">↑ 목록으로</a>
+      </section>
+      <section class="rest-sec" id="듀플릿부산해운대해리단길점">
+        <div class="rest-hd">
+          <div class="rest-hd-l">
+            <h3 class="rest-name">듀플릿 부산 해운대 해리단길점 <span class="rest-cat">카페,디저트</span></h3>
+            <span class="rev-cnt">방문자 99 · 블로그 25 · 종합 긍정률 87%</span>
+          </div>
+          <div class="hd-maps">
+            <a class="m-naver" href="https://map.naver.com/p/entry/place/1777650825" target="_blank">네이버지도</a>
+          </div>
+        </div>
+        
+        <div class="rs-sec">
+          <div class="rs-title">영업 정보</div>
+          <div class="biz-info">
+            <div class="bi-hours"><b class="bi-lab">영업시간</b> <span class="maybe">정보 미확인(매장 문의 권장)</span></div>
+            <div class="bi-etc"><b class="bi-lab">휴무</b> 연중무휴</div>
+          </div>
+          
+        </div>
+        <div class="rs-sec">
+          <div class="rs-title">전반적 평가</div>
+          
+        <div class="sent-bar-wrap">
+          <span class="sent-label">네이버 방문자 <span class="n-cnt">(99건)</span></span>
+          <div class="bar-track">
+            <div class="bar-pos" style="width:85.9%"></div>
+            <div class="bar-neu" style="width:14.1%"></div>
+            <div class="bar-neg" style="width:0.0%"></div>
+          </div>
+          <span class="sent-nums">긍정 85.9% / 중립 14.1% / 부정 0.0%</span>
+        </div>
+          
+        <div class="sent-bar-wrap">
+          <span class="sent-label">네이버 블로그 <span class="n-cnt">(25건)</span></span>
+          <div class="bar-track">
+            <div class="bar-pos" style="width:92.0%"></div>
+            <div class="bar-neu" style="width:8.0%"></div>
+            <div class="bar-neg" style="width:0.0%"></div>
+          </div>
+          <span class="sent-nums">긍정 92.0% / 중립 8.0% / 부정 0.0%</span>
+        </div>
+          
+        </div>
+        
+        <div class="rs-sec">
+          <div class="rs-title">대표 메뉴 (리뷰 언급 기준)</div>
+          <div class="menu-q"><div class="mq-box mq-box-sig"><span class="mq-tag mq-sig">시그니처</span><b>디저트</b> — <q>커피가 부드럽게 고소하고 묵직하고 맛있어요
+디저트 종류도 많고 음료도 맛있는 종류 많아요</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>몽실카토</b> — <q>…막 세트,
+
+스위트 프렌치프라이, 카프리, 진토닉,
+
+몽실카토, 수제 아이스크림,
+
+망고케이크, 초코쿠키 꾸덕바,…</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>케이크</b> — <q>…느낌이어서 좋았어요! 디저트 종류도 많고 말차바스크치즈케이크 꾸덕하고 살짝 쌉싸름해서 맛있어요!</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>솜사탕</b> — <q>…선을 끕니다.
+
+​
+
+​
+
+저는 상큼한 샤인머스캣과
+
+솜사탕이 뭉게구름처럼 풍성하게 올라간
+
+몽실카토를 골라보았습…</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>감자튀김</b> — <q>…가성비로 묶인 세트메뉴도 있었지만
+
+어니언크림스프와 감자튀김의 메뉴는 변동할 수 없다기에
+
+감자튀김을 지난밤에도…</q></div></div>
+        </div>
+        
+        <div class="rs-sec">
+          <div class="rs-title">항목별 리뷰 언급</div>
+          
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">😋 음식의 맛
+                <span class="neg-dr">언급 86건</span></div>
+              <div class="neg-q">"…울에 왔다가 지금 여름에 재방문 했는데 여전히 커피는 맛있고 분위기 넘 좋네요 말차 바치케 맛있는 집 찾기 힘든…"</div><div class="neg-q">"커피가 부드럽게 고소하고 묵직하고 맛있어요
+디저트 종류도 많고 음료도 맛있는 종류 많아요"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🍚 음식의 양
+                <span class="neg-dr">언급 5건</span></div>
+              <div class="neg-q">"…고 앞에 카운터에서 주문과 결제를 동시에 하면 끝.
+
+가성비로 묶인 세트메뉴도 있었지만
+
+어니언크림스프와 감자튀김…"</div><div class="neg-q">"…섞어서 먹으면 된다고설명해주셨다! 
+
+만원치고는 꽤 양이 많았다! 
+
+꿀은 아낌없이 다 부어버리기 ㅋㅋㅋ 
+
+나는…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🤝 서비스
+                <span class="neg-dr">언급 12건</span></div>
+              <div class="neg-q">"사장님이 친절하시고 
+음료가 맛있어요"</div><div class="neg-q">"…떼 왜케 맛있죠? 라떼파 여기와서 꼭 드샤보셔야할듯🩷 친절하고 멋진 공간이예요"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🧹 위생
+                <span class="neg-dr">언급 1건</span></div>
+              <div class="neg-q">"…집도 눈에 들어왔지만, 아이를 데리고 들어가기엔 술집 냄새가 너무 진하게 풍겼다.
+
+​
+
+​
+
+발길이 느려질 즈…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🚻 편의
+                <span class="neg-dr">언급 19건</span></div>
+              <div class="neg-q">"공영주차장 바로 뒤여서 쉽게 찾았어요~ 호텔뷔페도 좋지만 하루…"</div><div class="neg-q">"…가볍게 한 잔 하셔도 좋을 듯 합니다 :)
+
+​
+
+🅿 주차는 버거샵 맞은편에 있는 민영주차장
+
+이용하시면 30%…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">⏱ 웨이팅
+                <span class="neg-dr">언급 18건</span></div>
+              <div class="neg-q">"…분위기가 너무 이뻐서 먹고 가거 싶을 정도였어요!!
+기다리는동안 사진도 너무 이쁘게 나왔고
+숙소애서 먹는데 맛…"</div><div class="neg-q">"…하고 편안한 공간에서 정성 가득한 디저트와 음료를
+
+즐기다 보니 어느덧 시간이 훌쩍 지나가 버렸는데, 조만간…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">✨ 분위기
+                <span class="neg-dr">언급 67건</span></div>
+              <div class="neg-q">"…다가 지금 여름에 재방문 했는데 여전히 커피는 맛있고 분위기 넘 좋네요 말차 바치케 맛있는 집 찾기 힘든데 진짜…"</div><div class="neg-q">"감성적인 분위기가 돋보이는 듀플릿 카페☕️
+인테리어부터 커피까지 감각…"</div>
+            </div>
+        </div>
+        <a class="totop" href="#top">↑ 목록으로</a>
+      </section>
+      <section class="rest-sec" id="워킹홀리데이해운대">
+        <div class="rest-hd">
+          <div class="rest-hd-l">
+            <h3 class="rest-name">워킹홀리데이 해운대 <span class="rest-cat">카페,디저트</span></h3>
+            <span class="rev-cnt">방문자 100 · 블로그 27 · 종합 긍정률 86%</span>
+          </div>
+          <div class="hd-maps">
+            <a class="m-naver" href="https://map.naver.com/p/entry/place/2049577038" target="_blank">네이버지도</a>
+          </div>
+        </div>
+        
+        <div class="rs-sec">
+          <div class="rs-title">영업 정보</div>
+          <div class="biz-info">
+            <div class="bi-hours"><b class="bi-lab">영업시간</b> <span class="maybe">정보 미확인(매장 문의 권장)</span></div>
+            <div class="bi-etc"><b class="bi-lab">휴무</b> 연중무휴</div>
+          </div>
+          <p class="resv-p">📱 리뷰에서 언급된 예약/웨이팅 앱: <span class="waiting-tag">캐치테이블</span>, <span class="waiting-tag">테이블링</span></p>
+        </div>
+        <div class="rs-sec">
+          <div class="rs-title">전반적 평가</div>
+          
+        <div class="sent-bar-wrap">
+          <span class="sent-label">네이버 방문자 <span class="n-cnt">(100건)</span></span>
+          <div class="bar-track">
+            <div class="bar-pos" style="width:90.0%"></div>
+            <div class="bar-neu" style="width:9.0%"></div>
+            <div class="bar-neg" style="width:1.0%"></div>
+          </div>
+          <span class="sent-nums">긍정 90.0% / 중립 9.0% / 부정 1.0%</span>
+        </div>
+          
+        <div class="sent-bar-wrap">
+          <span class="sent-label">네이버 블로그 <span class="n-cnt">(27건)</span></span>
+          <div class="bar-track">
+            <div class="bar-pos" style="width:96.3%"></div>
+            <div class="bar-neu" style="width:0.0%"></div>
+            <div class="bar-neg" style="width:3.7%"></div>
+          </div>
+          <span class="sent-nums">긍정 96.3% / 중립 0.0% / 부정 3.7%</span>
+        </div>
+          
+        </div>
+        
+        <div class="rs-sec">
+          <div class="rs-title">대표 메뉴 (리뷰 언급 기준)</div>
+          <div class="menu-q"><div class="mq-box mq-box-sig"><span class="mq-tag mq-sig">시그니처</span><b>홀리데이라떼</b> — <q>…,000원)에
+
+샷추가(1,000원)를 했고
+
+짝꿍은 홀리데이라떼(7,500원)을 주문했어요
+
+홀리데이라떼는 아이스라떼…</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>디저트</b> — <q>커피랑 디저트가 맛있고 뷰가 미쳤어요</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>연어</b> — <q>…해운대 여행 왔어요 ! 다른 나라랑은 다르게 여기는 연어도 많이 올려준다고 좋아하네요 !! 베네딕트 추천합니다…</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>해운대바다</b> — <q>…kingholiday #workingholiday
+
+#해운대바다뷰카페추천 #해운대역카페추천 #해운대바다카페 #부산바다…</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>오션뷰</b> — <q>부산에서 오션뷰 카페 찾는다면 추천하고 싶은 곳!
+탁 트인 해운대 뷰…</q></div></div>
+        </div>
+        
+        <div class="rs-sec">
+          <div class="rs-title">항목별 리뷰 언급</div>
+          
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">😋 음식의 맛
+                <span class="neg-dr">언급 76건</span></div>
+              <div class="neg-q">"커피도 맛있고 바다가 바로 앞이어서 뷰가 좋아요!"</div><div class="neg-q">"뷰좋은 카페에서 맛있는 음료와 즐거운 시간 가졌어요. 넘 멋져요"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🍚 음식의 양
+                <span class="neg-dr">언급 8건</span></div>
+              <div class="neg-q">"…뷰를 감상하면서 먹을 수 있어서 좋아요.
+브런치세트 푸짐하고 커피도 맛있고, 뱅오쇼콜라도 추천입니다."</div><div class="neg-q">"…도 좋고 음식도 맛있네요! 사람이 많아도 자리가 꽤나 넉넉해서 좋았어요"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🤝 서비스
+                <span class="neg-dr">언급 24건</span></div>
+              <div class="neg-q">"…서 가면 웨이팅 없이 바로 이용할수있었어요 
+직원분들 친절하시고 해운대오면 또 오고싶은곳입니당!"</div><div class="neg-q">"…보이는 브런치 가게 찾다가 방문했는데 직원분들도 너무 친절하시고 음식도 다 맛있었어요! 바다도 잘보여서 또 방문…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🧹 위생
+                <span class="neg-dr">언급 2건</span></div>
+              <div class="neg-q">"직원분들이 친절하시고 내장이 깨끗해요"</div><div class="neg-q">"…브런치맛집 워킹홀리데이 해운대점  화장실 공간도 넓고 깨끗해 이용하기 아주 쾌적했어요.  
+
+​
+
+동생이랑 구석…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🚻 편의
+                <span class="neg-dr">언급 12건</span></div>
+              <div class="neg-q">"일단 거의 대부분 좌석이 바다뷰여서 너무 좋은 것 같고, 메뉴도 너무 맛있었…"</div><div class="neg-q">"…워킹홀리데이~브런치메뉴도 맛있고 뷰맛집이네요~바다뷰 좌석은 사람이 많아 안쪽에  앉았지만 안쪽 자리도 잘 보이…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">⏱ 웨이팅
+                <span class="neg-dr">언급 36건</span></div>
+              <div class="neg-q">"…!
+메뉴도 다양하고 맛있습니당..🫶🏻
+점심시간쯤 가면 웨이팅 있는데 조금 지나서 가면 웨이팅 없이 바로 이용할수있…"</div><div class="neg-q">"창가뷰는 좋아요
+입장 대기줄 관리는 안되네요
+순서대로 입장이 안되서 중국인은 그…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">✨ 분위기
+                <span class="neg-dr">언급 53건</span></div>
+              <div class="neg-q">"해운대 가족 여행
+우연히 방문한 브런치와 베이커리 맛집
+사진찍기도…"</div><div class="neg-q">"…요🤍 특히 날씨 좋은 날 방문하면 바다 색감이랑 카페 분위기가 너무 잘 어울려서 사진도 예쁘게 나와요📸커피 마시면…"</div>
+            </div>
+        </div>
+        <a class="totop" href="#top">↑ 목록으로</a>
+      </section>
+      <section class="rest-sec" id="고재해운대해리단길점">
+        <div class="rest-hd">
+          <div class="rest-hd-l">
+            <h3 class="rest-name">고재 해운대해리단길점 <span class="rest-cat">카페,디저트</span></h3>
+            <span class="rev-cnt">방문자 100 · 블로그 23 · 종합 긍정률 84%</span>
+          </div>
+          <div class="hd-maps">
+            <a class="m-naver" href="https://map.naver.com/p/entry/place/1322008394" target="_blank">네이버지도</a>
+          </div>
+        </div>
+        
+        <div class="rs-sec">
+          <div class="rs-title">영업 정보</div>
+          <div class="biz-info">
+            <div class="bi-hours"><b class="bi-lab">영업시간</b> <span class="yes">매일 11:00-19:30</span></div>
+            <div class="bi-etc"><b class="bi-lab">휴무</b> 연중무휴</div>
+          </div>
+          <p class="resv-p">📱 리뷰에서 언급된 예약/웨이팅 앱: <span class="waiting-tag">캐치테이블</span></p>
+        </div>
+        <div class="rs-sec">
+          <div class="rs-title">전반적 평가</div>
+          
+        <div class="sent-bar-wrap">
+          <span class="sent-label">네이버 방문자 <span class="n-cnt">(100건)</span></span>
+          <div class="bar-track">
+            <div class="bar-pos" style="width:82.0%"></div>
+            <div class="bar-neu" style="width:18.0%"></div>
+            <div class="bar-neg" style="width:0.0%"></div>
+          </div>
+          <span class="sent-nums">긍정 82.0% / 중립 18.0% / 부정 0.0%</span>
+        </div>
+          
+        <div class="sent-bar-wrap">
+          <span class="sent-label">네이버 블로그 <span class="n-cnt">(23건)</span></span>
+          <div class="bar-track">
+            <div class="bar-pos" style="width:100.0%"></div>
+            <div class="bar-neu" style="width:0.0%"></div>
+            <div class="bar-neg" style="width:0.0%"></div>
+          </div>
+          <span class="sent-nums">긍정 100.0% / 중립 0.0% / 부정 0.0%</span>
+        </div>
+          
+        </div>
+        
+        <div class="rs-sec">
+          <div class="rs-title">대표 메뉴 (리뷰 언급 기준)</div>
+          <div class="menu-q"><div class="mq-box mq-box-sig"><span class="mq-tag mq-sig">시그니처</span><b>옥수수빙수</b> — <q>여자친구랑 같이 왔는데 가게도 너무 이쁘고 초당옥수수빙수도 완전 맛있어요!!! 다음에도 또 올 예정입니다 완전…</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>유기농산딸기빙수</b> — 리뷰 언급 빈도 상위</div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>전통디저트</b> — <q>…벨이 울려요 🔔
+
+#고재해리단길 #고재 #산딸기빙수 #전통디저트 카페
+
+#해리단길카페 #내돈내산 #부산해운대고재 #빙…</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>우베크림라떼</b> — <q>…크로 하는 방식이었어요.
+
+​
+
+저는 평소 궁금했던
+
+우베크림라떼를 주문했어요 :)
+
+ 
+ 
+
+​
+
+카페 내부는 한옥…</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>쿠앤크라떼</b> — <q>…이 너무 좋았고, 더운 날 먹으니 진짜 최고였어요🌽💛 쿠앤크라떼도 쿠앤크 특유의 달달하고 진한 맛이 제대로라 맛있었고…</q></div></div>
+        </div>
+        
+        <div class="rs-sec">
+          <div class="rs-title">항목별 리뷰 언급</div>
+          
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">😋 음식의 맛
+                <span class="neg-dr">언급 81건</span></div>
+              <div class="neg-q">"…무 편하게 있다 왔어요! 블루베리 빙수 먹었는데 진짜 맛있었어요. 블루베리도 듬뿍 올라가 있고 빙수랑 너무 잘…"</div><div class="neg-q">"차 맛있고 옛날 감성의 분위기 좋아요.
+즐거운 시간이었습니다^…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🍚 음식의 양
+                <span class="neg-dr">언급 3건</span></div>
+              <div class="neg-q">"…다음에 다시 방문한다면 고민 없이 1인 1빙으로 
+
+넉넉하게 주문할 것 같습니다.
+
+​
+
+고즈넉한 분위기 속에…"</div><div class="neg-q">"…초당옥수수 빙수를 주문했다. 2인분인데 이정도 양.
+
+양이 적다
+
+우유빙수위에 다털린 강냉이를 올린 느낌. 딱히 맛…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🤝 서비스
+                <span class="neg-dr">언급 13건</span></div>
+              <div class="neg-q">"한옥 감성 너무 좋고 직원분들도 친절하셨어요!!"</div><div class="neg-q">"…이 맛있고 예뻐요 인테리어가 너무 좋아요 진원 분들이 친절해요"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🧹 위생
+                <span class="neg-dr">언급 2건</span></div>
+              <div class="neg-q">"매장 깨끗하고 다 맛있네요❤️
+추천합니다👍🏻👍🏻"</div><div class="neg-q">"…​
+
+​
+
+​
+
+ 
+
+화장실은 1인용 화장실이었으며
+
+깨끗하게 잘 관리되고 있었어요👍🏻
+
+고재 해운대해리단길점에…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🚻 편의
+                <span class="neg-dr">언급 17건</span></div>
+              <div class="neg-q">"…8번길 14-7 2층 고재 해리단길점
+
+	
+해리단길공영주차장
+
+부산광역시 해운대구
+
+​
+
+고재는 전용 주차장이…"</div><div class="neg-q">"…고재는 
+
+별도로 마련된 공간이 없어요ㅠㅠ
+
+근처 유료주차장을 이용해주세요 :)
+
+​
+
+​
+
+​
+
+​
+
+​
+
+​…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">⏱ 웨이팅
+                <span class="neg-dr">언급 21건</span></div>
+              <div class="neg-q">"…깔이 아주 영롱합니다🫪 맛은 두 말할 필요도 없네유~ 웨이팅한 보람이 있네요"</div><div class="neg-q">"부산여행중 맛집 찾아 온 고재!!!!
+맛집인만큼 대기가 있네요~~
+더운 여름 시원함을 찾아준 고재~
+행운이…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">✨ 분위기
+                <span class="neg-dr">언급 67건</span></div>
+              <div class="neg-q">"매장도 시원하고 분위기도 좋아서 너무 편하게 있다 왔어요! 블루베리 빙수 먹…"</div><div class="neg-q">"차 맛있고 옛날 감성의 분위기 좋아요.
+즐거운 시간이었습니다^^"</div>
+            </div>
+        </div>
+        <a class="totop" href="#top">↑ 목록으로</a>
+      </section>
+      <section class="rest-sec" id="비비비당">
+        <div class="rest-hd">
+          <div class="rest-hd-l">
+            <h3 class="rest-name">비비비당 <span class="rest-cat">차</span></h3>
+            <span class="rev-cnt">방문자 100 · 블로그 27 · 종합 긍정률 80%<span class="pill p-go" style="margin-left:4px">블루리본</span></span>
+          </div>
+          <div class="hd-maps">
+            <a class="m-naver" href="https://map.naver.com/p/entry/place/31225001" target="_blank">네이버지도</a>
+          </div>
+        </div>
+        
+        <div class="rs-sec">
+          <div class="rs-title">영업 정보</div>
+          <div class="biz-info">
+            <div class="bi-hours"><b class="bi-lab">영업시간</b> <span class="yes">화~금, 월 10:30 ~ 21:30</span></div>
+            <div class="bi-etc"><b class="bi-lab">휴무</b> 정기휴무</div>
+          </div>
+          <p class="resv-p">📱 리뷰에서 언급된 예약/웨이팅 앱: <span class="waiting-tag">캐치테이블</span></p>
+        </div>
+        <div class="rs-sec">
+          <div class="rs-title">전반적 평가</div>
+          
+        <div class="sent-bar-wrap">
+          <span class="sent-label">네이버 방문자 <span class="n-cnt">(100건)</span></span>
+          <div class="bar-track">
+            <div class="bar-pos" style="width:80.0%"></div>
+            <div class="bar-neu" style="width:20.0%"></div>
+            <div class="bar-neg" style="width:0.0%"></div>
+          </div>
+          <span class="sent-nums">긍정 80.0% / 중립 20.0% / 부정 0.0%</span>
+        </div>
+          
+        <div class="sent-bar-wrap">
+          <span class="sent-label">네이버 블로그 <span class="n-cnt">(27건)</span></span>
+          <div class="bar-track">
+            <div class="bar-pos" style="width:96.3%"></div>
+            <div class="bar-neu" style="width:3.7%"></div>
+            <div class="bar-neg" style="width:0.0%"></div>
+          </div>
+          <span class="sent-nums">긍정 96.3% / 중립 3.7% / 부정 0.0%</span>
+        </div>
+          
+        </div>
+        
+        <div class="rs-sec">
+          <div class="rs-title">대표 메뉴 (리뷰 언급 기준)</div>
+          <div class="menu-q"><div class="mq-box mq-box-sig"><span class="mq-tag mq-sig">시그니처</span><b>단호박빙수</b> — <q>부산 올 때마다 무조건 들리는 곳!
+단호박빙수는 꼭 먹어야 하고, 둘이 온다면 차 한잔까지 시켜서…</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>다과</b> — <q>…먹는 지금이 제일 행복합니다!
+
+전통차 종류도 많고 다과도 함께 주셔서 더 좋았어요. 다음에 또올게요!</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>디저트</b> — <q>바다뷰도 너무 좋고, 차와 디저트도 맛있습니다~ 힐링하기 좋습니다~</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>전통차</b> — <q>…보면서 단호박 빙수 먹는 지금이 제일 행복합니다!
+
+전통차 종류도 많고 다과도 함께 주셔서 더 좋았어요. 다음에…</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>단팥죽</b> — <q>…ㅎ
+
+​
+
+저희는 오늘의 차, 다완커피
+
+단호박빙수, 단팥죽을 주문했어요
+
+​
+
+ 
+
+​
+
+계산대 앞에 있던 비비…</q></div></div>
+        </div>
+        
+        <div class="rs-sec">
+          <div class="rs-title">항목별 리뷰 언급</div>
+          
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">😋 음식의 맛
+                <span class="neg-dr">언급 60건</span></div>
+              <div class="neg-q">"우연히 왔는데 뷰도 차도 다 너무 맛있네요 ㅎㅎ
+또 올 듯 합니다 ㅎㅎ"</div><div class="neg-q">"완전맛있고 분위기좋고 쵸베리굿"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🍚 음식의 양
+                <span class="neg-dr">언급 2건</span></div>
+              <div class="neg-q">"…종류의 차를 오션뷰와 함께 즐길수 있는 곳
+
+코스요리 양이 많아 혼자 먹기에는 벅찼지만
+
+차를 다양하게 경험해볼 수…"</div><div class="neg-q">"…부산카페투어 #부산데이트코스
+
+"부산 호캉스 끝판왕! 가성비 호텔 best 5"
+
+안녕하세요. 부산에서 가볍게 떠…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🤝 서비스
+                <span class="neg-dr">언급 11건</span></div>
+              <div class="neg-q">"뷰가 너무멋지고.친절하고. 굿♡"</div><div class="neg-q">"분위기도 좋고 맛있고 다들 너무 친절하세요!"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🧹 위생
+                <span class="neg-dr">언급 2건</span></div>
+              <div class="neg-q">"…맛있을 듯 ㅠ 심지어 저 날 안개가 많이 낀 날이라 깨끗하게 안보였는데도 통창으로 바다가 끝도 없이 보이는게…"</div><div class="neg-q">"…에는 물이 끓는 옹기가 있어서
+
+매장에 은은한 한약방 냄새가 돌아요.
+
+찻물 리필도 저 끓는 물로 해줍니다.…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🚻 편의
+                <span class="neg-dr">언급 26건</span></div>
+              <div class="neg-q">"분위기가 참 좋습니다
+가격도 생각보다 합리적입니다
+주차도 샹각보다 편합니다
+만족스러워서 다음에 또 오고 싶습…"</div><div class="neg-q">"…이 온다면 차 한잔까지 시켜서 마시면 딱 좋아요:)
+(주차가능)"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">⏱ 웨이팅
+                <span class="neg-dr">언급 24건</span></div>
+              <div class="neg-q">"휴가철에 주말이였지만 10분정도 대기후 바로 입장가능했고 직원분들이 친절하셔서 편안한 분위…"</div><div class="neg-q">"…박 빙수
+
+메뉴 ②: 팥빙수
+
+메뉴 ③:전통차
+
+5. 웨이팅/팁
+
+점심시간 이후 가면 사람들이 많다.
+
+늦은 점심…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">✨ 분위기
+                <span class="neg-dr">언급 64건</span></div>
+              <div class="neg-q">"완전맛있고 분위기좋고 쵸베리굿"</div><div class="neg-q">"분위기가 너무너무 쪼아용 🤍🤍🤍"</div>
+            </div>
+        </div>
+        <a class="totop" href="#top">↑ 목록으로</a>
+      </section>
+      <section class="rest-sec" id="카페해운대1994">
+        <div class="rest-hd">
+          <div class="rest-hd-l">
+            <h3 class="rest-name">카페해운대1994 <span class="rest-cat">카페,디저트</span></h3>
+            <span class="rev-cnt">방문자 100 · 블로그 0 · 종합 긍정률 80%</span>
+          </div>
+          <div class="hd-maps">
+            <a class="m-naver" href="https://map.naver.com/p/entry/place/1970535465" target="_blank">네이버지도</a>
+          </div>
+        </div>
+        
+        <div class="rs-sec">
+          <div class="rs-title">영업 정보</div>
+          <div class="biz-info">
+            <div class="bi-hours"><b class="bi-lab">영업시간</b> <span class="yes">매일 6:30 - 24:00</span></div>
+            <div class="bi-etc"><b class="bi-lab">휴무</b> 연중무휴</div>
+          </div>
+          
+        </div>
+        <div class="rs-sec">
+          <div class="rs-title">전반적 평가</div>
+          
+        <div class="sent-bar-wrap">
+          <span class="sent-label">네이버 방문자 <span class="n-cnt">(100건)</span></span>
+          <div class="bar-track">
+            <div class="bar-pos" style="width:82.0%"></div>
+            <div class="bar-neu" style="width:18.0%"></div>
+            <div class="bar-neg" style="width:0.0%"></div>
+          </div>
+          <span class="sent-nums">긍정 82.0% / 중립 18.0% / 부정 0.0%</span>
+        </div>
+          
+          <p class="warn-tag">⚠ 표본이 적어 분석 신뢰도가 낮을 수 있음</p>
+        </div>
+        
+        <div class="rs-sec">
+          <div class="rs-title">대표 메뉴 (리뷰 언급 기준)</div>
+          <div class="menu-q"><div class="mq-box mq-box-sig"><span class="mq-tag mq-sig">시그니처</span><b>디저트</b> — <q>…없는 카페라 카페상가 지하주차장 이용가능하다. 음료와 디저트가 맛있었고 커피는 이집만의 해운대바다를 연상케하는 느…</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>소금빵크로플</b> — 리뷰 언급 빈도 상위</div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>외부뷰</b> — 리뷰 언급 빈도 상위</div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>코코넛커피스무디</b> — <q>…있게 먹었습니다. 달달한 게 땡겨서 카라멜 마끼아또와 코코넛커피스무디도 같이 주문했는데 달콤하고 디저트랑 잘 어울렸어요.…</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>버터떡소금빵</b> — 리뷰 언급 빈도 상위</div></div>
+        </div>
+        
+        <div class="rs-sec">
+          <div class="rs-title">항목별 리뷰 언급</div>
+          
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">😋 음식의 맛
+                <span class="neg-dr">언급 49건</span></div>
+              <div class="neg-q">"…라 카페상가 지하주차장 이용가능하다. 음료와 디저트가 맛있었고 커피는 이집만의 해운대바다를 연상케하는 느낌의 메…"</div><div class="neg-q">"소금빵 맛있고 음료도 맛있어요~친절해요"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🍚 음식의 양
+                <span class="neg-dr">언급 2건</span></div>
+              <div class="neg-q">"자리 간격 넉넉해서 편하게 앉아있기 좋았어요
+커피도 부드럽고 맛 괜찮…"</div><div class="neg-q">"…창가 자리에서 여유롭게 시간을 보냈고 테이블 간격도 넉넉해 대화하기 좋았어요 디저트는 겉은 바삭하고 속은 촉촉…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🤝 서비스
+                <span class="neg-dr">언급 23건</span></div>
+              <div class="neg-q">"친절하시고 양도 많았습니다~"</div><div class="neg-q">"소금빵 맛있고 음료도 맛있어요~친절해요"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🧹 위생
+                <span class="neg-dr">언급 10건</span></div>
+              <div class="neg-q">"…장님 직원분들 
+덕분에 더 좋은 👏🏻👏🏻
+
+맛있는 빵 냄새에
+
+대표 메뉴인
+소금빵
+크로플
+
+다 주문했는데
+너무…"</div><div class="neg-q">"매장에 들어오자마자 나는 빵냄새가 너무 좋아요!"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🚻 편의
+                <span class="neg-dr">언급 8건</span></div>
+              <div class="neg-q">"…지하철역입구에 위치해서 어렵지 않게 찾아올수 있었고 주차걱정없는 카페라 카페상가 지하주차장 이용가능하다. 음료…"</div><div class="neg-q">"…^^
+소금빵도 맛있고 커피고 정말 괜찮은 곳이더라구요 주차시간도 넣을수 있는거도 너무 좋아요^^"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">⏱ 웨이팅
+                <span class="neg-dr">언급 2건</span></div>
+              <div class="neg-q">"항상 맛있는집^^  웨이팅이 아깝지않아요^^"</div><div class="neg-q">"동료들과 들렀는데 자리 회전이 빨라 대기 부담이 없었어요"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">✨ 분위기
+                <span class="neg-dr">언급 20건</span></div>
+              <div class="neg-q">"…네요
+기본으로 포장주문했는데 오 맛있어요 포장지도
+넘 감성적이고 이쁘네요"</div><div class="neg-q">"커피 넘 맛있어요 
+대화하기도 좋고 분위기도 좋고
+직원분들도 넘 친절하세요 
+해운대에서 카페를…"</div>
+            </div>
+        </div>
+        <a class="totop" href="#top">↑ 목록으로</a>
+      </section>
+      <section class="rest-sec" id="옵스해운대점">
+        <div class="rest-hd">
+          <div class="rest-hd-l">
+            <h3 class="rest-name">옵스 해운대점 <span class="rest-cat">베이커리</span></h3>
+            <span class="rev-cnt">방문자 100 · 블로그 26 · 종합 긍정률 78%</span>
+          </div>
+          <div class="hd-maps">
+            <a class="m-naver" href="https://map.naver.com/p/entry/place/20309509" target="_blank">네이버지도</a>
+          </div>
+        </div>
+        
+        <div class="rs-sec">
+          <div class="rs-title">영업 정보</div>
+          <div class="biz-info">
+            <div class="bi-hours"><b class="bi-lab">영업시간</b> <span class="yes">08:00~22:00</span></div>
+            <div class="bi-etc"><b class="bi-lab">휴무</b> 연중무휴</div>
+          </div>
+          
+        </div>
+        <div class="rs-sec">
+          <div class="rs-title">전반적 평가</div>
+          
+        <div class="sent-bar-wrap">
+          <span class="sent-label">네이버 방문자 <span class="n-cnt">(100건)</span></span>
+          <div class="bar-track">
+            <div class="bar-pos" style="width:76.0%"></div>
+            <div class="bar-neu" style="width:22.0%"></div>
+            <div class="bar-neg" style="width:2.0%"></div>
+          </div>
+          <span class="sent-nums">긍정 76.0% / 중립 22.0% / 부정 2.0%</span>
+        </div>
+          
+        <div class="sent-bar-wrap">
+          <span class="sent-label">네이버 블로그 <span class="n-cnt">(26건)</span></span>
+          <div class="bar-track">
+            <div class="bar-pos" style="width:88.5%"></div>
+            <div class="bar-neu" style="width:7.7%"></div>
+            <div class="bar-neg" style="width:3.8%"></div>
+          </div>
+          <span class="sent-nums">긍정 88.5% / 중립 7.7% / 부정 3.8%</span>
+        </div>
+          
+        </div>
+        
+        <div class="rs-sec">
+          <div class="rs-title">대표 메뉴 (리뷰 언급 기준)</div>
+          <div class="menu-q"><div class="mq-box mq-box-sig"><span class="mq-tag mq-sig">시그니처</span><b>슈크림빵</b> — <q>야식 샀어요~
+슈크림빵은 기대했는데 예전보다
+슈크림이 아예 달지도 않고..맛…</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>옵스</b> — <q>부산 옵스에 다녀왔는데 역시 빵덕후의 성지였어요🥐✨ 분위기도 따…</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>크림치즈데니쉬</b> — <q>…2
+
+	
+
+슈크림
+
+3
+
+	
+
+애플파이
+
+4
+
+	
+
+크림치즈데니쉬
+
+5
+
+	
+
+치즈 만주
+
+6
+
+	
+
+당근케익
+
+7…</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>구성</b> — <q>…고르기 힘들었어요😅 계산할때 좀더 가성비 좋은 다른 구성을 추천해주시고 넘 친절하셔서 기분좋았습니다~
+빵도 넘…</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>바다</b> — <q>​
+
+인사글｜바다 산책 사이에 만난 해운대 간식 맛집
+
+해운대 여행에서…</q></div></div>
+        </div>
+        
+        <div class="rs-sec">
+          <div class="rs-title">항목별 리뷰 언급</div>
+          
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">😋 음식의 맛
+                <span class="neg-dr">언급 80건</span></div>
+              <div class="neg-q">"다맛있어ㅛ는데 참치빵이 특히맛있었어요"</div><div class="neg-q">"…고급스럽고 다양해요 😋🥳🍞
+서비스로 팥빙수를 주셔서 맛있게 시원하게 먹고 왔네요 🤩🥳🍞
+친절한 직원분들  덕에…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🍚 음식의 양
+                <span class="neg-dr">언급 8건</span></div>
+              <div class="neg-q">"…다 맛있어 보여서 고르기 힘들었어요😅 계산할때 좀더 가성비 좋은 다른 구성을 추천해주시고 넘 친절하셔서 기분좋았…"</div><div class="neg-q">"빵 종류가 다양하고 가성비가 좋았어요~ 직원분들이 친절하셨고요~ㅎㅎ"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🤝 서비스
+                <span class="neg-dr">언급 20건</span></div>
+              <div class="neg-q">"…팥빙수를 주셔서 맛있게 시원하게 먹고 왔네요 🤩🥳🍞
+친절한 직원분들  덕에 기분이 좋아지는 옵스 😋🥳🍞
+담에…"</div><div class="neg-q">"직원분이 나이대가있어 보였는데 정말 친절하세요! 
+르 빠베 로인 샌드위치 아침부터 나오는데 진…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🧹 위생
+                <span class="neg-dr">언급 15건</span></div>
+              <div class="neg-q">"너무 친절하시고 빵도 맛있음
+매장도 상당히 청결함
+완전 👍"</div><div class="neg-q">"…말고 비닐포장해 둔 빵으로 다 골랐습니다. 빵집이니까 위생이 중요할테니 신경 쓰셔야 할 것 같아 계산하면서 알려…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🚻 편의
+                <span class="neg-dr">언급 8건</span></div>
+              <div class="neg-q">"…친구와 함께 간 기장 코랄라니. 오션뷰 대형카페인데, 주차장이 잘돼있어서 방문하기 편했어요...
+
+blog.na…"</div><div class="neg-q">"…박스에 14,500원입니다.
+
+​
+
+ 
+
+빵집 내부에 좌석이 있는 카페인만큼 커피 음료도 판매하고 있어요. 아메…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">⏱ 웨이팅
+                <span class="neg-dr">언급 4건</span></div>
+              <div class="neg-q">"…장고 앞에서 한참 서 있었음
+
+ 
+
+​
+
+​
+
+계산대 줄 서는길에
+
+케이크 종류도 한쪽에
+
+쭉 진열되어 있어서…"</div><div class="neg-q">"…관광객밖에 없었다.
+
+​
+
+예전에도 백화점 내 옵스는 웨이팅을 했었는데
+
+해운대점은 웨이팅 없이 샀던 기억이 있어…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">✨ 분위기
+                <span class="neg-dr">언급 15건</span></div>
+              <div class="neg-q">"부산 옵스에 다녀왔는데 역시 빵덕후의 성지였어요🥐✨ 분위기도 따뜻하고 아늑해서 오래 머물고 싶더라구요.
+특히 명…"</div><div class="neg-q">"해운대가면 꼭 들르는 빵집이예요
+슈크림 가족들 주려고 2박스 사고 레몬치즈케잌 맛나서 또 사고 초…"</div>
+            </div>
+        </div>
+        <a class="totop" href="#top">↑ 목록으로</a>
+      </section>
+      <section class="rest-sec" id="까사부사노해운대점">
+        <div class="rest-hd">
+          <div class="rest-hd-l">
+            <h3 class="rest-name">까사 부사노 해운대점 <span class="rest-cat">카페,디저트</span></h3>
+            <span class="rev-cnt">방문자 100 · 블로그 24 · 종합 긍정률 78%</span>
+          </div>
+          <div class="hd-maps">
+            <a class="m-naver" href="https://map.naver.com/p/entry/place/1684807810" target="_blank">네이버지도</a>
+          </div>
+        </div>
+        
+        <div class="rs-sec">
+          <div class="rs-title">영업 정보</div>
+          <div class="biz-info">
+            <div class="bi-hours"><b class="bi-lab">영업시간</b> <span class="maybe">정보 미확인(매장 문의 권장)</span></div>
+            <div class="bi-etc"><b class="bi-lab">휴무</b> 연중무휴</div>
+          </div>
+          <p class="resv-p">📱 리뷰에서 언급된 예약/웨이팅 앱: <span class="waiting-tag">캐치테이블</span></p>
+        </div>
+        <div class="rs-sec">
+          <div class="rs-title">전반적 평가</div>
+          
+        <div class="sent-bar-wrap">
+          <span class="sent-label">네이버 방문자 <span class="n-cnt">(100건)</span></span>
+          <div class="bar-track">
+            <div class="bar-pos" style="width:79.0%"></div>
+            <div class="bar-neu" style="width:19.0%"></div>
+            <div class="bar-neg" style="width:2.0%"></div>
+          </div>
+          <span class="sent-nums">긍정 79.0% / 중립 19.0% / 부정 2.0%</span>
+        </div>
+          
+        <div class="sent-bar-wrap">
+          <span class="sent-label">네이버 블로그 <span class="n-cnt">(24건)</span></span>
+          <div class="bar-track">
+            <div class="bar-pos" style="width:91.7%"></div>
+            <div class="bar-neu" style="width:4.2%"></div>
+            <div class="bar-neg" style="width:4.2%"></div>
+          </div>
+          <span class="sent-nums">긍정 91.7% / 중립 4.2% / 부정 4.2%</span>
+        </div>
+          
+        </div>
+        
+        <div class="rs-sec">
+          <div class="rs-title">대표 메뉴 (리뷰 언급 기준)</div>
+          <div class="menu-q"><div class="mq-box mq-box-sig"><span class="mq-tag mq-sig">시그니처</span><b>칵테일</b> — <q>…렇게 좋은 에스프레스바가 있어서 좋아요 ☕️ 저녁에는 칵테일도 맛잇고, 디저트도 셀렉션이 많아요.</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>디저트</b> — <q>맛있는 에스프레소가 먹고싶어서 갔어요 맛있어요 디저트도 맛있고 바빠서 그런지 친절은 모르겠네요 몇잔 더 마…</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>부사노에스프레소</b> — <q>…노 해운대점
+
+부산광역시 해운대구 우동 618-15
+
+부사노에스프레소
+외 1개
+2026.06.영수증
+
+​</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>아몬드크림라떼</b> — 리뷰 언급 빈도 상위</div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>카페</b> — <q>…레몬 껍질을
+함께 주시는데 향이 참 좋네요
+
+오늘도 카페인 충전하고
+해운대 백사장 한바퀴 돌고 왔답니다
+
+MD…</q></div></div>
+        </div>
+        
+        <div class="rs-sec">
+          <div class="rs-title">항목별 리뷰 언급</div>
+          
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">😋 음식의 맛
+                <span class="neg-dr">언급 75건</span></div>
+              <div class="neg-q">"…특했어요~~
+2층 구조도 그렇구~~
+아포카토 오랜만에 맛있게 먹었네요"</div><div class="neg-q">"레몬 크림샷 넘 상큼하니 맛있고
+샤케라또와 부사노 크렘프레소 매력 있어요!!^^
+분…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🍚 음식의 양
+                <span class="neg-dr">언급 5건</span></div>
+              <div class="neg-q">"…와 부사노크렘프레소. 바도바 먹었어요 코르타도는 우유 양이 적기 때문에 에스프레소 고유의 원두 향이 묻히지 않습니다…"</div><div class="neg-q">"…해운대 호텔 추천 | 라비드아틀란 오션 디럭스 트윈룸 가성비 숙소
+
+부산 여행 중에 해운대와 가까우면서 가성비 좋…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🤝 서비스
+                <span class="neg-dr">언급 13건</span></div>
+              <div class="neg-q">"…싶어서 갔어요 맛있어요 디저트도 맛있고 바빠서 그런지 친절은 모르겠네요 몇잔 더 마실까 해서 카운터에 서있었는데…"</div><div class="neg-q">"…요, 커피 좋네요^^* 역시 너무 좋은 부산, 공간도 직원분들도 좋구~ 좋은 기억을 안고 돌아갑니당!👐"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🧹 위생
+                <span class="neg-dr">언급 2건</span></div>
+              <div class="neg-q">"…맛아이겠습니까. 
+
+찌는 듯한 7월 한여름에 
+
+겨울 냄새를 풍기는 사진들을 꺼내면
+
+더 시원하고 로멘틱할 것…"</div><div class="neg-q">"…데 엄마가 밥이 너무 맛있다고 했다.
+
+곰탕도 기름을 깨끗하게 걷어내서 슴슴하니 깔끔한 맛있었다.
+
+반찬 하나하…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🚻 편의
+                <span class="neg-dr">언급 12건</span></div>
+              <div class="neg-q">"…카페인도 맛있고, 플랫화이트 진하고 맛있어요)
+
+야외 좌석에서 일광욕(?)하며 마시기 좋아요 🧡"</div><div class="neg-q">"…349
+
+⭕- 단체 이용 가능, 무선 인터넷, 남/녀 화장실 구분
+
+대중교통
+
+해운대역 3번 출구로 나와
+
+2분…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">⏱ 웨이팅
+                <span class="neg-dr">언급 9건</span></div>
+              <div class="neg-q">"…란 테이블로 되어 있다 
+
+메뉴 나올때까지만 1층에서 기다렸당 
+
+2층 올라가는 계단은 나선형 계단 ㅎㅎ
+
+2층…"</div><div class="neg-q">"…되어 있긴 했지만,
+
+제가 방문한 날은
+
+여자 화장실 대기가 꽤 있었어요.
+
+방문하실 분들은
+
+참고하시면 좋을…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">✨ 분위기
+                <span class="neg-dr">언급 68건</span></div>
+              <div class="neg-q">"가게 예뻐요 술도 다양하고 아늑합니다."</div><div class="neg-q">"…있고
+샤케라또와 부사노 크렘프레소 매력 있어요!!^^
+분위기 넘 좋은 이곳~~~"</div>
+            </div>
+        </div>
+        <a class="totop" href="#top">↑ 목록으로</a>
+      </section>
+      <section class="rest-sec" id="옵스마린시티점">
+        <div class="rest-hd">
+          <div class="rest-hd-l">
+            <h3 class="rest-name">옵스 마린시티점 <span class="rest-cat">베이커리</span></h3>
+            <span class="rev-cnt">방문자 100 · 블로그 27 · 종합 긍정률 70%</span>
+          </div>
+          <div class="hd-maps">
+            <a class="m-naver" href="https://map.naver.com/p/entry/place/16567963" target="_blank">네이버지도</a>
+          </div>
+        </div>
+        
+        <div class="rs-sec">
+          <div class="rs-title">영업 정보</div>
+          <div class="biz-info">
+            <div class="bi-hours"><b class="bi-lab">영업시간</b> <span class="yes">매일 08:00 ~ 22:00</span></div>
+            <div class="bi-etc"><b class="bi-lab">휴무</b> 연중무휴</div>
+          </div>
+          
+        </div>
+        <div class="rs-sec">
+          <div class="rs-title">전반적 평가</div>
+          
+        <div class="sent-bar-wrap">
+          <span class="sent-label">네이버 방문자 <span class="n-cnt">(100건)</span></span>
+          <div class="bar-track">
+            <div class="bar-pos" style="width:66.0%"></div>
+            <div class="bar-neu" style="width:31.0%"></div>
+            <div class="bar-neg" style="width:3.0%"></div>
+          </div>
+          <span class="sent-nums">긍정 66.0% / 중립 31.0% / 부정 3.0%</span>
+        </div>
+          
+        <div class="sent-bar-wrap">
+          <span class="sent-label">네이버 블로그 <span class="n-cnt">(27건)</span></span>
+          <div class="bar-track">
+            <div class="bar-pos" style="width:96.3%"></div>
+            <div class="bar-neu" style="width:3.7%"></div>
+            <div class="bar-neg" style="width:0.0%"></div>
+          </div>
+          <span class="sent-nums">긍정 96.3% / 중립 3.7% / 부정 0.0%</span>
+        </div>
+          
+        </div>
+        
+        <div class="rs-sec">
+          <div class="rs-title">대표 메뉴 (리뷰 언급 기준)</div>
+          <div class="menu-q"><div class="mq-box mq-box-sig"><span class="mq-tag mq-sig">시그니처</span><b>슈크림빵</b> — <q>슈크림빵하면 옵스♥︎</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>드마히니오픈샌드위치</b> — 리뷰 언급 빈도 상위</div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>디저트</b> — <q>…집 옵스 메뉴 추천 슈크림 후기
+
+부산에 가면 선물할 디저트, 빵 구매하러 혹은 간식거리 사냥하러 옵스는 꼭 방문…</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>안녕</b> — <q>진심으로 떠나는 맛의 여행..🍜✈️
+
+안녕하세요 "맛행" 입니다.​
+
+​
+
+부산 해운대 필수코스…</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>거대곰탕</b> — <q>…는 부산 대표 빵집중 하나가 되었습니다. 
+
+길 건너 거대곰탕 대기 걸어두고 넘어와서 빵쇼핑을 했습니다. 
+
+사실…</q></div></div>
+        </div>
+        
+        <div class="rs-sec">
+          <div class="rs-title">항목별 리뷰 언급</div>
+          
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">😋 음식의 맛
+                <span class="neg-dr">언급 72건</span></div>
+              <div class="neg-q">"밤식빵 진짜 맛있어요"</div><div class="neg-q">"마린시티점 오랜만이네요. 
+슈크림이랑 애플파이 맛있어요!!"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🍚 음식의 양
+                <span class="neg-dr">언급 3건</span></div>
+              <div class="neg-q">"한 개 만 먹어도 배부를 만큼 크림 양이 푸짐해요.^^ 슈크림 좋아하는 분들은 잘 드실 것 같습니다…"</div><div class="neg-q">"…즐기기 좋은 옵스 브랜드만의 30년 정통 베이커리.
+
+가성비 (🍚🍚): 퀄리티 있는 빵과 분위기 값이지만 처렴한…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🤝 서비스
+                <span class="neg-dr">언급 16건</span></div>
+              <div class="neg-q">"빵 맛있어요.
+직원분들 친절하고 좋아요^^"</div><div class="neg-q">"…다던데 마린시티는 판매중이라고하셔서
+구매했습니다 엄청 친절하셨어요!"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🧹 위생
+                <span class="neg-dr">언급 3건</span></div>
+              <div class="neg-q">"…시간 체크
+
+OPS빵집 내부 들어오시면
+
+고소,달달한 냄새 장난아니구여
+
+눈돌아갑니다..👀
+
+ 
+
+후..…"</div><div class="neg-q">"…쪽으로는 “인테리어가 멋져요”가 언급되고, “매장이 청결해요”도 반복되는 편이에요.
+
+​
+
+서비스 관련해서는…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🚻 편의
+                <span class="neg-dr">언급 16건</span></div>
+              <div class="neg-q">"상가주차장이 있어서 좋아요~😃"</div><div class="neg-q">"…방문했네요 ^^
+옵스 마린시티점은 해운대 카멜리아 지하주차장을 이용할 수 있어서 다행이네요 😀 👍"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">⏱ 웨이팅
+                <span class="neg-dr">언급 7건</span></div>
+              <div class="neg-q">"…대표 빵집중 하나가 되었습니다. 
+
+길 건너 거대곰탕 대기 걸어두고 넘어와서 빵쇼핑을 했습니다. 
+
+사실 그때의…"</div><div class="neg-q">"…힐링하러 여행 왔으면서 3일 동안 바쁘게 오픈런하고 웨이팅하고 여기 갔다 저기 갔다 하느라 제대로 된 힐...…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">✨ 분위기
+                <span class="neg-dr">언급 14건</span></div>
+              <div class="neg-q">"텔레비전에 나와서 가봤는데 분위기 고급스럽네요.맛있는 빵과 음료 잘먹고 갑니다"</div><div class="neg-q">"…시간가는지도 모르다가 창밖에서 그만
+가자고 쳐다보는 가족들 ㅋㅋㅋ
+
+오늘일정:부산역ㅡ마리나블루키친ㅡ옵스ㅡ해운대…"</div>
+            </div>
+        </div>
+        <a class="totop" href="#top">↑ 목록으로</a>
+      </section>
+      <section class="rest-sec" id="호랑이젤라떡부산해운대본점">
+        <div class="rest-hd">
+          <div class="rest-hd-l">
+            <h3 class="rest-name">호랑이젤라떡 부산해운대본점 <span class="rest-cat">카페,디저트</span></h3>
+            <span class="rev-cnt">방문자 100 · 블로그 25 · 종합 긍정률 69%</span>
+          </div>
+          <div class="hd-maps">
+            <a class="m-naver" href="https://map.naver.com/p/entry/place/1242739264" target="_blank">네이버지도</a>
+          </div>
+        </div>
+        
+        <div class="rs-sec">
+          <div class="rs-title">영업 정보</div>
+          <div class="biz-info">
+            <div class="bi-hours"><b class="bi-lab">영업시간</b> <span class="yes">매일 12:00 - 21:30</span></div>
+            <div class="bi-etc"><b class="bi-lab">브레이크타임</b> 16:00 -17:30 <span class='bi-sep'>·</span> <b class="bi-lab">휴무</b> 연중무휴</div>
+          </div>
+          <p class="resv-p">📱 리뷰에서 언급된 예약/웨이팅 앱: <span class="waiting-tag">캐치테이블</span></p>
+        </div>
+        <div class="rs-sec">
+          <div class="rs-title">전반적 평가</div>
+          
+        <div class="sent-bar-wrap">
+          <span class="sent-label">네이버 방문자 <span class="n-cnt">(100건)</span></span>
+          <div class="bar-track">
+            <div class="bar-pos" style="width:63.0%"></div>
+            <div class="bar-neu" style="width:34.0%"></div>
+            <div class="bar-neg" style="width:3.0%"></div>
+          </div>
+          <span class="sent-nums">긍정 63.0% / 중립 34.0% / 부정 3.0%</span>
+        </div>
+          
+        <div class="sent-bar-wrap">
+          <span class="sent-label">네이버 블로그 <span class="n-cnt">(25건)</span></span>
+          <div class="bar-track">
+            <div class="bar-pos" style="width:100.0%"></div>
+            <div class="bar-neu" style="width:0.0%"></div>
+            <div class="bar-neg" style="width:0.0%"></div>
+          </div>
+          <span class="sent-nums">긍정 100.0% / 중립 0.0% / 부정 0.0%</span>
+        </div>
+          
+        </div>
+        
+        <div class="rs-sec">
+          <div class="rs-title">대표 메뉴 (리뷰 언급 기준)</div>
+          <div class="menu-q"><div class="mq-box mq-box-sig"><span class="mq-tag mq-sig">시그니처</span><b>젤라떡</b> — <q>…하다가, 드디어 먹어봤습니다. 부산해운대본점의 '호랑이젤라떡' 최소 구매 단위인 4개들이 1박스(18,000원)를…</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>아이스크림</b> — <q>찰떡아이스 생각하고 사먹었는데 떡피가 완전 얇고 아이스크림이 가득 들었어요! 포장하면 주시는 보냉백도 예뻐요.</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>디저트</b> — <q>오길잘했어요 미포횟집 앞에 있던데 회먹고 디저트로 먹기도 좋고 무엇보다 너무 예쁜데 맛도 있네요 젤라…</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>피스타치오맛</b> — <q>제가 먹어본 피스타치오맛 중에 최고예요! 
+이런맛은 호랑이 젤라떡 밖에 못 낼…</q></div><div class="mq-box mq-box-rec"><span class="mq-tag mq-rec">언급 메뉴</span><b>물비빔소바</b> — <q>…기다린 만큼 기대도 커졌다.
+
+​
+
+야채튀김우동과 물비빔소바, 돈까스를 주문했다.
+
+전체적으로 모두 맛있었지만 특…</q></div></div>
+        </div>
+        
+        <div class="rs-sec">
+          <div class="rs-title">항목별 리뷰 언급</div>
+          
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">😋 음식의 맛
+                <span class="neg-dr">언급 77건</span></div>
+              <div class="neg-q">"…어버렸네요ㅋㅋㅋㅋ
+
+비싼 감은 있는데 원물 아이스크림 맛이 좋아요"</div><div class="neg-q">"…셔서 감동!! 고소한 젤라또 떡으로 감싸서 한입 한입 맛있어요!! 보냉유지도 잘되서 부산여행 기념품으로 사오기…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🍚 음식의 양
+                <span class="neg-dr">언급 2건</span></div>
+              <div class="neg-q">"…가득 담겨있어요! 
+
+매장 응대도 친절하시고 휴지도 넉넉하게 챙겨주시네요!"</div><div class="neg-q">"…하지만 괜한 걱정!
+
+대형 드라이아이스를 
+
+정말 넉넉하게 넣어주셔서 
+
+대구까지 오는 동안에도 
+
+처음 그…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🤝 서비스
+                <span class="neg-dr">언급 17건</span></div>
+              <div class="neg-q">"…좋아해서 매번 사러 오게됩니다 넘 맛있다고합니다 매장 친절하고 좋습니다"</div><div class="neg-q">"…이 좀 있음. 특히 24시간이나 유지되는 보냉팩 포장 서비스가 잘 되어 있어서 집으로 포장해 가거나 주변에 선물하…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🧹 위생
+                <span class="neg-dr">언급 5건</span></div>
+              <div class="neg-q">"…냉이 정말 확실하다란 생각을 했어요~
+예쁘게 담아주고 위생장갑+냅킨도 넣어주셔서 좋아요~
+지인들 반응도 너무 좋…"</div><div class="neg-q">"…를 열어보니 안에 손에 묻지 않게 먹을 수 있는 비닐 위생장갑이 함께 들어있는 점이 참 센스 있게 느껴졌습니다…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">🚻 편의
+                <span class="neg-dr">언급 18건</span></div>
+              <div class="neg-q">"…너무 완벽해서 포장하기 좋았어요!!
+⭐️드시고 가는 좌석❌️❌️❌️⭐️"</div><div class="neg-q">"….
+포장도 깔끔했고, 잡고 먹을 수 있게 손가락장갑, 물티슈, 건티슈 챙겨주셔서 좋았습니다. 또한 어떤 맛이 있는…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">⏱ 웨이팅
+                <span class="neg-dr">언급 42건</span></div>
+              <div class="neg-q">"…픈하면 차곡차곡 빠르게 주문하니까 덜기다리는데 
+괜히 웨이팅 걸리지마시고 애매한 시간에 방문하세요!"</div><div class="neg-q">"…한대서 방문했어요-
+신랑이 찹쌀떡을 무지 좋아하는데 거기다가 젤라또까지...!
+고른 젤라떡들 모두 맛있었어요.…"</div>
+            </div>
+            <div class="neg-pattern" style="background:#f7f3ec">
+              <div class="neg-ph" style="color:var(--accent)">✨ 분위기
+                <span class="neg-dr">언급 14건</span></div>
+              <div class="neg-q">"저번에 먹고 또 먹고 싶어서 부산 가족 여행와서 방문했어요~~~^_^ 6구로 다양한 맛 구매…"</div><div class="neg-q">"전에 맛있게 먹어서 여행왔다가 생각나서 가족이랑 갔는데
+캡슐로 바뀌고 낱게 구매도 안되네요..
+공…"</div>
+            </div>
+        </div>
+        <a class="totop" href="#top">↑ 목록으로</a>
+      </section>
+
+  <div class="foot">
+    데이터 출처: 네이버 플레이스 방문자·블로그 리뷰 (naver_crawler.py 자동 수집·분석) ·
+    분석 기준일 2026-08-14 · 광고/협찬/체험단 키워드 및 복붙 중복 리뷰는 사전 제거됨.
+  </div>
+</div>
+</body>
+</html>
